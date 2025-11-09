@@ -39,7 +39,7 @@
         </div>
 
         <!-- Formulario -->
-        <form action="{{ route('admin.schools.update', $school) }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin.schools.update', $school) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
 

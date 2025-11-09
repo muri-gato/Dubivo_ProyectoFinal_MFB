@@ -181,7 +181,7 @@ if ($request->hasFile('logo')) {
         }
 
         $types = Work::getTypeOptions();
-    return view('admin.works.create', compact('work', 'types'));
+    return view('admin.works.create', compact('types'));
     }
 
     public function storeWork(Request $request)

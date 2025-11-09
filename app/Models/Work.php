@@ -63,7 +63,9 @@ class Work extends Model
         'series' => 'Serie',
         'commercial' => 'Publicidad', 
         'animation' => 'Animación',
-        'videogame' => 'Videojuego'
+        'videogame' => 'Videojuego',
+        'documentary' => 'Documental',
+        'other' => 'Otro',
     ];
 }
 }

@@ -19,7 +19,7 @@
         </div>
 
         <!-- Formulario -->
-        <form action="{{ route('admin.schools.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin.schools.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <!-- Nombre -->

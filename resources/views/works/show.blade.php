@@ -42,13 +42,37 @@
                     </div>
                     
                     @auth
-                        @if(auth()->user()->role === 'admin')
-                            <a href="{{ route('admin.works.edit', $work) }}" 
-                               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                                <i class="fas fa-edit mr-1"></i>Editar
-                            </a>
-                        @endif
-                    @endauth
+    @if(Auth::user()->role == 'admin')
+        
+            <div class="flex justify-between items-center">
+                <div class="flex space-x-3">
+                    {{-- Botón Editar --}}
+                    <a href="{{ route('admin.works.edit', $work) }}" 
+                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex items-center">
+                       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                       </svg>
+                       Editar Obra
+                    </a>
+                    
+                    {{-- Botón Eliminar --}}
+                    <form action="{{ route('admin.works.destroy', $work) }}" method="POST" 
+                          onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta obra? Esta acción no se puede deshacer.');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" 
+                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Eliminar Obra
+                        </button>
+                    </form>
+                </div>
+            
+        </div>
+    @endif
+@endauth
                 </div>
 
                 @if($work->description)
@@ -140,6 +164,8 @@
             </div>
         @endif
     </div>
+
+    
 
     <!-- Obras Relacionadas (mismo tipo) -->
     @if($relatedWorks->count() > 0)

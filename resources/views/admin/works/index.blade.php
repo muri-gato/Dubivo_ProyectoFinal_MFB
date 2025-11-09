@@ -176,31 +176,31 @@
 
                             <!-- Acciones -->
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex space-x-2">
-                                    <a href="{{ route('works.show', $work) }}" 
-                                       class="text-blue-600 hover:text-blue-900" 
-                                       title="Ver pública">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.works.edit', $work) }}" 
-                                       class="text-green-600 hover:text-green-900"
-                                       title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('admin.works.destroy', $work) }}" 
-                                          method="POST" 
-                                          class="inline"
-                                          onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta obra? Esta acción no se puede deshacer.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="text-red-600 hover:text-red-900"
-                                                title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+    <div class="flex space-x-2">
+        {{-- Botón Ver --}}
+        <a href="{{ route('works.show', $work) }}" 
+           class="text-blue-600 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded text-sm">
+           Ver
+        </a>
+        
+        {{-- Botón Editar --}}
+        <a href="{{ route('admin.works.edit', $work) }}" 
+           class="text-yellow-600 hover:text-yellow-900 bg-yellow-100 hover:bg-yellow-200 px-3 py-1 rounded text-sm">
+           Editar
+        </a>
+        
+        {{-- Botón Eliminar --}}
+        <form action="{{ route('admin.works.destroy', $work) }}" method="POST" 
+              onsubmit="return confirm('¿Eliminar esta obra?');" class="inline">
+            @csrf
+            @method('DELETE')
+            <button type="submit" 
+                    class="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded text-sm">
+                Eliminar
+            </button>
+        </form>
+    </div>
+</td>
                         </tr>
                     @empty
                         <tr>
