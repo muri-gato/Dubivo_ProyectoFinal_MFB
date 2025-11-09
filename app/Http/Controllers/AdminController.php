@@ -74,9 +74,14 @@ class AdminController extends Controller
             'city' => 'required|string|max:255',
             'description' => 'required|string|max:1000',
             'founded_year' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'logo' => 'nullable|image|max:2048',
             'website' => 'nullable|url'
         ]);
 
+        // Manejar la subida del logo
+        if ($request->hasFile('logo')) {
+            $validated['logo'] = $request->file('logo')->store('schools/logos', 'public');
+        }
         School::create($validated);
 
         return redirect()->route('admin.schools')->with('success', 'Escuela creada exitosamente.');
@@ -102,9 +107,16 @@ class AdminController extends Controller
             'city' => 'required|string|max:255',
             'description' => 'required|string|max:1000',
             'founded_year' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'logo' => 'nullable|image|max:2048',
             'website' => 'nullable|url'
         ]);
-
+        // Manejar la subida del logo si se proporciona uno nuevo
+if ($request->hasFile('logo')) {
+    if ($school->logo) {
+        Storage::disk('public')->delete($school->logo);
+    }
+    $validated['logo'] = $request->file('logo')->store('schools/logos', 'public');
+}
         $school->update($validated);
 
         return redirect()->route('admin.schools')->with('success', 'Escuela actualizada exitosamente.');
@@ -178,12 +190,12 @@ class AdminController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'type' => 'required|in:movie,series,commercial,animation,videogame',
-            'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
-            'description' => 'nullable|string|max:1000',
-            'poster' => 'nullable|image|max:2048'
-        ]);
+    'title' => 'required|string|max:255',
+    'type' => 'required|in:Película,Serie,Publicidad,Animación,Videojuego', // ← ESPAÑOL
+    'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
+    'description' => 'nullable|string|max:1000',
+    'poster' => 'nullable|image|max:2048'
+]);
 
         // Manejar la subida del póster
         if ($request->hasFile('poster')) {
@@ -211,12 +223,12 @@ class AdminController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'type' => 'required|in:movie,series,commercial,animation,videogame',
-            'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
-            'description' => 'nullable|string|max:1000',
-            'poster' => 'nullable|image|max:2048'
-        ]);
+    'title' => 'required|string|max:255',
+    'type' => 'required|in:Película,Serie,Publicidad,Animación,Videojuego', // ← ESPAÑOL
+    'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
+    'description' => 'nullable|string|max:1000',
+    'poster' => 'nullable|image|max:2048'
+]);
 
         // Manejar la subida del póster si se proporciona uno nuevo
         if ($request->hasFile('poster')) {
@@ -302,13 +314,17 @@ public function actors(Request $request)
 
     public function createActor()
 {
-    $users = User::where('role', 'actor')->whereDoesntHave('actorProfile')->get();
+    // Mostrar usuarios que pueden ser actores (no admin, no clientes con perfil)
+    $availableUsers = User::where('role', '!=', 'admin')
+                         ->whereDoesntHave('actorProfile')
+                         ->get();
+    
     $schools = School::all();
     $works = Work::all();
     $genders = Actor::getGenderOptions();
     $voiceAges = Actor::getVoiceAgeOptions();
 
-    return view('admin.actors.create', compact('users', 'schools', 'works', 'genders', 'voiceAges'));
+    return view('admin.actors.create', compact('availableUsers', 'schools', 'works', 'genders', 'voiceAges'));
 }
 
     // Método para guardar nuevo actor

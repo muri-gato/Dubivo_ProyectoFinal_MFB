@@ -18,6 +18,12 @@
             </a>
         </div>
     </div>
+    @if($user->role == 'client' && !$user->actorProfile)
+    <a href="{{ route('admin.actors.create-from-user', $user) }}" 
+       class="text-green-600 hover:text-green-900 text-sm font-medium">
+       Convertir en actor
+    </a>
+@endif
 
     <!-- Filtros -->
     <div class="bg-white rounded-lg shadow-md p-4 mb-6">
