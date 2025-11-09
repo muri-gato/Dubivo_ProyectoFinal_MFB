@@ -1,0 +1,142 @@
+@extends('layouts.app')
+
+@section('title', 'Crear Nueva Escuela - Admin')
+
+@section('content')
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <!-- Header -->
+        <div class="border-b border-gray-200 pb-4 mb-6">
+            <div class="flex items-center">
+                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-school text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Crear Nueva Escuela</h1>
+                    <p class="text-gray-600 mt-1">Añade una nueva escuela de doblaje al sistema</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <form action="{{ route('admin.schools.store') }}" method="POST" class="space-y-6">
+            @csrf
+
+            <!-- Nombre -->
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre de la Escuela <span class="text-red-500">*</span>
+                </label>
+                <input type="text" 
+                       name="name" 
+                       id="name" 
+                       required
+                       value="{{ old('name') }}"
+                       placeholder="Ej: Escuela Superior de Doblaje de Madrid"
+                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                @error('name')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Ciudad -->
+            <div>
+                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">
+                    Ciudad <span class="text-red-500">*</span>
+                </label>
+                <input type="text" 
+                       name="city" 
+                       id="city" 
+                       required
+                       value="{{ old('city') }}"
+                       placeholder="Ej: Madrid, Barcelona, Sevilla..."
+                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                @error('city')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Año de Fundación -->
+            <div>
+                <label for="founded_year" class="block text-sm font-medium text-gray-700 mb-2">
+                    Año de Fundación
+                </label>
+                <input type="number" 
+                       name="founded_year" 
+                       id="founded_year" 
+                       value="{{ old('founded_year') }}"
+                       min="1900" 
+                       max="{{ date('Y') }}"
+                       placeholder="Ej: 1995"
+                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                @error('founded_year')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Sitio Web -->
+            <div>
+                <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
+                    Sitio Web
+                </label>
+                <input type="url" 
+                       name="website" 
+                       id="website" 
+                       value="{{ old('website') }}"
+                       placeholder="Ej: https://www.escuela-doblaje.com"
+                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                @error('website')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Descripción -->
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                    Descripción <span class="text-red-500">*</span>
+                </label>
+                <textarea name="description" 
+                          id="description" 
+                          rows="6"
+                          required
+                          placeholder="Describe la escuela, su metodología, profesores destacados, instalaciones..."
+                          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description') }}</textarea>
+                @error('description')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <a href="{{ route('admin.schools') }}" 
+                   class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
+                    Cancelar
+                </a>
+                <button type="submit" 
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
+                    <i class="fas fa-save mr-2"></i>
+                    Crear Escuela
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Información de Ayuda -->
+    <div class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-lightbulb text-green-400 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-green-800">Consejos para crear una escuela</h3>
+                <div class="mt-2 text-sm text-green-700">
+                    <p>• Incluye información relevante sobre la metodología de enseñanza</p>
+                    <p>• Menciona profesores o profesionales destacados si los hay</p>
+                    <p>• Describe las instalaciones y equipos disponibles</p>
+                    <p>• Incluye el enlace al sitio web oficial si existe</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

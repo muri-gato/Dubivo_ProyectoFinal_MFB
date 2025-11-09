@@ -1,0 +1,249 @@
+@extends('layouts.app')
+
+@section('title', 'Gestión de Actores - Admin')
+
+@section('content')
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Gestión de Actores</h1>
+                <p class="text-gray-600 mt-2">Administra todos los actores registrados en el sistema</p>
+            </div>
+            <a href="{{ route('admin.actors.create') }}" 
+       class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center">
+        <i class="fas fa-plus mr-2"></i>
+        Nuevo Actor
+    </a>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-lg shadow p-4 text-center">
+        <div class="text-2xl font-bold text-blue-600">{{ $actors->total() }}</div>
+        <div class="text-sm text-gray-600">Total Actores</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4 text-center">
+        <div class="text-2xl font-bold text-green-600">{{ $actors->where('is_available', true)->count() }}</div>
+        <div class="text-sm text-gray-600">Disponibles</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4 text-center">
+        <div class="text-2xl font-bold text-purple-600">
+            {{ $actors->filter(function($actor) { 
+                return in_array('Masculino', $actor->genders ?? []); 
+            })->count() }}
+        </div>
+        <div class="text-sm text-gray-600">Incluye Masculino</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4 text-center">
+        <div class="text-2xl font-bold text-pink-600">
+            {{ $actors->filter(function($actor) { 
+                return in_array('Femenino', $actor->genders ?? []); 
+            })->count() }}
+        </div>
+        <div class="text-sm text-gray-600">Incluye Femenino</div>
+    </div>
+</div>
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+    <form method="GET" action="{{ route('admin.actors') }}" class="flex flex-wrap gap-4 items-end">
+        <!-- Género -->
+        <div class="min-w-[150px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Género</label>
+            <select name="gender" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                <option value="">Todos los géneros</option>
+                @foreach($genders as $gender)
+                    <option value="{{ $gender }}" {{ request('gender') == $gender ? 'selected' : '' }}>
+                        {{ $gender }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+            <!-- Edad Vocal -->
+        <div class="min-w-[150px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Edad Vocal</label>
+            <select name="voice_age" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                <option value="">Todas las edades</option>
+                @foreach($voiceAges as $age)
+                    <option value="{{ $age }}" {{ request('voice_age') == $age ? 'selected' : '' }}>
+                        {{ $age }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+            <div class="min-w-[150px]">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Disponibilidad</label>
+                <select name="availability" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                    <option value="">Todos</option>
+                    <option value="available" {{ request('availability') == 'available' ? 'selected' : '' }}>Disponibles</option>
+                    <option value="unavailable" {{ request('availability') == 'unavailable' ? 'selected' : '' }}>No disponibles</option>
+                </select>
+            </div>
+            <div class="min-w-[150px]">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ordenar</label>
+                <select name="sort" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                    <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Más recientes</option>
+                    <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Más antiguos</option>
+                    <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nombre A-Z</option>
+                    <option value="works" {{ request('sort') == 'works' ? 'selected' : '' }}>Más obras</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 h-[42px]">
+                    <i class="fas fa-filter mr-1"></i> Filtrar
+                </button>
+                <a href="{{ route('admin.actors') }}" class="ml-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 h-[42px] inline-flex items-center">
+                    <i class="fas fa-times mr-1"></i> Limpiar Filtros
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de Actores -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <!-- Tabla -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actor
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Información
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Escuelas
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Obras
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Estado
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($actors as $actor)
+                        <tr class="hover:bg-gray-50 transition duration-150">
+                            <!-- Información del Actor -->
+                            <td class="px-6 py-4">
+    <div class="text-sm text-gray-900">
+        <strong>Géneros:</strong> {{ $actor->genders_string ?: 'No especificado' }}
+    </div>
+    <div class="text-sm text-gray-900 mt-1">
+        <strong>Edades:</strong> {{ $actor->voice_ages_string ?: 'No especificado' }}
+    </div>
+    @if($actor->bio)
+        <div class="text-xs text-gray-500 line-clamp-1 max-w-xs mt-1">
+            {{ Str::limit($actor->bio, 50) }}
+        </div>
+    @endif
+</td>
+
+                            <!-- Información -->
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900 capitalize">
+                                    {{ $actor->gender }} • {{ str_replace('_', ' ', $actor->voice_age) }}
+                                </div>
+                                @if($actor->bio)
+                                    <div class="text-xs text-gray-500 line-clamp-1 max-w-xs mt-1">
+                                        {{ Str::limit($actor->bio, 50) }}
+                                    </div>
+                                @endif
+                            </td>
+
+                            <!-- Escuelas -->
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900">
+                                    {{ $actor->schools_count ?? $actor->schools->count() }}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    escuelas
+                                </div>
+                            </td>
+
+                            <!-- Obras -->
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900">
+                                    {{ $actor->works_count ?? $actor->works->count() }}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    obras
+                                </div>
+                            </td>
+
+                            <!-- Estado -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                    {{ $actor->is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $actor->is_available ? 'Disponible' : 'No disponible' }}
+                                </span>
+                            </td>
+
+                            <!-- Acciones -->
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <a href="{{ route('actors.show', $actor) }}" 
+                                       class="text-blue-600 hover:text-blue-900" 
+                                       title="Ver pública">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('admin.actors.edit', $actor) }}" 
+                                       class="text-green-600 hover:text-green-900"
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('admin.actors.destroy', $actor) }}" 
+                                          method="POST" 
+                                          class="inline"
+                                          onsubmit="return confirm('¿Estás seguro de que quieres eliminar este actor? Esta acción no se puede deshacer.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                                class="text-red-600 hover:text-red-900"
+                                                title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center">
+                                <div class="text-gray-400">
+                                    <i class="fas fa-users text-4xl mb-4"></i>
+                                    <p class="text-lg font-medium">No hay actores registrados</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        @if($actors->hasPages())
+            <div class="bg-white px-6 py-4 border-t border-gray-200">
+                {{ $actors->links() }}
+            </div>
+        @endif
+    </div>
+</div>
+
+<style>
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
+@endsection
