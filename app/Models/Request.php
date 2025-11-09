@@ -29,7 +29,7 @@ class Request extends Model
 
     public function actor()
     {
-        return $this->belongsTo(User::class, 'actor_id');
+        return $this->belongsTo(Actor::class, 'actor_id');
     }
 
     // SCOPES

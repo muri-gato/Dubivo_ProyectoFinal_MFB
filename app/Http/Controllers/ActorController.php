@@ -16,6 +16,12 @@ class ActorController extends Controller
     $query = Actor::with(['user', 'schools', 'works']);
 
     // Aplicar filtros
+    if ($request->has('search') && $request->search != '') {
+        $query->whereHas('user', function($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->search . '%');
+        });
+    }
+
     if ($request->has('availability') && $request->availability !== '') {
         $query->filterByAvailability($request->availability);
     }
@@ -183,7 +189,7 @@ class ActorController extends Controller
 }
 
     public function destroy(Actor $actor)
-    {
+{
         if (Auth::id() != $actor->user_id && Auth::user()->role != 'admin') {
             abort(403, 'No autorizado.');
         }
@@ -192,5 +198,12 @@ class ActorController extends Controller
         
         return redirect()->route('home')
                         ->with('success', 'Perfil eliminado exitosamente.');
-    }
+}
+
+    public function show(Actor $actor)
+{
+    $actor->load(['user', 'schools', 'works', 'requests.client']);
+    return view('actors.show', compact('actor'));
+}
+
 }

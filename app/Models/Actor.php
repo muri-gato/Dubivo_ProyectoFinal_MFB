@@ -99,4 +99,33 @@ class Actor extends Model
         return $this->genders ? implode(', ', $this->genders) : '';
     }
 
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
+public function schools()
+{
+    return $this->belongsToMany(School::class, 'actor_school');
+}
+
+public function works() // o works - revisa cómo lo llamaste en la migración
+{
+    return $this->belongsToMany(Work::class, 'actor_work')
+                ->withPivot('character_name')
+                ->withTimestamps();
+}
+
+public function requests()
+{
+    return $this->hasMany(Request::class, 'actor_id');
+}
+
+public function teachingSchools()
+{
+    return $this->belongsToMany(School::class, 'actor_school_teacher')
+                ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
+                ->withTimestamps();
+}
+
 }

@@ -502,6 +502,8 @@ public function actors(Request $request)
             'password' => bcrypt($validated['password']),
             'role' => $validated['role']
         ]);
+
+         return redirect()->route('admin.users')->with('success', 'Usuario creado exitosamente.');
     }
 
     public function editUser(User $user)

@@ -46,6 +46,11 @@ class User extends Authenticatable
         return $this->hasMany(Request::class, 'actor_id');
     }
 
+    public function schools()
+{
+    return $this->hasManyThrough(School::class, Actor::class);
+}
+
     // SCOPES PARA ROLES
     public function scopeActors($query)
     {

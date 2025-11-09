@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('schools', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->string('city')->nullable();
-    $table->text('description')->nullable();
-    $table->integer('founded_year')->nullable();
-    $table->string('website')->nullable(); // Para enlace a la web de la escuela
-    $table->timestamps();
-});
+    Schema::create('schools', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('city')->nullable();
+        $table->text('description')->nullable();
+        $table->integer('founded_year')->nullable();
+        $table->string('website')->nullable();
+        $table->string('logo')->nullable();
+        $table->timestamps();
+    });
     }
 
     /**

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('requests', function (Blueprint $table) {
     $table->id();
-    $table->foreignId('user_id')->constrained()->onDelete('cascade');
-    $table->foreignId('actor_id')->constrained()->onDelete('cascade');
+    $table->foreignId('client_id')->constrained('users')->onDelete('cascade'); // ✅ CLIENT_ID
+    $table->foreignId('actor_id')->constrained('users')->onDelete('cascade'); // ✅ ACTOR_ID a USERS
+    $table->string('subject'); // ✅ FALTA ESTE CAMPO
     $table->text('message');
     $table->string('status')->default('pending');
     $table->timestamps();

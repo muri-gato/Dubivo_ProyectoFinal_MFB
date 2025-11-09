@@ -5,6 +5,7 @@ use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SchoolTeacherController;
 use Illuminate\Support\Facades\Route;
 
 // Página principal
@@ -42,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/requests/{contactRequest}', [RequestController::class, 'destroy'])->name('requests.destroy');
 
     // Admin routes - SIN MIDDLEWARE
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
         // Escuelas
@@ -76,6 +77,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
         Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
         Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+
+        // Rutas para gestión de profesores
+        Route::get('/schools/{school}/teachers/create', [SchoolTeacherController::class, 'create'])->name('admin.schools.teachers.create');
+        Route::post('/schools/{school}/teachers', [SchoolTeacherController::class, 'store'])->name('admin.schools.teachers.store');
+        Route::get('/schools/{school}/teachers/{actor}/edit', [SchoolTeacherController::class, 'edit'])->name('admin.schools.teachers.edit');
+        Route::put('/schools/{school}/teachers/{actor}', [SchoolTeacherController::class, 'update'])->name('admin.schools.teachers.update');
+        Route::delete('/schools/{school}/teachers/{actor}', [SchoolTeacherController::class, 'destroy'])->name('admin.schools.teachers.destroy');
     });
 });
 

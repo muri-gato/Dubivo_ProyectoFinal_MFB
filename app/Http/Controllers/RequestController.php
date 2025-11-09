@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Request as ContactRequest;
 use App\Models\User;
+use App\Models\Actor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class RequestController extends Controller
 {
@@ -19,7 +21,7 @@ class RequestController extends Controller
               ->with('client');
     } else {
         $query->where('client_id', $user->id)
-              ->with('actor.actorProfile');
+              ->with('actor.user');
     }
 
     if ($request->has('status') && $request->status != '') { //filtro por estado
@@ -30,20 +32,20 @@ class RequestController extends Controller
 
     return view('requests.index', compact('requests'));
     
-        return view('requests.index', compact('requests'));
 }
 
-    public function create(User $actor)
+    public function create(Actor $actor)
+
     {
         // Verificar que el actor existe y está disponible
-        if (!$actor->actorProfile || !$actor->actorProfile->is_available) {
-            return redirect()->back()->with('error', 'Este actor no está disponible.');
-        }
+         if (!$actor->is_available) {
+        return redirect()->back()->with('error', 'Este actor no está disponible.');
+    }
 
         return view('requests.create', compact('actor'));
     }
 
-    public function store(Request $request, User $actor)
+    public function store(Request $request, Actor $actor)
     {
         // Verificar que el usuario es cliente
         if (Auth::user()->role != 'client') {
@@ -57,13 +59,13 @@ class RequestController extends Controller
 
         ContactRequest::create([
             'client_id' => Auth::id(),
-            'actor_id' => $actor->id,
+            'actor_id' => $actor->user_id,
             'subject' => $validated['subject'],
             'message' => $validated['message'],
             'status' => 'pending'
         ]);
 
-        return redirect()->route('actors.show', $actor->actorProfile)
+        return redirect()->route('actors.show', $actor)
                         ->with('success', 'Solicitud enviada exitosamente.');
     }
 
