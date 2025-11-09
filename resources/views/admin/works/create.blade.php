@@ -44,17 +44,14 @@
                 <label for="type" class="block text-sm font-medium text-gray-700 mb-2">
                     Tipo <span class="text-red-500">*</span>
                 </label>
-                <select name="type" 
-                        id="type" 
-                        required
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
-                    <option value="">Selecciona un tipo</option>
-                    <option value="movie" {{ old('type') == 'movie' ? 'selected' : '' }}>Película</option>
-                    <option value="series" {{ old('type') == 'series' ? 'selected' : '' }}>Serie</option>
-                    <option value="commercial" {{ old('type') == 'commercial' ? 'selected' : '' }}>Comercial</option>
-                    <option value="animation" {{ old('type') == 'animation' ? 'selected' : '' }}>Animación</option>
-                    <option value="videogame" {{ old('type') == 'videogame' ? 'selected' : '' }}>Videojuego</option>
-                </select>
+                <select name="type" id="type" required>
+    <option value="">Selecciona un tipo</option>
+    @foreach($types as $key => $label)
+        <option value="{{ $key }}" {{ old('type', $work->type ?? '') == $key ? 'selected' : '' }}>
+            {{ $label }}
+        </option>
+    @endforeach
+</select>
                 @error('type')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror

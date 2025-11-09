@@ -56,4 +56,14 @@ class Work extends Model
     {
         return $query->where('type', 'other');
     }
+    public static function getTypeOptions()
+{
+    return [
+        'movie' => 'Película',
+        'series' => 'Serie',
+        'commercial' => 'Publicidad', 
+        'animation' => 'Animación',
+        'videogame' => 'Videojuego'
+    ];
+}
 }

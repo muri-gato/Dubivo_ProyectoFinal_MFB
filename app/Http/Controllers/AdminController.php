@@ -180,7 +180,8 @@ if ($request->hasFile('logo')) {
             abort(403, 'No autorizado.');
         }
 
-        return view('admin.works.create');
+        $types = Work::getTypeOptions();
+    return view('admin.works.create', compact('work', 'types'));
     }
 
     public function storeWork(Request $request)
@@ -191,7 +192,7 @@ if ($request->hasFile('logo')) {
 
         $validated = $request->validate([
     'title' => 'required|string|max:255',
-    'type' => 'required|in:Película,Serie,Publicidad,Animación,Videojuego', // ← ESPAÑOL
+    'type' => 'required|in:movie,series,commercial,animation,videogame,documentary,other', // ← ESPAÑOL
     'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
     'description' => 'nullable|string|max:1000',
     'poster' => 'nullable|image|max:2048'
@@ -213,7 +214,8 @@ if ($request->hasFile('logo')) {
             abort(403, 'No autorizado.');
         }
 
-        return view('admin.works.edit', compact('work'));
+        $types = Work::getTypeOptions();
+    return view('admin.works.edit', compact('work', 'types'));
     }
 
     public function updateWork(Request $request, Work $work)
