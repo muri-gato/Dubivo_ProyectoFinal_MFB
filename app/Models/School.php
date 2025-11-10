@@ -14,25 +14,26 @@ class School extends Model
         'city',
         'description',
         'founded_year',
-        'website'
+        'website',
+        'logo'
     ];
 
     // RELACIONES
     public function actors()
     {
         return $this->belongsToMany(Actor::class, 'actor_school')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     public function teachers()
-{
-    return $this->hasMany(Teacher::class);
-}
+    {
+        return $this->hasMany(Teacher::class);
+    }
 
-public function teacherActors()
-{
-    return $this->belongsToMany(Actor::class, 'actor_school_teacher')
-                ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
-                ->withTimestamps();
-}
+    public function teacherActors()
+    {
+        return $this->belongsToMany(Actor::class, 'actor_school_teacher')
+            ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
+            ->withTimestamps();
+    }
 }

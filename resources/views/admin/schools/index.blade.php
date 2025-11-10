@@ -69,24 +69,31 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($schools as $school)
                         <tr class="hover:bg-gray-50 transition duration-150">
+                            
                             <!-- Nombre -->
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-school text-blue-600"></i>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $school->name }}</div>
-                                        @if($school->website)
-                                            <div class="text-sm text-gray-500">
-                                                <a href="{{ $school->website }}" target="_blank" class="hover:text-blue-600">
-                                                    {{ parse_url($school->website, PHP_URL_HOST) }}
-                                                </a>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </td>
+    <div class="flex items-center">
+        @if($school->logo)
+            <img class="h-10 w-10 rounded-lg object-cover mr-3" 
+                 src="{{ asset('storage/' . $school->logo) }}" 
+                 alt="{{ $school->name }}">
+        @else
+            <div class="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-school text-blue-600"></i>
+            </div>
+        @endif
+        <div>
+            <div class="text-sm font-medium text-gray-900">{{ $school->name }}</div>
+            @if($school->website)
+                <div class="text-sm text-gray-500">
+                    <a href="{{ $school->website }}" target="_blank" class="hover:text-blue-600">
+                        {{ parse_url($school->website, PHP_URL_HOST) }}
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
+</td>
 
                             <!-- Ciudad -->
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -122,31 +129,31 @@
 
                             <!-- Acciones -->
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex space-x-2">
-                                    <a href="{{ route('schools.show', $school) }}" 
-                                       class="text-blue-600 hover:text-blue-900" 
-                                       title="Ver pública">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.schools.edit', $school) }}" 
-                                       class="text-green-600 hover:text-green-900"
-                                       title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('admin.schools.destroy', $school) }}" 
-                                          method="POST" 
-                                          class="inline"
-                                          onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta escuela? Esta acción no se puede deshacer.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="text-red-600 hover:text-red-900"
-                                                title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+    <div class="flex space-x-2">
+        <a href="{{ route('schools.show', $school) }}" 
+           class="text-blue-600 hover:text-blue-900" 
+           title="Ver pública">
+            <i class="fas fa-eye"></i>
+        </a>
+        <a href="{{ route('admin.schools.edit', $school) }}" 
+           class="text-green-600 hover:text-green-900"
+           title="Editar">
+            <i class="fas fa-edit"></i>
+        </a>
+        <form action="{{ route('admin.schools.destroy', $school) }}" 
+              method="POST" 
+              class="inline"
+              onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta escuela? Esta acción no se puede deshacer.');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" 
+                    class="text-red-600 hover:text-red-900"
+                    title="Eliminar">
+                <i class="fas fa-trash"></i>
+            </button>
+        </form>
+    </div>
+</td>
                         </tr>
                     @empty
                         <tr>

@@ -7,33 +7,58 @@
     <!-- Header de la Escuela -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
         <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-8 text-white">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h1 class="text-4xl font-bold mb-2">{{ $school->name }}</h1>
-                    @if($school->city)
-                        <p class="text-xl mb-4">
-                            <i class="fas fa-map-marker-alt mr-2"></i>{{ $school->city }}
-                        </p>
-                    @endif
-                    @if($school->founded_year)
-                        <p class="text-lg opacity-90">
-                            <i class="fas fa-calendar-alt mr-2"></i>Fundada en {{ $school->founded_year }}
-                        </p>
-                    @endif
+    <div class="flex justify-between items-start">
+        <div class="flex items-start space-x-6">
+            {{-- Logo de la escuela --}}
+            @if($school->logo)
+                <div class="flex-shrink-0">
+                    <img src="{{ asset('storage/' . $school->logo) }}" 
+                         alt="{{ $school->name }}"
+                         class="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover">
                 </div>
-                
-                @auth
-                    @if(auth()->user()->role === 'admin')
-                        <div class="flex space-x-2">
-                            <a href="{{ route('admin.schools.edit', $school) }}" 
-                               class="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100">
-                                <i class="fas fa-edit mr-1"></i>Editar
-                            </a>
-                        </div>
-                    @endif
-                @endauth
+            @else
+                <div class="flex-shrink-0 w-24 h-24 bg-white bg-opacity-20 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+                    <i class="fas fa-school text-white text-3xl"></i>
+                </div>
+            @endif
+            
+            <div>
+                <h1 class="text-4xl font-bold mb-2">{{ $school->name }}</h1>
+                @if($school->city)
+                    <p class="text-xl mb-4">
+                        <i class="fas fa-map-marker-alt mr-2"></i>{{ $school->city }}
+                    </p>
+                @endif
+                @if($school->founded_year)
+                    <p class="text-lg opacity-90">
+                        <i class="fas fa-calendar-alt mr-2"></i>Fundada en {{ $school->founded_year }}
+                    </p>
+                @endif
             </div>
         </div>
+        
+        {{-- Botones de admin --}}
+        @auth
+            @if(auth()->user()->role === 'admin')
+                <div class="flex space-x-2">
+                    <a href="{{ route('admin.schools.edit', $school) }}" 
+                       class="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 font-medium">
+                        <i class="fas fa-edit mr-1"></i>Editar
+                    </a>
+                    <form action="{{ route('admin.schools.destroy', $school) }}" method="POST" 
+                          onsubmit="return confirm('¿Estás seguro de eliminar esta escuela?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" 
+                                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 font-medium">
+                            <i class="fas fa-trash mr-1"></i>Eliminar
+                        </button>
+                    </form>
+                </div>
+            @endif
+        @endauth
+    </div>
+</div>
         
         <!-- Información Adicional -->
         <div class="p-8">

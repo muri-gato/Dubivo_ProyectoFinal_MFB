@@ -24,8 +24,23 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($schools as $school)
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold mb-3 text-blue-600">{{ $school->name }}</h3>
+    <div class="p-6">
+        {{-- Logo --}}
+        @if($school->logo)
+            <div class="mb-4 flex justify-center">
+                <img src="{{ asset('storage/' . $school->logo) }}" 
+                     alt="{{ $school->name }}"
+                     class="w-20 h-20 rounded-full object-cover border-2 border-gray-200">
+            </div>
+        @else
+            <div class="mb-4 flex justify-center">
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center border-2 border-gray-200">
+                    <i class="fas fa-school text-blue-500 text-2xl"></i>
+                </div>
+            </div>
+        @endif
+        
+        <h3 class="text-xl font-semibold mb-3 text-blue-600 text-center">{{ $school->name }}</h3>
                     
                     <div class="space-y-2 mb-4">
                         @if($school->city)
