@@ -52,7 +52,7 @@
                     <h3 class="text-xl font-semibold text-blue-800 mb-2">Actores de Voz</h3>
                     <p class="text-blue-600 mb-4">Encuentra el talento vocal perfecto para tu proyecto</p>
                     <a href="{{ route('actors.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                        Explorar Actores
+                        Ver Actores
                     </a>
                 </div>
                 
@@ -97,7 +97,7 @@
                     @elseif(auth()->user()->role === 'admin')
                         <p class="text-gray-600 mb-4">Eres administrador. Tienes acceso al panel de control.</p>
                         <a href="{{ route('admin.dashboard') }}" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                            Panel de Admin
+                            Panel de Administrador
                         </a>
                     @endif
                 </div>

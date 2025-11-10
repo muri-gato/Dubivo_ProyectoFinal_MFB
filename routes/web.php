@@ -21,6 +21,12 @@ Route::get('/schools/{school}', [SchoolController::class, 'show'])->name('school
 Route::get('/works', [WorkController::class, 'index'])->name('works.index');
 Route::get('/works/{work}', [WorkController::class, 'show'])->name('works.show');
 
+// Rutas de registro separadas
+Route::get('/register/actor', [App\Http\Controllers\Auth\RegisterController::class, 'showActorRegistrationForm'])->name('register.actor');
+Route::get('/register/client', [App\Http\Controllers\Auth\RegisterController::class, 'showClientRegistrationForm'])->name('register.client');
+Route::post('/register/actor', [App\Http\Controllers\Auth\RegisterController::class, 'registerActor'])->name('register.actor.submit');
+Route::post('/register/client', [App\Http\Controllers\Auth\RegisterController::class, 'registerClient'])->name('register.client.submit');
+
 // Dashboard general
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -79,7 +85,11 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 
         // Rutas para gestión de profesores
-Route::post('/actors/{actor}/manage-teacher', [SchoolTeacherController::class, 'manage'])->name('admin.actors.manage-teacher');
+        Route::get('/schools/{school}/teachers/create', [SchoolTeacherController::class, 'create'])->name('admin.schools.teachers.create');
+        Route::post('/schools/{school}/teachers', [SchoolTeacherController::class, 'store'])->name('admin.schools.teachers.store');
+        Route::get('/schools/{school}/teachers/{actor}/edit', [SchoolTeacherController::class, 'edit'])->name('admin.schools.teachers.edit');
+        Route::put('/schools/{school}/teachers/{actor}', [SchoolTeacherController::class, 'update'])->name('admin.schools.teachers.update');
+        Route::delete('/schools/{school}/teachers/{actor}', [SchoolTeacherController::class, 'destroy'])->name('admin.schools.teachers.destroy');
     });
 });
 

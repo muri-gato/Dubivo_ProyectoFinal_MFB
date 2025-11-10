@@ -30,7 +30,7 @@
                 <select name="user_id" id="user_id" required
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Selecciona un usuario</option>
-                    @foreach($users as $user)
+                    @foreach($availableUsers as $user)
                         <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
                             {{ $user->name }} ({{ $user->email }})
                         </option>
@@ -40,7 +40,7 @@
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
                 
-                @if($users->isEmpty())
+                @if($availableUsers->isEmpty())
                     <p class="text-yellow-600 text-sm mt-2">
                         <i class="fas fa-exclamation-triangle mr-1"></i>
                         No hay usuarios disponibles para crear perfiles de actor. 
@@ -221,7 +221,7 @@
                 </a>
                 <button type="submit" 
                         class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center"
-                        {{ $users->isEmpty() ? 'disabled' : '' }}>
+                        {{ $availableUsers->isEmpty() ? 'disabled' : '' }}>
                     <i class="fas fa-plus mr-2"></i>
                     Crear Actor
                 </button>

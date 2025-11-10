@@ -92,22 +92,64 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-16 bg-blue-700 text-white">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl font-bold mb-4">¿Eres actor de voz o buscas talento?</h2>
-            <p class="text-xl mb-8 max-w-2xl mx-auto">
-                Únete a nuestra comunidad y descubre nuevas oportunidades en el mundo del doblaje y la locución.
-            </p>
-            <div class="flex justify-center space-x-4">
-                <a href="{{ route('register') }}?role=actor" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">
-                    Soy Actor
+    {{-- Sección de registro --}}
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-8">Únete a nuestra comunidad</h2>
+        <p class="text-gray-600 mb-12 max-w-2xl mx-auto">
+            Forma parte del banco de voces más completo de España. 
+            Elige cómo quieres participar en nuestra plataforma.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {{-- Tarjeta Actor --}}
+            <div class="bg-white rounded-lg shadow-md p-8 border-2 border-blue-200 hover:border-blue-400 transition duration-300">
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-microphone text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-blue-600">Actor/Actriz de Doblaje</h3>
+                <p class="text-gray-600 mb-6">
+                    Muestra tu talento, crea tu perfil profesional y recibe ofertas de trabajo.
+                </p>
+                <ul class="text-sm text-gray-500 mb-6 space-y-2 text-left">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Perfil profesional visible</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Recibe solicitudes de clientes</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Conecta con escuelas</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Muestra tu portfolio</li>
+                </ul>
+                <a href="{{ route('register.actor') }}" 
+                   class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-medium block">
+                    Registrarse como Actor
                 </a>
-                <a href="{{ route('register') }}?role=client" class="bg-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-400 transition duration-300">
-                    Busco Talentos
+            </div>
+
+            {{-- Tarjeta Cliente --}}
+            <div class="bg-white rounded-lg shadow-md p-8 border-2 border-green-200 hover:border-green-400 transition duration-300">
+                <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-search text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-green-600">Cliente</h3>
+                <p class="text-gray-600 mb-6">
+                    Encuentra las voces perfectas para tus proyectos de doblaje.
+                </p>
+                <ul class="text-sm text-gray-500 mb-6 space-y-2 text-left">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Acceso a banco de voces</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Búsqueda avanzada</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Contacta directamente</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Gestiona solicitudes</li>
+                </ul>
+                <a href="{{ route('register.client') }}" 
+                   class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200 font-medium block">
+                    Registrarse como Cliente
                 </a>
             </div>
         </div>
-    </section>
+        
+        <p class="text-gray-500 mt-8">
+            ¿Ya tienes cuenta? <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-800">Inicia sesión</a>
+        </p>
+    </div>
+</section>
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8">
