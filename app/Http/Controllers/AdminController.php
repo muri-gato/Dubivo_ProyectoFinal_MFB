@@ -10,6 +10,7 @@ use App\Models\Request as ContactRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -111,12 +112,12 @@ class AdminController extends Controller
             'website' => 'nullable|url'
         ]);
         // Manejar la subida del logo si se proporciona uno nuevo
-if ($request->hasFile('logo')) {
-    if ($school->logo) {
-        Storage::disk('public')->delete($school->logo);
-    }
-    $validated['logo'] = $request->file('logo')->store('schools/logos', 'public');
-}
+        if ($request->hasFile('logo')) {
+            if ($school->logo) {
+                Storage::disk('public')->delete($school->logo);
+            }
+            $validated['logo'] = $request->file('logo')->store('schools/logos', 'public');
+        }
         $school->update($validated);
 
         return redirect()->route('admin.schools')->with('success', 'Escuela actualizada exitosamente.');
@@ -181,7 +182,7 @@ if ($request->hasFile('logo')) {
         }
 
         $types = Work::getTypeOptions();
-    return view('admin.works.create', compact('types'));
+        return view('admin.works.create', compact('types'));
     }
 
     public function storeWork(Request $request)
@@ -191,12 +192,12 @@ if ($request->hasFile('logo')) {
         }
 
         $validated = $request->validate([
-    'title' => 'required|string|max:255',
-    'type' => 'required|in:movie,series,commercial,animation,videogame,documentary,other', // ← ESPAÑOL
-    'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
-    'description' => 'nullable|string|max:1000',
-    'poster' => 'nullable|image|max:2048'
-]);
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:movie,series,commercial,animation,videogame,documentary,other', // ← ESPAÑOL
+            'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
+            'description' => 'nullable|string|max:1000',
+            'poster' => 'nullable|image|max:2048'
+        ]);
 
         // Manejar la subida del póster
         if ($request->hasFile('poster')) {
@@ -215,7 +216,7 @@ if ($request->hasFile('logo')) {
         }
 
         $types = Work::getTypeOptions();
-    return view('admin.works.edit', compact('work', 'types'));
+        return view('admin.works.edit', compact('work', 'types'));
     }
 
     public function updateWork(Request $request, Work $work)
@@ -225,12 +226,12 @@ if ($request->hasFile('logo')) {
         }
 
         $validated = $request->validate([
-    'title' => 'required|string|max:255',
-    'type' => 'required|in:Película,Serie,Publicidad,Animación,Videojuego', // ← ESPAÑOL
-    'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
-    'description' => 'nullable|string|max:1000',
-    'poster' => 'nullable|image|max:2048'
-]);
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:movie,series,commercial,animation,videogame,documentary,other',
+            'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
+            'description' => 'nullable|string|max:1000',
+            'poster' => 'nullable|image|max:2048'
+        ]);
 
         // Manejar la subida del póster si se proporciona uno nuevo
         if ($request->hasFile('poster')) {
@@ -264,70 +265,67 @@ if ($request->hasFile('logo')) {
 
 
     // Métodos para actores
-public function actors(Request $request)
-{
-    if (Auth::user()->role != 'admin') {
-        abort(403, 'No autorizado.');
-    }
-
-    $query = Actor::with(['user', 'schools', 'works']);
-
-    // Filtros - ACTUALIZAR para usar los nuevos campos JSON
-    if ($request->has('gender') && $request->gender != '') {
-        $query->whereJsonContains('genders', $request->gender);
-    }
-
-    if ($request->has('voice_age') && $request->voice_age != '') {
-        $query->whereJsonContains('voice_ages', $request->voice_age);
-    }
-
-    if ($request->has('availability') && $request->availability != '') {
-        $query->where('is_available', $request->availability == 'available');
-    }
-
-    // Ordenamiento
-    if ($request->has('sort')) {
-        switch ($request->sort) {
-            case 'oldest':
-                $query->oldest();
-                break;
-            case 'name':
-                $query->join('users', 'actors.user_id', '=', 'users.id')
-                    ->orderBy('users.name');
-                break;
-            case 'works':
-                $query->withCount('works')->orderBy('works_count', 'desc');
-                break;
-            default:
-                $query->latest();
+    public function actors(Request $request)
+    {
+        if (Auth::user()->role != 'admin') {
+            abort(403, 'No autorizado.');
         }
-    } else {
-        $query->latest();
+
+        $query = Actor::with(['user', 'schools', 'works']);
+
+        // Filtros - ACTUALIZAR para usar los nuevos campos JSON
+        if ($request->has('gender') && $request->gender != '') {
+            $query->whereJsonContains('genders', $request->gender);
+        }
+
+        if ($request->has('voice_age') && $request->voice_age != '') {
+            $query->whereJsonContains('voice_ages', $request->voice_age);
+        }
+
+        if ($request->has('availability') && $request->availability != '') {
+            $query->where('is_available', $request->availability == 'available');
+        }
+
+        // Ordenamiento
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'oldest':
+                    $query->oldest();
+                    break;
+                case 'name':
+                    $query->join('users', 'actors.user_id', '=', 'users.id')
+                        ->orderBy('users.name');
+                    break;
+                case 'works':
+                    $query->withCount('works')->orderBy('works_count', 'desc');
+                    break;
+                default:
+                    $query->latest();
+            }
+        } else {
+            $query->latest();
+        }
+
+        $actors = $query->paginate(10);
+
+        $schools = School::all();
+        $genders = Actor::getGenderOptions();
+        $voiceAges = Actor::getVoiceAgeOptions();
+
+        return view('admin.actors.index', compact('actors', 'schools', 'genders', 'voiceAges'));
     }
-
-    $actors = $query->paginate(10);
-
-    $schools = School::all();
-    $genders = Actor::getGenderOptions();
-    $voiceAges = Actor::getVoiceAgeOptions();
-
-    return view('admin.actors.index', compact('actors', 'schools', 'genders', 'voiceAges'));
-}
 
     public function createActor()
-{
-    // Mostrar usuarios que pueden ser actores (no admin, no clientes con perfil)
-    $availableUsers = User::where('role', '!=', 'admin')
-                         ->whereDoesntHave('actorProfile')
-                         ->get();
-    
-    $schools = School::all();
-    $works = Work::all();
-    $genders = Actor::getGenderOptions();
-    $voiceAges = Actor::getVoiceAgeOptions();
+    {
+        // Mostrar usuarios que pueden ser actores (no admin, no clientes con perfil)
+        $users = User::where('role', '!=', 'admin')->get();
+        $schools = School::all();
+        $works = Work::all();
+        $genders = Actor::getGenderOptions();
+        $voiceAges = Actor::getVoiceAgeOptions();
 
-    return view('admin.actors.create', compact('availableUsers', 'schools', 'works', 'genders', 'voiceAges'));
-}
+        return view('admin.actors.create', compact('users', 'schools', 'works', 'genders', 'voiceAges'));
+    }
 
     // Método para guardar nuevo actor
     public function storeActor(Request $request)
@@ -341,9 +339,11 @@ public function actors(Request $request)
             'bio' => 'nullable|string|max:1000',
             'photo' => 'nullable|image|max:2048',
             'audio_path' => 'nullable|file|mimes:mp3,wav|max:5120',
-            'gender' => 'required|in:male,female,other',
-            'voice_age' => 'required|in:child,teen,young_adult,adult,senior',
-            'is_available' => 'sometimes|boolean',
+            'genders' => 'required|array',
+            'genders.*' => 'in:Masculino,Femenino,Otro',
+            'voice_ages' => 'required|array',
+            'voice_ages.*' => 'in:Niño,Adolescente,Adulto joven,Adulto,Anciano,Atipada',
+            'is_available' => 'required|boolean',
             'schools' => 'nullable|array',
             'works' => 'nullable|array'
         ]);
@@ -361,6 +361,10 @@ public function actors(Request $request)
         if ($request->hasFile('audio_path')) {
             $validated['audio_path'] = $request->file('audio_path')->store('actors/audios', 'public');
         }
+
+        // CONVERTIR A JSON ANTES DE CREAR
+        $validated['genders'] = json_encode($validated['genders']);
+        $validated['voice_ages'] = json_encode($validated['voice_ages']);
 
         // Crear el actor
         $actor = Actor::create($validated);
@@ -385,15 +389,15 @@ public function actors(Request $request)
     }
 
     public function editActor(Actor $actor)
-{
-    $users = User::where('role', 'actor')->get();
-    $schools = School::all();
-    $works = Work::all();
-    $genders = Actor::getGenderOptions();
-    $voiceAges = Actor::getVoiceAgeOptions();
+    {
+        $users = User::where('role', 'actor')->get();
+        $schools = School::all();
+        $works = Work::all();
+        $genders = Actor::getGenderOptions();
+        $voiceAges = Actor::getVoiceAgeOptions();
 
-    return view('admin.actors.edit', compact('actor', 'users', 'schools', 'works', 'genders', 'voiceAges'));
-}
+        return view('admin.actors.edit', compact('actor', 'users', 'schools', 'works', 'genders', 'voiceAges'));
+    }
 
     public function updateActor(Request $request, Actor $actor)
     {
@@ -401,16 +405,23 @@ public function actors(Request $request)
             abort(403, 'No autorizado.');
         }
 
+Log::info('Update Actor Request Data:', $request->all());
+
         $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
             'bio' => 'nullable|string|max:1000',
             'photo' => 'nullable|image|max:2048',
             'audio_path' => 'nullable|file|mimes:mp3,wav|max:5120',
-            'gender' => 'required|in:male,female,other',
-            'voice_age' => 'required|in:child,teen,young_adult,adult,senior',
-            'is_available' => 'sometimes|boolean',
+            'genders' => 'required|array',
+            'genders.*' => 'in:Masculino,Femenino,Otro',
+            'voice_ages' => 'required|array',
+            'voice_ages.*' => 'in:Niño,Adolescente,Adulto joven,Adulto,Anciano,Atipada',
+            'is_available' => 'required|boolean',
             'schools' => 'nullable|array',
             'works' => 'nullable|array'
         ]);
+
+Log::info('Update Actor Validated Data:', $validated);
 
         // Manejar archivos
         if ($request->hasFile('photo')) {
@@ -426,6 +437,10 @@ public function actors(Request $request)
             }
             $validated['audio_path'] = $request->file('audio_path')->store('actors/audios', 'public');
         }
+
+        // CONVERTIR A JSON ANTES DE ACTUALIZAR
+        $validated['genders'] = json_encode($validated['genders']);
+        $validated['voice_ages'] = json_encode($validated['voice_ages']);
 
         $actor->update($validated);
 
@@ -492,7 +507,7 @@ public function actors(Request $request)
     }
 
     // Crear usuario
-    public function createUser() 
+    public function createUser()
     {
         if (Auth::user()->role != 'admin') {
             abort(403, 'No autorizado.');
@@ -521,7 +536,7 @@ public function actors(Request $request)
             'role' => $validated['role']
         ]);
 
-         return redirect()->route('admin.users')->with('success', 'Usuario creado exitosamente.');
+        return redirect()->route('admin.users')->with('success', 'Usuario creado exitosamente.');
     }
 
     public function editUser(User $user)

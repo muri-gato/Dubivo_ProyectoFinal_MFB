@@ -37,13 +37,13 @@
                 </div>
                 <div class="col-span-2">
                     @if($work->poster)
-                        <span class="font-medium">Póster actual:</span>
-                        <img src="{{ asset('storage/' . $work->poster) }}" 
-                             alt="{{ $work->title }}" 
-                             class="h-20 object-cover rounded mt-2">
+                    <span class="font-medium">Póster actual:</span>
+                    <img src="{{ asset('storage/' . $work->poster) }}"
+                        alt="{{ $work->title }}"
+                        class="h-20 object-cover rounded mt-2">
                     @else
-                        <span class="font-medium">Póster:</span>
-                        <span class="ml-2 text-gray-500">No tiene póster</span>
+                    <span class="font-medium">Póster:</span>
+                    <span class="ml-2 text-gray-500">No tiene póster</span>
                     @endif
                 </div>
             </div>
@@ -59,14 +59,14 @@
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                     Título <span class="text-red-500">*</span>
                 </label>
-                <input type="text" 
-                       name="title" 
-                       id="title" 
-                       required
-                       value="{{ old('title', $work->title) }}"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="text"
+                    name="title"
+                    id="title"
+                    required
+                    value="{{ old('title', $work->title) }}"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('title')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -75,16 +75,17 @@
                 <label for="type" class="block text-sm font-medium text-gray-700 mb-2">
                     Tipo <span class="text-red-500">*</span>
                 </label>
-                <select name="type" id="type" required>
-    <option value="">Selecciona un tipo</option>
-    @foreach($types as $key => $label)
-        <option value="{{ $key }}" {{ old('type', $work->type ?? '') == $key ? 'selected' : '' }}>
-            {{ $label }}
-        </option>
-    @endforeach
-</select>
+                <select name="type" id="type" required
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"> <!-- ← AÑADIR CLASE -->
+                    <option value="">Selecciona un tipo</option>
+                    @foreach($types as $key => $label)
+                    <option value="{{ $key }}" {{ old('type', $work->type) == $key ? 'selected' : '' }}>
+                        {{ $label }}
+                    </option>
+                    @endforeach
+                </select>
                 @error('type')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -93,15 +94,15 @@
                 <label for="year" class="block text-sm font-medium text-gray-700 mb-2">
                     Año de Lanzamiento
                 </label>
-                <input type="number" 
-                       name="year" 
-                       id="year" 
-                       value="{{ old('year', $work->year) }}"
-                       min="1900" 
-                       max="{{ date('Y') + 5 }}"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="number"
+                    name="year"
+                    id="year"
+                    value="{{ old('year', $work->year) }}"
+                    min="1900"
+                    max="{{ date('Y') + 5 }}"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('year')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -110,14 +111,14 @@
                 <label for="poster" class="block text-sm font-medium text-gray-700 mb-2">
                     Cambiar Póster
                 </label>
-                <input type="file" 
-                       name="poster" 
-                       id="poster" 
-                       accept="image/*"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="file"
+                    name="poster"
+                    id="poster"
+                    accept="image/*"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 <p class="text-xs text-gray-500 mt-1">Dejar vacío para mantener el póster actual</p>
                 @error('poster')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -126,13 +127,13 @@
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
                     Descripción
                 </label>
-                <textarea name="description" 
-                          id="description" 
-                          rows="6"
-                          placeholder="Describe la obra, su trama, personajes principales..."
-                          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description', $work->description) }}</textarea>
+                <textarea name="description"
+                    id="description"
+                    rows="6"
+                    placeholder="Describe la obra, su trama, personajes principales..."
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description', $work->description) }}</textarea>
                 @error('description')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -140,19 +141,19 @@
             <div class="flex justify-between items-center pt-6 border-t border-gray-200">
                 <div>
                     @if($work->actors_count > 0)
-                        <p class="text-sm text-gray-500">
-                            <i class="fas fa-info-circle text-blue-500 mr-1"></i>
-                            Esta obra tiene {{ $work->actors_count }} actor(es) asociado(s)
-                        </p>
+                    <p class="text-sm text-gray-500">
+                        <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                        Esta obra tiene {{ $work->actors_count }} actor(es) asociado(s)
+                    </p>
                     @endif
                 </div>
                 <div class="flex space-x-4">
-                    <a href="{{ route('admin.works') }}" 
-                       class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
+                    <a href="{{ route('admin.works') }}"
+                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
                         Cancelar
                     </a>
-                    <button type="submit" 
-                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
+                    <button type="submit"
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
                         <i class="fas fa-save mr-2"></i>
                         Actualizar Obra
                     </button>

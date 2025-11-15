@@ -30,9 +30,9 @@
                 <select name="user_id" id="user_id" required
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Selecciona un usuario</option>
-                    @foreach($availableUsers as $user)
+                    @foreach($users as $user)
                         <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                            {{ $user->name }} ({{ $user->email }})
+                            {{ $user->name }} ({{ $user->email }}) - {{ $user->role }}
                         </option>
                     @endforeach
                 </select>
@@ -40,72 +40,74 @@
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
                 
-                @if($availableUsers->isEmpty())
+                @if($users->isEmpty())
                     <p class="text-yellow-600 text-sm mt-2">
                         <i class="fas fa-exclamation-triangle mr-1"></i>
-                        No hay usuarios disponibles para crear perfiles de actor. 
-                        <a href="{{ route('register') }}" class="underline">Registra nuevos usuarios primero.</a>
+                        No hay usuarios disponibles. 
+                        <a href="{{ route('admin.users.create') }}" class="underline">Crea nuevos usuarios primero.</a>
                     </p>
                 @else
                     <p class="text-gray-500 text-sm mt-2">
-                        Solo se muestran usuarios con rol "actor" que no tengan perfil creado.
+                        Selecciona un usuario para convertirlo en actor.
                     </p>
                 @endif
             </div>
 
-            <!-- Información Básica -->
+             <!-- Información Básica -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Género -->
-                <!-- Géneros (MÚLTIPLE SELECCIÓN) -->
-<div>
-    <label class="block text-sm font-medium text-gray-700 mb-3">
-        Géneros que puede interpretar <span class="text-red-500">*</span>
-    </label>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        @foreach($genders as $gender)
-        <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-150">
-            <input type="checkbox" name="genders[]" value="{{ $gender }}" 
-                   {{ in_array($gender, old('genders', [])) ? 'checked' : '' }}
-                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-            <span class="ml-3 text-sm font-medium text-gray-700">{{ $gender }}</span>
-        </label>
-        @endforeach
-    </div>
-    @error('genders')
-        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-    @enderror
-</div>
+                <!-- Géneros -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        Géneros que puede interpretar <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        @foreach($genders as $gender)
+                        <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-150">
+                            <input type="checkbox" name="genders[]" value="{{ $gender }}" 
+                                   {{ in_array($gender, old('genders', [])) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="ml-3 text-sm font-medium text-gray-700">{{ $gender }}</span>
+                        </label>
+                        @endforeach
+                    </div>
+                    @error('genders')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
-
-                <!-- Edades Vocales (MÚLTIPLE SELECCIÓN) -->
-<div>
-    <label class="block text-sm font-medium text-gray-700 mb-3">
-        Edades vocales que puede interpretar <span class="text-red-500">*</span>
-    </label>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        @foreach($voiceAges as $age)
-        <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-150">
-            <input type="checkbox" name="voice_ages[]" value="{{ $age }}" 
-                   {{ in_array($age, old('voice_ages', [])) ? 'checked' : '' }}
-                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-            <span class="ml-3 text-sm font-medium text-gray-700">{{ $age }}</span>
-        </label>
-        @endforeach
-    </div>
-    @error('voice_ages')
-        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-    @enderror
-</div>
+                <!-- Edades Vocales -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        Edades vocales que puede interpretar <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        @foreach($voiceAges as $age)
+                        <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-150">
+                            <input type="checkbox" name="voice_ages[]" value="{{ $age }}" 
+                                   {{ in_array($age, old('voice_ages', [])) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="ml-3 text-sm font-medium text-gray-700">{{ $age }}</span>
+                        </label>
+                        @endforeach
+                    </div>
+                    @error('voice_ages')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
-            <!-- Disponibilidad -->
+             <!-- Disponibilidad -->
             <div>
                 <label class="flex items-center space-x-3 cursor-pointer">
+                    <input type="hidden" name="is_available" value="0"> {{-- ← AÑADIDO: hidden para valor por defecto --}}
                     <input type="checkbox" name="is_available" value="1" 
                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                           {{ old('is_available') ? 'checked' : '' }}>
+                           {{ old('is_available', 1) ? 'checked' : '' }}>
                     <span class="text-sm font-medium text-gray-700">Disponible para nuevos proyectos</span>
                 </label>
+                @error('is_available')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Biografía -->
@@ -221,7 +223,7 @@
                 </a>
                 <button type="submit" 
                         class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center"
-                        {{ $availableUsers->isEmpty() ? 'disabled' : '' }}>
+                        {{ $users->isEmpty() ? 'disabled' : '' }}> {{-- ← CAMBIADO --}}
                     <i class="fas fa-plus mr-2"></i>
                     Crear Actor
                 </button>

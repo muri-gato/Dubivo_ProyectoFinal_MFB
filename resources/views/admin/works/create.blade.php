@@ -27,15 +27,15 @@
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                     Título <span class="text-red-500">*</span>
                 </label>
-                <input type="text" 
-                       name="title" 
-                       id="title" 
-                       required
-                       value="{{ old('title') }}"
-                       placeholder="Ej: El Señor de los Anillos, Breaking Bad..."
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="text"
+                    name="title"
+                    id="title"
+                    required
+                    value="{{ old('title') }}"
+                    placeholder="Ej: El Señor de los Anillos, Breaking Bad..."
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('title')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -44,16 +44,17 @@
                 <label for="type" class="block text-sm font-medium text-gray-700 mb-2">
                     Tipo <span class="text-red-500">*</span>
                 </label>
-                <select name="type" id="type" required>
-    <option value="">Selecciona un tipo</option>
-    @foreach($types as $key => $label)
-        <option value="{{ $key }}" {{ old('type', $work->type ?? '') == $key ? 'selected' : '' }}>
-            {{ $label }}
-        </option>
-    @endforeach
-</select>
+                <select name="type" id="type" required
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"> <!-- ← AÑADIR CLASE -->
+                    <option value="">Selecciona un tipo</option>
+                    @foreach($types as $key => $label)
+                    <option value="{{ $key }}" {{ old('type') == $key ? 'selected' : '' }}>
+                        {{ $label }}
+                    </option>
+                    @endforeach
+                </select>
                 @error('type')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -62,16 +63,16 @@
                 <label for="year" class="block text-sm font-medium text-gray-700 mb-2">
                     Año de Lanzamiento
                 </label>
-                <input type="number" 
-                       name="year" 
-                       id="year" 
-                       value="{{ old('year') }}"
-                       min="1900" 
-                       max="{{ date('Y') + 5 }}"
-                       placeholder="Ej: 2023"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="number"
+                    name="year"
+                    id="year"
+                    value="{{ old('year') }}"
+                    min="1900"
+                    max="{{ date('Y') + 5 }}"
+                    placeholder="Ej: 2023"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('year')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -80,14 +81,14 @@
                 <label for="poster" class="block text-sm font-medium text-gray-700 mb-2">
                     Póster o Imagen
                 </label>
-                <input type="file" 
-                       name="poster" 
-                       id="poster" 
-                       accept="image/*"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="file"
+                    name="poster"
+                    id="poster"
+                    accept="image/*"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 <p class="text-xs text-gray-500 mt-1">Formatos: JPG, PNG, GIF. Máx: 2MB</p>
                 @error('poster')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -96,24 +97,24 @@
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
                     Descripción
                 </label>
-                <textarea name="description" 
-                          id="description" 
-                          rows="6"
-                          placeholder="Describe la obra, su trama, personajes principales..."
-                          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description') }}</textarea>
+                <textarea name="description"
+                    id="description"
+                    rows="6"
+                    placeholder="Describe la obra, su trama, personajes principales..."
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description') }}</textarea>
                 @error('description')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Botones -->
             <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                <a href="{{ route('admin.works') }}" 
-                   class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
+                <a href="{{ route('admin.works') }}"
+                    class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
                     Cancelar
                 </a>
-                <button type="submit" 
-                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
+                <button type="submit"
+                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
                     <i class="fas fa-save mr-2"></i>
                     Crear Obra
                 </button>
@@ -141,13 +142,13 @@
 </div>
 
 <script>
-// Preview de imagen seleccionada
-document.getElementById('poster').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        // Podrías agregar aquí un preview de la imagen si quieres
-        console.log('Póster seleccionado:', file.name);
-    }
-});
+    // Preview de imagen seleccionada
+    document.getElementById('poster').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Podrías agregar aquí un preview de la imagen si quieres
+            console.log('Póster seleccionado:', file.name);
+        }
+    });
 </script>
 @endsection

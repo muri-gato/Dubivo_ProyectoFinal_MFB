@@ -70,24 +70,37 @@
             {{-- FIN DE LA NUEVA SECCIÓN --}}
 
             <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <span class="font-semibold">Género:</span>
-                    @if($actor->genders && count($actor->genders) > 0)
-                        {{ implode(', ', $actor->genders) }}
-                    @else
-                        No especificados
-                    @endif
-                </div>
-                <div>
-                    <span class="font-semibold">Edad vocal:</span>
-                    @if($actor->voice_ages && count($actor->voice_ages) > 0)
-                        {{ implode(', ', $actor->voice_ages) }}
-                    @else
-                        No especificadas
-                    @endif
-                </div>
-
-            </div>
+    <div>
+        <span class="font-semibold">Género:</span>
+        @php
+            // Convertir genders a array si es necesario
+            $genders = $actor->genders;
+            if (is_string($genders)) {
+                $genders = json_decode($genders, true) ?? [];
+            }
+        @endphp
+        @if($genders && count($genders) > 0)
+            {{ implode(', ', $genders) }}
+        @else
+            No especificados
+        @endif
+    </div>
+    <div>
+        <span class="font-semibold">Edad vocal:</span>
+        @php
+            // Convertir voice_ages a array si es necesario
+            $voiceAges = $actor->voice_ages;
+            if (is_string($voiceAges)) {
+                $voiceAges = json_decode($voiceAges, true) ?? [];
+            }
+        @endphp
+        @if($voiceAges && count($voiceAges) > 0)
+            {{ implode(', ', $voiceAges) }}
+        @else
+            No especificadas
+        @endif
+    </div>
+</div>
 
             <!-- Audio -->
             @if($actor->audio_path)

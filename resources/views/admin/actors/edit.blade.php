@@ -42,10 +42,15 @@
         Géneros que puede interpretar <span class="text-red-500">*</span>
     </label>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        @php
+            // CONVERTIR genders A ARRAY
+            $currentGenders = is_array($actor->genders) ? $actor->genders : json_decode($actor->genders, true) ?? [];
+            $currentGenders = old('genders', $currentGenders);
+        @endphp
         @foreach($genders as $gender)
         <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-150">
             <input type="checkbox" name="genders[]" value="{{ $gender }}" 
-                   {{ in_array($gender, old('genders', $actor->genders ?? [])) ? 'checked' : '' }}
+                   {{ in_array($gender, $currentGenders) ? 'checked' : '' }}
                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
             <span class="ml-3 text-sm font-medium text-gray-700">{{ $gender }}</span>
         </label>
@@ -62,10 +67,15 @@
         Edades vocales que puede interpretar <span class="text-red-500">*</span>
     </label>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        @php
+            // CONVERTIR voice_ages A ARRAY
+            $currentVoiceAges = is_array($actor->voice_ages) ? $actor->voice_ages : json_decode($actor->voice_ages, true) ?? [];
+            $currentVoiceAges = old('voice_ages', $currentVoiceAges);
+        @endphp
         @foreach($voiceAges as $age)
         <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-150">
             <input type="checkbox" name="voice_ages[]" value="{{ $age }}" 
-                   {{ in_array($age, old('voice_ages', $actor->voice_ages ?? [])) ? 'checked' : '' }}
+                   {{ in_array($age, $currentVoiceAges) ? 'checked' : '' }}
                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
             <span class="ml-3 text-sm font-medium text-gray-700">{{ $age }}</span>
         </label>
@@ -75,17 +85,20 @@
         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
     @enderror
 </div>
-            </div>
 
             <!-- Disponibilidad -->
-            <div>
-                <label class="flex items-center space-x-3 cursor-pointer">
-                    <input type="checkbox" name="is_available" value="1" 
-                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                           {{ old('is_available', $actor->is_available) ? 'checked' : '' }}>
-                    <span class="text-sm font-medium text-gray-700">Disponible para nuevos proyectos</span>
-                </label>
-            </div>
+<div>
+    <label class="flex items-center space-x-3 cursor-pointer">
+        <input type="hidden" name="is_available" value="0">
+        <input type="checkbox" name="is_available" value="1" 
+               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+               {{ old('is_available', $actor->is_available) ? 'checked' : '' }}>
+        <span class="text-sm font-medium text-gray-700">Disponible para nuevos proyectos</span>
+    </label>
+    @error('is_available')
+        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+    @enderror
+</div>
 
             <!-- Biografía -->
             <div>

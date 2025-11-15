@@ -14,8 +14,8 @@ class Actor extends Model
         'bio',
         'photo',
         'audio_path',
-        'gender',
-        'voice_age', 
+        'genders',
+        'voice_ages',
         'is_available',
         'voice_characteristics'
     ];
@@ -28,50 +28,39 @@ class Actor extends Model
     ];
 
     public static function getGenderOptions()
-{
-    return [
-        'male' => 'Masculino',
-        'female' => 'Femenino', 
-        'other' => 'Otro'
-    ];
-}
+    {
+        return ['Masculino', 'Femenino', 'Otro'];
+    }
 
     public static function getVoiceAgeOptions()
-{
-    return [
-        'child' => 'Niño',
-        'teen' => 'Adolescente', 
-        'young_adult' => 'Adulto joven',
-        'adult' => 'Adulto',
-        'senior' => 'Anciano',
-        'variety' => 'Atipada'
-    ];
-}
-
-
-   public function scopeFilterByVoiceAges($query, $voiceAges)
-{
-    if ($voiceAges && count($voiceAges) > 0) {
-        $query->where(function ($q) use ($voiceAges) {
-            foreach ($voiceAges as $age) {
-                $q->orWhereJsonContains('voice_ages', $age);
-            }
-        });
+    {
+        return ['Niño', 'Adolescente', 'Adulto joven', 'Adulto', 'Anciano', 'Atipada'];
     }
-    return $query;
-}
+
+
+    public function scopeFilterByVoiceAges($query, $voiceAges)
+    {
+        if ($voiceAges && count($voiceAges) > 0) {
+            $query->where(function ($q) use ($voiceAges) {
+                foreach ($voiceAges as $age) {
+                    $q->orWhereJsonContains('voice_ages', $age);
+                }
+            });
+        }
+        return $query;
+    }
 
     public function scopeFilterByGenders($query, $genders)
-{
-    if ($genders && count($genders) > 0) {
-        $query->where(function ($q) use ($genders) {
-            foreach ($genders as $gender) {
-                $q->orWhereJsonContains('genders', $gender);
-            }
-        });
+    {
+        if ($genders && count($genders) > 0) {
+            $query->where(function ($q) use ($genders) {
+                foreach ($genders as $gender) {
+                    $q->orWhereJsonContains('genders', $gender);
+                }
+            });
+        }
+        return $query;
     }
-    return $query;
-}
 
     public function scopeFilterByAvailability($query, $availability)
     {
@@ -105,41 +94,71 @@ class Actor extends Model
     // HELPERS para mostrar como string
     public function getVoiceAgesStringAttribute()
     {
-        return $this->voice_ages ? implode(', ', $this->voice_ages) : '';
+        $voiceAges = $this->voice_ages;
+        if (is_string($voiceAges)) {
+            $voiceAges = json_decode($voiceAges, true) ?? [];
+        }
+        // Asegurar que siempre sea array
+        $voiceAges = is_array($voiceAges) ? $voiceAges : [];
+        return $voiceAges ? implode(', ', $voiceAges) : '';
     }
 
     public function getGendersStringAttribute()
     {
-        return $this->genders ? implode(', ', $this->genders) : '';
+        $genders = $this->genders;
+        if (is_string($genders)) {
+            $genders = json_decode($genders, true) ?? [];
+        }
+        // Asegurar que siempre sea array
+        $genders = is_array($genders) ? $genders : [];
+        return $genders ? implode(', ', $genders) : '';
     }
 
+    // Obtener arrays seguros:
+    public function getGendersArrayAttribute()
+    {
+        $genders = $this->genders;
+        if (is_string($genders)) {
+            $genders = json_decode($genders, true) ?? [];
+        }
+        return is_array($genders) ? $genders : [];
+    }
+    public function getVoiceAgesArrayAttribute()
+    {
+        $voiceAges = $this->voice_ages;
+        if (is_string($voiceAges)) {
+            $voiceAges = json_decode($voiceAges, true) ?? [];
+        }
+        return is_array($voiceAges) ? $voiceAges : [];
+    }
+
+
     public function user()
-{
-    return $this->belongsTo(User::class);
-}
+    {
+        return $this->belongsTo(User::class);
+    }
 
-public function schools()
-{
-    return $this->belongsToMany(School::class, 'actor_school');
-}
+    public function schools()
+    {
+        return $this->belongsToMany(School::class, 'actor_school');
+    }
 
-public function works() // o works - revisa cómo lo llamaste en la migración
-{
-    return $this->belongsToMany(Work::class, 'actor_work')
-                ->withPivot('character_name')
-                ->withTimestamps();
-}
+    public function works() // o works - revisa cómo lo llamaste en la migración
+    {
+        return $this->belongsToMany(Work::class, 'actor_work')
+            ->withPivot('character_name')
+            ->withTimestamps();
+    }
 
-public function requests()
-{
-    return $this->hasMany(Request::class, 'actor_id');
-}
+    public function requests()
+    {
+        return $this->hasMany(Request::class, 'actor_id');
+    }
 
-public function teachingSchools()
-{
-    return $this->belongsToMany(School::class, 'actor_school_teacher')
-                ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
-                ->withTimestamps();
-}
-
+    public function teachingSchools()
+    {
+        return $this->belongsToMany(School::class, 'actor_school_teacher')
+            ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
+            ->withTimestamps();
+    }
 }
