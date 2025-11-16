@@ -32,26 +32,57 @@ class AdminController extends Controller
         ];
 
         // Datos para actividad reciente
-        $recentRequests = ContactRequest::with(['client', 'actor'])
-            ->latest()
-            ->take(5)
-            ->get();
-
         $recentActors = Actor::with('user')
             ->latest()
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'recentRequests', 'recentActors'));
+        return view('admin.dashboard', compact('stats', 'recentActors'));
     }
 
-    public function schools()
+    public function schools(Request $request)
     {
         if (Auth::user()->role != 'admin') {
             abort(403, 'No autorizado.');
         }
 
-        $schools = School::withCount('actors')->latest()->paginate(10);
+        $query = School::withCount(['actors', 'teachers']);
+
+        // Filtro por ciudad
+        if ($request->has('city') && $request->city != '') {
+            $query->where('city', 'like', '%' . $request->city . '%');
+        }
+
+        // Filtro por estado (activo/inactivo)
+        if ($request->has('status') && $request->status != '') {
+            if ($request->status == 'active') {
+                $query->has('actors', '>', 0);
+            } elseif ($request->status == 'inactive') {
+                $query->doesntHave('actors');
+            }
+        }
+
+        // Ordenamiento
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'oldest':
+                    $query->oldest();
+                    break;
+                case 'name':
+                    $query->orderBy('name');
+                    break;
+                case 'actors':
+                    $query->orderBy('actors_count', 'desc');
+                    break;
+                default:
+                    $query->latest();
+            }
+        } else {
+            $query->latest();
+        }
+
+        $schools = $query->paginate(10);
+
         return view('admin.schools.index', compact('schools'));
     }
 
@@ -317,14 +348,12 @@ class AdminController extends Controller
 
     public function createActor()
     {
-        // Mostrar usuarios que pueden ser actores (no admin, no clientes con perfil)
-        $users = User::where('role', '!=', 'admin')->get();
         $schools = School::all();
         $works = Work::all();
         $genders = Actor::getGenderOptions();
         $voiceAges = Actor::getVoiceAgeOptions();
 
-        return view('admin.actors.create', compact('users', 'schools', 'works', 'genders', 'voiceAges'));
+        return view('admin.actors.create', compact('schools', 'works', 'genders', 'voiceAges'));
     }
 
     // Método para guardar nuevo actor
@@ -335,57 +364,93 @@ class AdminController extends Controller
         }
 
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            // Datos del usuario
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+
+            // Datos del actor
             'bio' => 'nullable|string|max:1000',
             'photo' => 'nullable|image|max:2048',
             'audio_path' => 'nullable|file|mimes:mp3,wav|max:5120',
-            'genders' => 'required|array',
+            'genders' => 'required|array|min:1',
             'genders.*' => 'in:Masculino,Femenino,Otro',
-            'voice_ages' => 'required|array',
+            'voice_ages' => 'required|array|min:1',
             'voice_ages.*' => 'in:Niño,Adolescente,Adulto joven,Adulto,Anciano,Atipada',
             'is_available' => 'required|boolean',
             'schools' => 'nullable|array',
-            'works' => 'nullable|array'
+            'works' => 'nullable|array',
+            'teaching_schools' => 'nullable|array',
         ]);
 
-        // Verificar que el usuario no tenga ya un perfil de actor
-        if (User::find($validated['user_id'])->actorProfile) {
-            return redirect()->back()->with('error', 'Este usuario ya tiene un perfil de actor.');
-        }
+        try {
+            // Crear el usuario
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => bcrypt($validated['password']),
+                'role' => 'actor'
+            ]);
 
-        // Manejar archivos
-        if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('actors/photos', 'public');
-        }
+            // Crear el perfil de actor
+            $actorData = [
+                'user_id' => $user->id,
+                'bio' => $validated['bio'],
+                'genders' => json_encode($validated['genders']),
+                'voice_ages' => json_encode($validated['voice_ages']),
+                'is_available' => $validated['is_available'],
+            ];
 
-        if ($request->hasFile('audio_path')) {
-            $validated['audio_path'] = $request->file('audio_path')->store('actors/audios', 'public');
-        }
-
-        // CONVERTIR A JSON ANTES DE CREAR
-        $validated['genders'] = json_encode($validated['genders']);
-        $validated['voice_ages'] = json_encode($validated['voice_ages']);
-
-        // Crear el actor
-        $actor = Actor::create($validated);
-
-        // Sincronizar relaciones
-        if ($request->has('schools')) {
-            $actor->schools()->sync($request->schools);
-        }
-
-        // Sincronizar obras con nombres de personaje
-        if ($request->has('works')) {
-            $worksData = [];
-            foreach ($request->works as $workId) {
-                $worksData[$workId] = [
-                    'character_name' => $request->character_names[$workId] ?? null
-                ];
+            // Manejar archivos
+            if ($request->hasFile('photo')) {
+                $actorData['photo'] = $request->file('photo')->store('actors/photos', 'public');
             }
-            $actor->works()->sync($worksData);
-        }
 
-        return redirect()->route('admin.actors')->with('success', 'Actor creado exitosamente.');
+            if ($request->hasFile('audio_path')) {
+                $actorData['audio_path'] = $request->file('audio_path')->store('actors/audios', 'public');
+            }
+
+            // Crear el actor
+            $actor = Actor::create($actorData);
+
+            // Sincronizar relaciones
+            if ($request->has('schools')) {
+                $actor->schools()->sync($request->schools);
+            }
+
+            // Sincronizar obras con nombres de personaje
+            if ($request->has('works')) {
+                $worksData = [];
+                foreach ($request->works as $workId) {
+                    $worksData[$workId] = [
+                        'character_name' => $request->character_names[$workId] ?? null
+                    ];
+                }
+                $actor->works()->sync($worksData);
+            }
+
+            if ($request->has('teaching_schools')) {
+                $teachingSchoolsData = [];
+                foreach ($request->teaching_schools as $schoolId) {
+                    $teachingSchoolsData[$schoolId] = [
+                        'is_active_teacher' => true
+                    ];
+                }
+                $actor->teachingSchools()->sync($teachingSchoolsData);
+            }
+
+
+            return redirect()->route('admin.actors')->with('success', 'Actor y usuario creados exitosamente.');
+        } catch (\Exception $e) {
+            // Si hay error, eliminar el usuario creado
+            if (isset($user)) {
+                $user->delete();
+            }
+
+            return redirect()->back()
+                ->with('error', 'Error al crear el actor: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function editActor(Actor $actor)
@@ -396,6 +461,22 @@ class AdminController extends Controller
         $genders = Actor::getGenderOptions();
         $voiceAges = Actor::getVoiceAgeOptions();
 
+        // Obtener las escuelas donde enseña actualmente
+        $currentTeachingSchools = $actor->teachingSchools()
+            ->where('is_active_teacher', true)
+            ->pluck('schools.id')
+            ->toArray();
+
+        return view('admin.actors.edit', compact(
+            'actor',
+            'users',
+            'schools',
+            'works',
+            'genders',
+            'voiceAges',
+            'currentTeachingSchools'
+        ));
+
         return view('admin.actors.edit', compact('actor', 'users', 'schools', 'works', 'genders', 'voiceAges'));
     }
 
@@ -405,60 +486,82 @@ class AdminController extends Controller
             abort(403, 'No autorizado.');
         }
 
-Log::info('Update Actor Request Data:', $request->all());
+        try {
+            $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'bio' => 'nullable|string|max:1000',
+                'photo' => 'nullable|image|max:2048',
+                'audio_path' => 'nullable|file|mimes:mp3,wav|max:5120',
+                'genders' => 'required|array|min:1',
+                'genders.*' => 'in:Masculino,Femenino,Otro',
+                'voice_ages' => 'required|array|min:1',
+                'voice_ages.*' => 'in:Niño,Adolescente,Adulto joven,Adulto,Anciano,Atipada',
+                'is_available' => 'required|boolean',
+                'schools' => 'nullable|array',
+                'works' => 'nullable|array'
+            ]);
 
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'bio' => 'nullable|string|max:1000',
-            'photo' => 'nullable|image|max:2048',
-            'audio_path' => 'nullable|file|mimes:mp3,wav|max:5120',
-            'genders' => 'required|array',
-            'genders.*' => 'in:Masculino,Femenino,Otro',
-            'voice_ages' => 'required|array',
-            'voice_ages.*' => 'in:Niño,Adolescente,Adulto joven,Adulto,Anciano,Atipada',
-            'is_available' => 'required|boolean',
-            'schools' => 'nullable|array',
-            'works' => 'nullable|array'
-        ]);
-
-Log::info('Update Actor Validated Data:', $validated);
-
-        // Manejar archivos
-        if ($request->hasFile('photo')) {
-            if ($actor->photo) {
-                Storage::disk('public')->delete($actor->photo);
+            // Manejar archivos
+            if ($request->hasFile('photo')) {
+                if ($actor->photo) {
+                    Storage::disk('public')->delete($actor->photo);
+                }
+                $validated['photo'] = $request->file('photo')->store('actors/photos', 'public');
             }
-            $validated['photo'] = $request->file('photo')->store('actors/photos', 'public');
-        }
 
-        if ($request->hasFile('audio_path')) {
-            if ($actor->audio_path) {
-                Storage::disk('public')->delete($actor->audio_path);
+            if ($request->hasFile('audio_path')) {
+                if ($actor->audio_path) {
+                    Storage::disk('public')->delete($actor->audio_path);
+                }
+                $validated['audio_path'] = $request->file('audio_path')->store('actors/audios', 'public');
             }
-            $validated['audio_path'] = $request->file('audio_path')->store('actors/audios', 'public');
-        }
 
-        // CONVERTIR A JSON ANTES DE ACTUALIZAR
-        $validated['genders'] = json_encode($validated['genders']);
-        $validated['voice_ages'] = json_encode($validated['voice_ages']);
+            // CONVERTIR A JSON ANTES DE ACTUALIZAR
+            $validated['genders'] = json_encode($validated['genders']);
+            $validated['voice_ages'] = json_encode($validated['voice_ages']);
 
-        $actor->update($validated);
+            $actor->update($validated);
 
-        // Sincronizar relaciones
-        $actor->schools()->sync($request->schools ?? []);
+            // Sincronizar relaciones
+            $actor->schools()->sync($request->schools ?? []);
 
-        // Sincronizar obras con nombres de personaje
-        $worksData = [];
-        if ($request->has('works')) {
-            foreach ($request->works as $workId) {
-                $worksData[$workId] = [
-                    'character_name' => $request->character_names[$workId] ?? null
-                ];
+            // Sincronizar obras con nombres de personaje
+            $worksData = [];
+            if ($request->has('works')) {
+                foreach ($request->works as $workId) {
+                    $worksData[$workId] = [
+                        'character_name' => $request->character_names[$workId] ?? null
+                    ];
+                }
             }
-        }
-        $actor->works()->sync($worksData);
+            $actor->works()->sync($worksData);
 
-        return redirect()->route('admin.actors')->with('success', 'Actor actualizado exitosamente.');
+
+            // SINCRONIZAR ESCUELAS DONDE ENSEÑA
+            $teachingSchoolsData = [];
+            if ($request->has('teaching_schools')) {
+                foreach ($request->teaching_schools as $schoolId) {
+                    $teachingSchoolsData[$schoolId] = [
+                        'subject' => $request->teaching_subjects[$schoolId] ?? null,
+                        'teaching_bio' => $request->teaching_bios[$schoolId] ?? null,
+                        'is_active_teacher' => true
+                    ];
+                }
+            }
+            $actor->teachingSchools()->sync($teachingSchoolsData);
+
+            return redirect()->route('admin.actors')->with('success', 'Actor actualizado exitosamente.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Redirigir de vuelta con errores de validación
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            // Manejar otros errores
+            return redirect()->back()
+                ->with('error', 'Error al actualizar el actor: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function destroyActor(Actor $actor)

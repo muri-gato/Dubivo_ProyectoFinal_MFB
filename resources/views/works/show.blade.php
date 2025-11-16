@@ -36,8 +36,8 @@
                             </span>
                             @endif
                             <span class="text-gray-600">
-                                <i class="fas fa-users mr-1"></i>{{ $work->actors_count }} actores
-                            </span>
+    <i class="fas fa-users mr-1"></i>{{ $work->actors->count() }} actores
+</span>
                         </div>
                     </div>
 
@@ -93,10 +93,10 @@
                         <span class="ml-2">{{ $work->year }}</span>
                     </div>
                     @endif
-                    <div>
-                        <span class="font-semibold text-gray-600">Actores participantes:</span>
-                        <span class="ml-2">{{ $work->actors_count }}</span>
-                    </div>
+<div>
+    <span class="font-semibold text-gray-600">Actores participantes:</span>
+    <span class="ml-2">{{ $work->actors->count() }}</span>
+</div>
                     <div>
                         <span class="font-semibold text-gray-600">Registrada:</span>
                         <span class="ml-2">{{ $work->created_at->format('d/m/Y') }}</span>
@@ -133,17 +133,8 @@
                     </a>
 
                     <p class="text-gray-600 text-sm mb-2">
-                        @if($actor->genders && count($actor->genders) > 0)
-                        {{ implode(', ', $actor->genders) }}
-                        @else
-                        Género no especificado
-                        @endif
-                        •
-                        @if($actor->voice_ages && count($actor->voice_ages) > 0)
-                        {{ implode(', ', $actor->voice_ages) }}
-                        @else
-                        Edad no especificada
-                        @endif
+                        {{ $actor->genders_string ?: 'Género no especificado' }} •
+                        {{ $actor->voice_ages_string ?: 'Edad no especificada' }}
                     </p>
 
                     @if($actor->pivot->character_name)

@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Panel de Administración - Banco de Voces')
+@section('title', 'Panel de Administración - Dubivo')
 
 @section('content')
 <div class="max-w-7xl mx-auto">
     <!-- Header -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <h1 class="text-3xl font-bold text-gray-800">Panel de Administración</h1>
-        <p class="text-gray-600 mt-2">Gestiona todos los aspectos del banco de voces</p>
+        <p class="text-gray-600 mt-2">Gestiona todos los aspectos de la aplicación</p>
     </div>
 
     <!-- Estadísticas -->
@@ -210,20 +210,10 @@
                     <div class="flex-1">
                         <p class="font-medium text-gray-800">{{ $actor->user->name }}</p>
                         <p class="text-sm text-gray-600 capitalize">
-                            @if($actor->genders && count($actor->genders) > 0)
-                        {{ implode(', ', $actor->genders) }}
-                    @else
-                        Género no especificado
-                    @endif
-                    
-                    • 
-                    
-                    @if($actor->voice_ages && count($actor->voice_ages) > 0)
-                        {{ implode(', ', $actor->voice_ages) }}
-                    @else
-                        Edad no especificada
-                    @endif
-                </p>
+    {{ $actor->genders_string ?: 'Género no especificado' }}
+    • 
+    {{ $actor->voice_ages_string ?: 'Edad no especificada' }}
+</p>
             </div>
         </div>
         @empty

@@ -3,9 +3,9 @@
 use App\Http\Controllers\ActorController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\WorkController;
-use App\Http\Controllers\RequestController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SchoolTeacherController;
+use App\Http\Controllers\FavoriteController;
 use Illuminate\Support\Facades\Route;
 
 // Página principal
@@ -40,16 +40,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/actor/profile/{actor}', [ActorController::class, 'update'])->name('actors.update');
     Route::delete('/actor/profile/{actor}', [ActorController::class, 'destroy'])->name('actors.destroy');
 
-    // SOLICITUDES - CORREGIDAS
-    Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
-    
-    // Cambiar la ruta de create para evitar conflicto
-    Route::get('/contact-actor/{actor}', [RequestController::class, 'create'])->name('requests.create');
-    Route::post('/contact-actor/{actor}', [RequestController::class, 'store'])->name('requests.store');
-    
-    Route::patch('/requests/{contactRequest}/{status}', [RequestController::class, 'updateStatus'])->name('requests.updateStatus');
-    Route::delete('/requests/{contactRequest}', [RequestController::class, 'destroy'])->name('requests.destroy');
-
     // ADMIN ROUTES - SIN MIDDLEWARE DUPLICADO
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -77,6 +67,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/actors/{actor}/edit', [AdminController::class, 'editActor'])->name('admin.actors.edit');
         Route::put('/actors/{actor}', [AdminController::class, 'updateActor'])->name('admin.actors.update');
         Route::delete('/actors/{actor}', [AdminController::class, 'destroyActor'])->name('admin.actors.destroy');
+        //Favoritos
+        Route::middleware(['auth'])->group(function () {
+            Route::post('/actors/{actor}/favorite', [FavoriteController::class, 'toggleFavorite'])->name('actors.favorite.toggle');
+        });
 
         // Usuarios
         Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
@@ -95,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-// RUTA PÚBLICA DE ACTORES - debe ir AL FINAL para evitar conflictos
+// RUTA PÚBLICA DE ACTORES
 Route::get('/actors/{actor}', [ActorController::class, 'show'])->name('actors.show');
 
 // Rutas de autenticación de Laravel

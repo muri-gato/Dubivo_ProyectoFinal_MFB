@@ -36,20 +36,16 @@ class User extends Authenticatable
         return $this->hasOne(Actor::class);
     }
 
-    public function sentRequests()
-    {
-        return $this->hasMany(Request::class, 'client_id');
-    }
-
-    public function receivedRequests()
-    {
-        return $this->hasMany(Request::class, 'actor_id');
-    }
-
     public function schools()
-{
-    return $this->hasManyThrough(School::class, Actor::class);
-}
+    {
+        return $this->hasManyThrough(School::class, Actor::class);
+    }
+
+        public function favoriteActors()
+    {
+        return $this->belongsToMany(Actor::class, 'actor_user_favorites')
+            ->withTimestamps();
+    }
 
     // SCOPES PARA ROLES
     public function scopeActors($query)
@@ -82,4 +78,6 @@ class User extends Authenticatable
     {
         return $this->role === 'client';
     }
+
+
 }

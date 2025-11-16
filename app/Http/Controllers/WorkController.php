@@ -21,7 +21,8 @@ class WorkController extends Controller
 
     public function show(Work $work)
 {
-    $work->load('actors.user');
+    $work->load(['actors.user', 'actors.schools']);
+    $work->loadCount('actors');
     
     // Obtener obras relacionadas (mismo tipo, excluyendo la actual)
     $relatedWorks = Work::where('type', $work->type)

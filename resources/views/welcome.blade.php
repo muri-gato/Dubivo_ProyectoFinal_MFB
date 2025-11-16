@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banco de Voces - Encuentra el talento vocal perfecto</title>
+    <title>Dubivo - Encuentra el talento vocal perfecto</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -12,7 +12,7 @@
     <header class="bg-blue-600 text-white">
         <div class="container mx-auto px-4 py-16">
             <div class="text-center">
-                <h1 class="text-5xl font-bold mb-6">Banco de Voces</h1>
+                <h1 class="text-5xl font-bold mb-6">Dubivo</h1>
                 <p class="text-xl mb-8 max-w-2xl mx-auto">
                     La plataforma líder para conectar actores de voz con oportunidades profesionales en doblaje, publicidad y producción audiovisual.
                 </p>
@@ -37,7 +37,7 @@
     <!-- Features Section -->
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">¿Por qué elegir nuestro banco de voces?</h2>
+            <h2 class="text-3xl font-bold text-center mb-12">¿Por qué elegir Dubivo?</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="text-center">
@@ -133,7 +133,7 @@
                     Encuentra las voces perfectas para tus proyectos de doblaje.
                 </p>
                 <ul class="text-sm text-gray-500 mb-6 space-y-2 text-left">
-                    <li><i class="fas fa-check text-green-500 mr-2"></i>Acceso a banco de voces</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Acceso a Dubivo</li>
                     <li><i class="fas fa-check text-green-500 mr-2"></i>Búsqueda avanzada</li>
                     <li><i class="fas fa-check text-green-500 mr-2"></i>Contacta directamente</li>
                     <li><i class="fas fa-check text-green-500 mr-2"></i>Gestiona solicitudes</li>
@@ -156,9 +156,9 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h3 class="text-xl font-bold mb-4">Banco de Voces</h3>
+                    <h3 class="text-xl font-bold mb-4">Dubivo</h3>
                     <p class="text-gray-400">
-                        Conectando talento vocal con oportunidades profesionales desde 2024.
+                        Conectando talento vocal con oportunidades profesionales desde 2025.
                     </p>
                 </div>
                 <div>
@@ -178,7 +178,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 Banco de Voces. Todos los derechos reservados.</p>
+                <p>&copy; 2025 Dubivo. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>

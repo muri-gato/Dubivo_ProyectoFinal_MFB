@@ -22,7 +22,7 @@
     <!-- Estadísticas -->
     <div class="space-y-4 mb-6">
         <!-- Primera fila: Totales principales -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <!-- Total Actores -->
             <div class="bg-white rounded-lg shadow p-4 text-center">
                 <div class="text-2xl font-bold text-blue-600">{{ $actors->total() }}</div>
@@ -39,14 +39,6 @@
             <div class="bg-white rounded-lg shadow p-4 text-center">
                 <div class="text-2xl font-bold text-red-600">{{ $actors->where('is_available', false)->count() }}</div>
                 <div class="text-sm text-gray-600">No Disponibles</div>
-            </div>
-
-            <!-- Promedio obras por actor -->
-            <div class="bg-white rounded-lg shadow p-4 text-center">
-                <div class="text-2xl font-bold text-purple-600">
-                    {{ number_format($actors->avg('works_count') ?? 0, 1) }}
-                </div>
-                <div class="text-sm text-gray-600">Obras/Actor</div>
             </div>
         </div>
 
@@ -211,25 +203,17 @@
 
                             <!-- Géneros -->
                             <td class="px-6 py-4">
-                                <div class="text-sm text-gray-900">
-                                    @if($actor->genders && count($actor->genders) > 0)
-                                    {{ implode(', ', $actor->genders) }}
-                                    @else
-                                    <span class="text-gray-400">No especificado</span>
-                                    @endif
-                                </div>
-                            </td>
+    <div class="text-sm text-gray-900">
+        {{ $actor->genders_string ?: 'No especificado' }}
+    </div>
+</td>
 
                             <!-- Edades Vocales -->
                             <td class="px-6 py-4">
-                                <div class="text-sm text-gray-900">
-                                    @if($actor->voice_ages && count($actor->voice_ages) > 0)
-                                    {{ implode(', ', $actor->voice_ages) }}
-                                    @else
-                                    <span class="text-gray-400">No especificado</span>
-                                    @endif
-                                </div>
-                            </td>
+    <div class="text-sm text-gray-900">
+        {{ $actor->voice_ages_string ?: 'No especificado' }}
+    </div>
+</td>
 
                             <!-- Escuelas -->
                             <td class="px-6 py-4 whitespace-nowrap">

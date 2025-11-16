@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Banco de Voces')</title>
+    <title>@yield('title', 'Dubivo')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,7 +12,7 @@
     <header class="bg-blue-600 text-white shadow-md">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <a href="{{ url('/') }}" class="text-2xl font-bold">Banco de Voces</a>
+                <a href="{{ url('/') }}" class="text-2xl font-bold">Dubivo</a>
                 <nav class="flex space-x-4 items-center">
                     <!-- Menú de navegación común -->
                     <a href="{{ route('actors.index') }}" class="hover:bg-blue-500 px-3 py-2 rounded">Actores</a>
@@ -31,10 +31,6 @@
                             @else
                                 <a href="{{ route('actors.create') }}" class="hover:bg-blue-500 px-3 py-2 rounded">Crear Perfil</a>
                             @endif
-                        @endif
-                        
-                        @if(auth()->user()->role === 'client' || auth()->user()->role === 'admin')
-                            <a href="{{ route('requests.index') }}" class="hover:bg-blue-500 px-3 py-2 rounded">Solicitudes</a>
                         @endif
 
                         <!-- Dropdown usuario -->
@@ -70,7 +66,7 @@
     <!-- Footer -->
     <footer class="bg-gray-800 text-white mt-12">
         <div class="container mx-auto px-4 py-6">
-            <p class="text-center">&copy; 2024 Banco de Voces. Todos los derechos reservados.</p>
+            <p class="text-center">&copy; 2025 Dubivo. Todos los derechos reservados.</p>
         </div>
     </footer>
 

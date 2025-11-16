@@ -99,97 +99,40 @@
         </div>
     </div>
 
-    {{-- Sección de Profesores --}}
-    <section class="mb-8">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-gray-800">Profesorado</h2>
-
-            @auth
-            @if(Auth::user()->role == 'admin')
-            <a href="{{ route('admin.schools.teachers.create', $school) }}"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
-                + Agregar Profesor
-            </a>
-            @endif
-            @endauth
-        </div>
-
-        @if($school->teacherActors->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($school->teacherActors as $actor)
-            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-                {{-- Foto del profesor --}}
-                @if($actor->photo)
-                <img src="{{ asset('storage/' . $actor->photo) }}"
-                    alt="{{ $actor->name }}"
-                    class="w-24 h-24 rounded-full mx-auto mb-4 object-cover">
-                @else
-                <div class="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span class="text-gray-600 text-2xl">{{ substr($actor->name, 0, 1) }}</span>
-                </div>
-                @endif
-
-                {{-- Información del profesor --}}
-                <h3 class="text-xl font-semibold text-center text-gray-800 mb-2">
-                    {{ $actor->name }}
-                </h3>
-
-                @if($actor->pivot->subject)
-                <p class="text-green-600 text-center font-medium mb-2">
-                    {{ $actor->pivot->subject }}
-                </p>
-                @endif
-
-                @if($actor->pivot->teaching_bio)
-                <p class="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {{ $actor->pivot->teaching_bio }}
-                </p>
-                @endif
-
-                {{-- Botones de acción --}}
-                <div class="flex justify-between items-center">
-                    <a href="{{ route('actors.show', $actor) }}"
-                        class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        Ver perfil completo
-                    </a>
-
-                    @auth
-                    @if(Auth::user()->role == 'admin')
-                    <div class="flex space-x-2">
-                        <a href="{{ route('admin.schools.teachers.edit', [$school, $actor]) }}"
-                            class="text-yellow-600 hover:text-yellow-800 text-sm">
-                            Editar
-                        </a>
-                        <form action="{{ route('admin.schools.teachers.destroy', [$school, $actor]) }}"
-                            method="POST"
-                            onsubmit="return confirm('¿Eliminar este profesor?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
-                                Eliminar
-                            </button>
-                        </form>
+    @if($school->teachers->count() > 0)
+    <!-- Sección de Profesores -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-2xl font-bold mb-4">Profesores</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @foreach($school->teachers as $teacher)
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    @if($teacher->photo)
+                    <img src="{{ asset('storage/' . $teacher->photo) }}" alt="{{ $teacher->name }}"
+                        class="w-12 h-12 rounded-full object-cover mr-3">
+                    @else
+                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-user text-gray-500"></i>
                     </div>
                     @endif
-                    @endauth
+                    <div>
+                        <h3 class="font-semibold">{{ $teacher->name }}</h3>
+                        @if($teacher->pivot->subject)
+                        <p class="text-sm text-gray-600">{{ $teacher->pivot->subject }}</p>
+                        @endif
+                    </div>
                 </div>
+                @if($teacher->pivot->teaching_bio)
+                <p class="text-sm text-gray-700 mb-3">{{ Str::limit($teacher->pivot->teaching_bio, 100) }}</p>
+                @endif
+                <a href="{{ route('actors.show', $teacher) }}" class="text-blue-600 hover:underline text-sm">
+                    Ver perfil completo
+                </a>
             </div>
             @endforeach
         </div>
-        @else
-        <div class="bg-gray-100 rounded-lg p-8 text-center">
-            <p class="text-gray-600 mb-4">Esta escuela aún no tiene profesores registrados.</p>
-            @auth
-            @if(Auth::user()->role == 'admin')
-            <a href="{{ route('admin.schools.teachers.create', $school) }}"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg inline-block">
-                Agregar el primer profesor
-            </a>
-            @endif
-            @endauth
-        </div>
-        @endif
-    </section>
+    </div>
+    @endif
 
     <!-- Actores de esta Escuela -->
     @if($school->actors->count() > 0)
@@ -220,11 +163,8 @@
 
                         {{-- Géneros y edades vocales --}}
                         <p class="text-gray-600 text-sm mb-2">
-                            @php
-                            $genders = $actor->genders && count($actor->genders) > 0 ? implode(', ', $actor->genders) : 'Género no especificado';
-                            $voiceAges = $actor->voice_ages && count($actor->voice_ages) > 0 ? implode(', ', $actor->voice_ages) : 'Edad no especificada';
-                            @endphp
-                            {{ $genders }} • {{ $voiceAges }}
+                            {{ $actor->genders_string ?: 'Género no especificado' }} •
+                            {{ $actor->voice_ages_string ?: 'Edad no especificada' }}
                         </p>
 
                         {{-- Biografía breve --}}

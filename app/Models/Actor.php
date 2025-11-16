@@ -132,7 +132,6 @@ class Actor extends Model
         return is_array($voiceAges) ? $voiceAges : [];
     }
 
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -150,15 +149,31 @@ class Actor extends Model
             ->withTimestamps();
     }
 
-    public function requests()
-    {
-        return $this->hasMany(Request::class, 'actor_id');
-    }
-
     public function teachingSchools()
     {
         return $this->belongsToMany(School::class, 'actor_school_teacher')
             ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
             ->withTimestamps();
+    }
+
+    public function isTeacher()
+    {
+        return $this->teachingSchools()->where('is_active_teacher', true)->exists();
+    }
+
+    public function getActiveTeachingSchools()
+    {
+        return $this->teachingSchools()->where('is_active_teacher', true)->get();
+    }
+
+    public function favoritedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'actor_user_favorites')
+            ->withTimestamps();
+    }
+
+    public function isFavoritedBy($userId)
+    {
+        return $this->favoritedByUsers()->where('user_id', $userId)->exists();
     }
 }

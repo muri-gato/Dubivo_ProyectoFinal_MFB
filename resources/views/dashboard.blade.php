@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banco de Voces - Dashboard</title>
+    <title>Dubivo - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
@@ -11,7 +11,7 @@
     <header class="bg-blue-600 text-white shadow-md">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold">Banco de Voces</h1>
+                <h1 class="text-2xl font-bold">Dubivo</h1>
                 <nav class="flex space-x-4">
                     @auth
                         <a href="{{ route('dashboard') }}" class="hover:bg-blue-500 px-3 py-2 rounded">Dashboard</a>
@@ -45,7 +45,7 @@
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-3xl font-bold mb-6 text-gray-800">Bienvenido al Banco de Voces</h2>
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">Bienvenido a Dubivo</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
@@ -121,7 +121,7 @@
     <!-- Footer -->
     <footer class="bg-gray-800 text-white mt-12">
         <div class="container mx-auto px-4 py-6">
-            <p class="text-center">&copy; 2024 Banco de Voces. Todos los derechos reservados.</p>
+            <p class="text-center">&copy; 2025 Dubivo. Todos los derechos reservados.</p>
         </div>
     </footer>
 </body>

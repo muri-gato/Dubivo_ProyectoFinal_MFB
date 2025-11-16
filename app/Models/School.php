@@ -26,9 +26,12 @@ class School extends Model
     }
 
     public function teachers()
-    {
-        return $this->hasMany(Teacher::class);
-    }
+{
+    return $this->belongsToMany(Actor::class, 'actor_school_teacher')
+                ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
+                ->wherePivot('is_active_teacher', true)
+                ->withTimestamps();
+}
 
     public function teacherActors()
     {
@@ -36,4 +39,9 @@ class School extends Model
             ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
             ->withTimestamps();
     }
+
+    public function getTeachersCountAttribute()
+{
+    return $this->teachers()->count();
+}
 }
