@@ -24,6 +24,9 @@ export default {
                 'negro': '#000000',
                 'blanco-crema': '#FFF8F2',
                 'gris-azulado': '#787F8F',
+                'verde-menta': '#02AC66',
+                'azul-profundo': '#3B82F6',
+                'morado-vibrante': '#8B5CF6',
             }
         },
     },

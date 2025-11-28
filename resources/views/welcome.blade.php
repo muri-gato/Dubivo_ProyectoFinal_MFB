@@ -3,226 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dubivo - Encuentra el talento vocal perfecto</title>
+    <title>Dubivo - Plataforma de Actores de Voz</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'rosa-electrico': '#FF7DB5',
-                        'rojo-intenso': '#F21F07', 
-                        'naranja-vibrante': '#FC7925',
-                        'ambar': '#FFB700',
-                        'amarillo-dorado': '#FFDD00',
-                        'crema': '#FAEDD9',
-                        'negro': '#000000',
-                        'blanco-crema': '#FFF8F2',
-                        'gris-azulado': '#787F8F',
-                    }
-                }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            border-radius: 0 !important;
+        }
+        
+        /* Estilos vintage color-block */
+        .vintage-border {
+            border: 6px solid #000;
+            box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .vintage-border:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 20px 20px 0px rgba(0, 0, 0, 0.3);
+        }
+        
+        .color-block-1 { background-color: #FF7DB5; }
+        .color-block-2 { background-color: #FC7925; }
+        .color-block-3 { background-color: #FFB700; }
+        .color-block-4 { background-color: #3B82F6; }
+        .color-block-5 { background-color: #8B5CF6; }
+        .color-block-6 { background-color: #02AC66; }
+        
+        .vintage-text {
+            font-family: 'Arial', sans-serif;
+            font-weight: 700;
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+            letter-spacing: 2px;
+        }
+        
+        .retro-btn {
+            background: #FF7DB5;
+            border: 4px solid #000;
+            box-shadow: 8px 8px 0px #000;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .retro-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0px #000;
+        }
+        
+        .retro-btn-secondary {
+            background: #3B82F6;
+            border: 4px solid #000;
+            box-shadow: 8px 8px 0px #000;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .retro-btn-secondary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0px #000;
+        }
+        
+        .geometric-pattern {
+            background-color: #FAEDD9;
+            background-image: 
+                linear-gradient(45deg, #FF7DB5 25%, transparent 25%), 
+                linear-gradient(-45deg, #FF7DB5 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #FF7DB5 75%), 
+                linear-gradient(-45deg, transparent 75%, #FF7DB5 75%);
+            background-size: 60px 60px;
+            background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+            opacity: 0.1;
+        }
+        
+        .vintage-film-grain {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-    </script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        
+        .animate-slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+    </style>
 </head>
-<body class="bg-blanco-crema">
-    <!-- Hero Section -->
-    <header class="bg-negro text-white">
-        <div class="container mx-auto px-4 py-16">
-            <div class="text-center">
-                <h1 class="text-5xl font-bold mb-6 text-rosa-electrico">Dubivo</h1>
-                <p class="text-xl mb-8 max-w-2xl mx-auto text-crema">
-                    La plataforma líder para conectar actores de voz con oportunidades profesionales en doblaje, publicidad y producción audiovisual.
+<body class="bg-crema vintage-film-grain min-h-screen overflow-x-hidden">
+    <!-- Fondo con bloques de color geométricos - SOLO LOS CUADRITOS COLORIDOS -->
+    <div class="fixed inset-0 pointer-events-none">
+        <!-- Bloques de color vintage -->
+        <div class="absolute top-0 left-0 w-1/3 h-1/4 color-block-1 opacity-85"></div>
+        <div class="absolute top-10 right-0 w-1/4 h-1/3 color-block-2 opacity-90"></div>
+        <div class="absolute bottom-0 left-1/4 w-1/5 h-2/5 color-block-3 opacity-80"></div>
+        <div class="absolute bottom-1/4 right-1/3 w-1/6 h-1/2 color-block-4 opacity-85"></div>
+        <div class="absolute top-1/3 left-1/2 w-1/4 h-1/4 color-block-5 opacity-75"></div>
+        <div class="absolute top-2/3 right-1/4 w-1/5 h-1/3 color-block-6 opacity-80"></div>
+        
+        <!-- Patrón geométrico superpuesto -->
+        <div class="absolute inset-0 geometric-pattern"></div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="max-w-4xl w-full">
+            <!-- Header principal -->
+            <div class="text-center mb-16 opacity-0 animate-slide-in">
+                <h1 class="vintage-text text-7xl md:text-8xl font-bold mb-6 text-black leading-none">
+                    DUBIVO
+                </h1>
+                <div class="w-48 h-2 bg-black mx-auto mb-8"></div>
+                <p class="text-2xl md:text-3xl font-semibold text-black uppercase tracking-wider">
+                    Banco de Voces
                 </p>
-                <div class="flex justify-center space-x-4">
-                    <a href="{{ route('actors.index') }}" class="bg-rosa-electrico text-white px-8 py-3 rounded-lg font-semibold hover:bg-naranja-vibrante transition duration-300">
-                        Explorar Actores
-                    </a>
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="bg-ambar text-negro px-8 py-3 rounded-lg font-semibold hover:bg-amarillo-dorado transition duration-300">
-                            Mi Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('register') }}" class="bg-ambar text-negro px-8 py-3 rounded-lg font-semibold hover:bg-amarillo-dorado transition duration-300">
-                            Registrarse
-                        </a>
-                    @endauth
-                </div>
             </div>
-        </div>
-    </header>
 
-    <!-- CTA Section -->
-    <section class="py-16 bg-crema">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl font-bold mb-8 text-negro">Únete a nuestra comunidad</h2>
-            <p class="text-gris-azulado mb-12 max-w-2xl mx-auto">
-                Forma parte del banco de voces más completo de España. 
-                Elige cómo quieres participar en nuestra plataforma.
-            </p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <!-- Tarjeta Actor -->
-                <div class="bg-white rounded-lg shadow-md p-8 border-2 border-rosa-electrico/30 hover:border-rosa-electrico transition duration-300">
-                    <div class="bg-rosa-electrico/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-microphone text-rosa-electrico text-2xl"></i>
+            <!-- Tarjetas de características CLICKABLES - BIEN ALINEADAS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+                <!-- Tarjeta 1 - Actores -->
+                <a href="{{ route('actors.index') }}" class="block group">
+                    <div class="bg-white vintage-border p-6 opacity-0 animate-slide-in stagger-1 h-full flex flex-col">
+                        <div class="color-block-1 w-16 h-16 flex items-center justify-center mb-6 border-4 border-black">
+                            <i class="fas fa-microphone text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-black mb-4 text-black uppercase">Actores</h3>
+                        <p class="text-gray-800 mb-6 leading-relaxed flex-grow">
+                            Descubre talentos únicos del doblaje español. Voces auténticas para proyectos extraordinarios.
+                        </p>
+                        <div class="w-full h-1 bg-black mb-3"></div>
+                        <p class="text-sm text-black font-semibold group-hover:text-rosa-electrico transition-colors">
+                            Haz clic para explorar →
+                        </p>
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-rosa-electrico">Actor/Actriz de Doblaje</h3>
-                    <p class="text-gris-azulado mb-6">
-                        Muestra tu talento, crea tu perfil profesional y recibe ofertas de trabajo.
-                    </p>
-                    <ul class="text-sm text-gris-azulado mb-6 space-y-2 text-left">
-                        <li><i class="fas fa-check text-ambar mr-2"></i>Perfil profesional visible</li>
-                        <li><i class="fas fa-check text-ambar mr-2"></i>Recibe solicitudes de clientes</li>
-                        <li><i class="fas fa-check text-ambar mr-2"></i>Conecta con escuelas</li>
-                        <li><i class="fas fa-check text-ambar mr-2"></i>Muestra tu portfolio</li>
-                    </ul>
-                    <a href="{{ route('register.actor') }}" 
-                       class="bg-rosa-electrico text-white px-6 py-3 rounded-lg hover:bg-naranja-vibrante transition duration-200 font-medium block">
-                        Registrarse como Actor
-                    </a>
-                </div>
+                </a>
 
-                <!-- Tarjeta Cliente -->
-                <div class="bg-white rounded-lg shadow-md p-8 border-2 border-ambar/30 hover:border-ambar transition duration-300">
-                    <div class="bg-ambar/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-search text-ambar text-2xl"></i>
+                <!-- Tarjeta 2 - Escuelas -->
+                <a href="{{ route('schools.index') }}" class="block group">
+                    <div class="bg-white vintage-border p-6 opacity-0 animate-slide-in stagger-2 h-full flex flex-col">
+                        <div class="color-block-4 w-16 h-16 flex items-center justify-center mb-6 border-4 border-black">
+                            <i class="fas fa-school text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-black mb-4 text-black uppercase">Escuelas</h3>
+                        <p class="text-gray-800 mb-6 leading-relaxed flex-grow">
+                            Las mejores academias de doblaje. Formación de calidad para las voces del futuro.
+                        </p>
+                        <div class="w-full h-1 bg-black mb-3"></div>
+                        <p class="text-sm text-black font-semibold group-hover:text-azul-profundo transition-colors">
+                            Haz clic para explorar →
+                        </p>
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-ambar">Cliente</h3>
-                    <p class="text-gris-azulado mb-6">
-                        Encuentra las voces perfectas para tus proyectos de doblaje.
-                    </p>
-                    <ul class="text-sm text-gris-azulado mb-6 space-y-2 text-left">
-                        <li><i class="fas fa-check text-ambar mr-2"></i>Acceso a Dubivo</li>
-                        <li><i class="fas fa-check text-ambar mr-2"></i>Búsqueda avanzada</li>
-                        <li><i class="fas fa-check text-ambar mr-2"></i>Contacta directamente</li>
-                        <li><i class="fas fa-check text-ambar mr-2"></i>Gestiona solicitudes</li>
-                    </ul>
-                    <a href="{{ route('register.client') }}" 
-                       class="bg-ambar text-negro px-6 py-3 rounded-lg hover:bg-amarillo-dorado transition duration-200 font-medium block">
-                        Registrarse como Cliente
-                    </a>
-                </div>
+                </a>
+
+                <!-- Tarjeta 3 - Obras -->
+                <a href="{{ route('works.index') }}" class="block group">
+                    <div class="bg-white vintage-border p-6 opacity-0 animate-slide-in stagger-3 h-full flex flex-col">
+                        <div class="color-block-6 w-16 h-16 flex items-center justify-center mb-6 border-4 border-black">
+                            <i class="fas fa-film text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-black mb-4 text-black uppercase">Obras</h3>
+                        <p class="text-gray-800 mb-6 leading-relaxed flex-grow">
+                            Proyectos destacados y trabajos de referencia en el mundo del doblaje profesional.
+                        </p>
+                        <div class="w-full h-1 bg-black mb-3"></div>
+                        <p class="text-sm text-black font-semibold group-hover:text-verde-menta transition-colors">
+                            Haz clic para explorar →
+                        </p>
+                    </div>
+                </a>
             </div>
-            
-            <p class="text-gris-azulado mt-8">
-                ¿Ya tienes cuenta? <a href="{{ route('login') }}" class="text-rosa-electrico hover:text-naranja-vibrante">Inicia sesión</a>
-            </p>
-        </div>
-    </section>
 
-    <!-- Features Section -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12 text-negro">¿Por qué elegir Dubivo?</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="text-center">
-                    <div class="bg-rosa-electrico/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-microphone text-rosa-electrico text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-3 text-negro">Talento Verificado</h3>
-                    <p class="text-gris-azulado">Actores profesionales con formación en las mejores escuelas de doblaje.</p>
-                </div>
+            <!-- Botones de registro y login -->
+            <div class="text-center space-y-6 md:space-y-0 md:space-x-8 md:flex md:justify-center mb-12">
+                <!-- Botón Registrarse -->
+                <a href="{{ route('register') }}" 
+                   class="retro-btn px-12 py-4 text-xl font-black text-white uppercase tracking-wider inline-block opacity-0 animate-slide-in stagger-1">
+                    Registrarse
+                </a>
                 
-                <div class="text-center">
-                    <div class="bg-ambar/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-search text-ambar text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-3 text-negro">Búsqueda Avanzada</h3>
-                    <p class="text-gris-azulado">Filtra por género, edad vocal, escuela y experiencia para encontrar la voz perfecta.</p>
-                </div>
-                
-                <div class="text-center">
-                    <div class="bg-naranja-vibrante/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-handshake text-naranja-vibrante text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-3 text-negro">Conexión Directa</h3>
-                    <p class="text-gris-azulado">Contacta directamente con los actores y gestiona tus proyectos fácilmente.</p>
-                </div>
+                <!-- Botón Iniciar Sesión -->
+                <a href="{{ route('login') }}" 
+                   class="retro-btn-secondary px-12 py-4 text-xl font-black text-white uppercase tracking-wider inline-block opacity-0 animate-slide-in stagger-2">
+                    Iniciar Sesión
+                </a>
             </div>
-        </div>
-    </section>
 
-    <!-- Stats Section -->
-    <section class="py-16 bg-crema">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div>
-                    <div class="text-3xl font-bold text-rosa-electrico mb-2" id="actors-count">0</div>
-                    <div class="text-gris-azulado">Actores Registrados</div>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-ambar mb-2" id="schools-count">0</div>
-                    <div class="text-gris-azulado">Escuelas Asociadas</div>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-naranja-vibrante mb-2" id="works-count">0</div>
-                    <div class="text-gris-azulado">Obras Registradas</div>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-rojo-intenso mb-2" id="projects-count">0</div>
-                    <div class="text-gris-azulado">Proyectos Realizados</div>
-                </div>
+            <!-- Texto informativo -->
+            <div class="text-center opacity-0 animate-slide-in stagger-3">
+                <p class="text-black text-sm font-semibold">
+                    Explora libremente o crea una cuenta para acceder a todas las funciones
+                </p>
             </div>
-        </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-negro text-white py-8">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-xl font-bold mb-4 text-rosa-electrico">Dubivo</h3>
-                    <p class="text-crema">
-                        Conectando talento vocal con oportunidades profesionales desde 2025.
-                    </p>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4 text-ambar">Enlaces Rápidos</h4>
-                    <ul class="space-y-2">
-                        <li><a href="{{ route('actors.index') }}" class="text-crema hover:text-ambar">Actores</a></li>
-                        <li><a href="{{ route('schools.index') }}" class="text-crema hover:text-ambar">Escuelas</a></li>
-                        <li><a href="{{ route('works.index') }}" class="text-crema hover:text-ambar">Obras</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4 text-ambar">Contacto</h4>
-                    <ul class="space-y-2 text-crema">
-                        <li><i class="fas fa-envelope mr-2"></i>info@dubivo.com</li>
-                        <li><i class="fas fa-phone mr-2"></i>+34 912 345 678</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-ambar/30 mt-8 pt-8 text-center text-crema">
-                <p>&copy; 2025 Dubivo. Todos los derechos reservados.</p>
+            <!-- Footer -->
+            <div class="text-center mt-16 pt-8 border-t-4 border-black opacity-0 animate-slide-in stagger-3">
+                <p class="text-black text-sm font-medium">
+                    Conectando voces desde la era analógica hasta la digital
+                </p>
             </div>
         </div>
-    </footer>
+    </div>
 
     <script>
-        function animateCount(element, finalValue, duration = 2000) {
-            let start = 0;
-            const increment = finalValue / (duration / 16);
-            const timer = setInterval(() => {
-                start += increment;
-                if (start >= finalValue) {
-                    element.textContent = finalValue;
-                    clearInterval(timer);
-                } else {
-                    element.textContent = Math.floor(start);
-                }
-            }, 16);
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                animateCount(document.getElementById('actors-count'), 150);
-                animateCount(document.getElementById('schools-count'), 25);
-                animateCount(document.getElementById('works-count'), 300);
-                animateCount(document.getElementById('projects-count'), 500);
-            }, 500);
+            // Título aparece inmediatamente
+            const title = document.querySelector('.vintage-text');
+            title.style.animation = 'none';
+            title.style.opacity = '1';
+            
+            // Animaciones más rápidas
+            const animatedElements = document.querySelectorAll('.animate-slide-in');
+            animatedElements.forEach((el, index) => {
+                el.style.animationDelay = (index * 0.1) + 's';
+            });
         });
     </script>
 </body>

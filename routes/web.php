@@ -8,6 +8,7 @@ use App\Http\Controllers\SchoolTeacherController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 // Página principal
 Route::get('/', function () {
@@ -21,6 +22,12 @@ Route::get('/schools/{school}', [SchoolController::class, 'show'])->name('school
 Route::get('/works', [WorkController::class, 'index'])->name('works.index');
 Route::get('/works/{work}', [WorkController::class, 'show'])->name('works.show');
 
+// Búsqueda de obras para autocompletar
+Route::get('/works/search', [WorkController::class, 'search'])->name('works.search');
+
+// Ruta para actualizar disponibilidad via AJAX
+Route::put('/actors/{actor}/availability', [ActorController::class, 'updateAvailability'])->name('actors.update-availability');
+
 // Rutas de registro separadas
 Route::get('/register/actor', [App\Http\Controllers\Auth\RegisterController::class, 'showActorRegistrationForm'])->name('register.actor');
 Route::get('/register/client', [App\Http\Controllers\Auth\RegisterController::class, 'showClientRegistrationForm'])->name('register.client');
@@ -29,7 +36,6 @@ Route::post('/register/client', [App\Http\Controllers\Auth\RegisterController::c
 
 // Dashboard general
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/', [DashboardController::class, 'index']);
 
 // Rutas que requieren autenticación
 Route::middleware(['auth'])->group(function () {

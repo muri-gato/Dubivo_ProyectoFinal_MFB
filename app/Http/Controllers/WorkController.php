@@ -34,4 +34,16 @@ class WorkController extends Controller
 
     return view('works.show', compact('work', 'relatedWorks'));
 }
+
+public function search(Request $request)
+{
+    $query = $request->get('q');
+    
+    $works = Work::where('title', 'like', '%' . $query . '%')
+        ->limit(10)
+        ->get(['id', 'title', 'type', 'year']);
+    
+    return response()->json($works);
+}
+
 }

@@ -223,4 +223,33 @@ class ActorController extends Controller
         $actor->load(['user', 'schools', 'works']);
         return view('actors.show', compact('actor'));
     }
+
+    public function updateAvailability(Request $request, Actor $actor)
+{
+    // Verificar que el usuario es el dueño del perfil o admin
+    if (Auth::id() !== $actor->user_id && Auth::user()->role !== 'admin') {
+        return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+    }
+
+    $request->validate([
+        'is_available' => 'required|boolean'
+    ]);
+
+    try {
+        $actor->update([
+            'is_available' => $request->is_available
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_available' => $actor->is_available,
+            'message' => 'Disponibilidad actualizada correctamente'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al actualizar la disponibilidad'
+        ], 500);
+    }
+}
 }
