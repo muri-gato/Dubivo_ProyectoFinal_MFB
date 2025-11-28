@@ -6,6 +6,7 @@ use App\Http\Controllers\WorkController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SchoolTeacherController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // Página principal
@@ -27,9 +28,8 @@ Route::post('/register/actor', [App\Http\Controllers\Auth\RegisterController::cl
 Route::post('/register/client', [App\Http\Controllers\Auth\RegisterController::class, 'registerClient'])->name('register.client.submit');
 
 // Dashboard general
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/', [DashboardController::class, 'index']);
 
 // Rutas que requieren autenticación
 Route::middleware(['auth'])->group(function () {

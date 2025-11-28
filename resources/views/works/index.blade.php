@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Obras y Producciones - Banco de Voces')
+@section('title', 'Obras y Producciones - Dubivo')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Obras y Producciones</h1>
+        <h1 class="text-3xl font-bold text-gray-800">Obras y Producciones</h1>
         @auth
             @if(auth()->user()->role === 'admin')
-                <a href="{{ route('admin.works.create') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                <a href="{{ route('admin.works.create') }}" class="bg-verde-menta text-white px-6 py-3 rounded-lg hover:bg-verde-menta hover:bg-opacity-90 transition duration-200 flex items-center font-semibold">
                     <i class="fas fa-plus mr-2"></i>Nueva Obra
                 </a>
             @endif
@@ -16,12 +16,12 @@
     </div>
 
     <!-- Filtros -->
-    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 class="text-xl font-semibold mb-4">Filtrar Obras</h2>
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-200">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Filtrar Obras</h2>
         <form method="GET" action="{{ route('works.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-                <select name="type" class="w-full border border-gray-300 rounded-md p-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+                <select name="type" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-rosa-electrico focus:ring-rosa-electrico">
                     <option value="">Todos los tipos</option>
                     <option value="movie" {{ request('type') == 'movie' ? 'selected' : '' }}>Película</option>
                     <option value="series" {{ request('type') == 'series' ? 'selected' : '' }}>Serie</option>
@@ -34,16 +34,16 @@
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Año</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Año</label>
                 <input type="number" name="year" value="{{ request('year') }}" 
                        placeholder="Ej: 2023" 
-                       class="w-full border border-gray-300 rounded-md p-2"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-naranja-vibrante focus:ring-naranja-vibrante"
                        min="1900" max="{{ date('Y') + 5 }}">
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ordenar por</label>
-                <select name="sort" class="w-full border border-gray-300 rounded-md p-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ordenar por</label>
+                <select name="sort" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-azul-profundo focus:ring-azul-profundo">
                     <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Más recientes</option>
                     <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Más antiguas</option>
                     <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>Título A-Z</option>
@@ -51,7 +51,7 @@
             </div>
             
             <div class="flex items-end">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
+                <button type="submit" class="bg-rosa-electrico text-white px-4 py-2 rounded-lg hover:bg-rosa-electrico hover:bg-opacity-90 w-full font-semibold transition duration-200">
                     <i class="fas fa-filter mr-2"></i>Filtrar
                 </button>
             </div>
@@ -61,13 +61,13 @@
     <!-- Lista de Obras -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse($works as $work)
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+            <a href="{{ route('works.show', $work) }}" class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-morado-vibrante hover:scale-105 transform group cursor-pointer">
                 <!-- Poster -->
                 @if($work->poster)
                     <img src="{{ asset('storage/' . $work->poster) }}" alt="{{ $work->title }}" 
                          class="w-full h-48 object-cover">
                 @else
-                    <div class="w-full h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                    <div class="w-full h-48 bg-gradient-to-br from-morado-vibrante to-rosa-electrico flex items-center justify-center group-hover:from-rosa-electrico group-hover:to-morado-vibrante transition duration-300">
                         <i class="fas fa-{{ $work->type == 'movie' ? 'film' : ($work->type == 'series' ? 'tv' : 'gamepad') }} text-white text-4xl"></i>
                     </div>
                 @endif
@@ -75,8 +75,8 @@
                 <!-- Contenido -->
                 <div class="p-4">
                     <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-semibold text-lg leading-tight">{{ $work->title }}</h3>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded capitalize">
+                        <h3 class="font-semibold text-lg leading-tight text-gray-800 group-hover:text-morado-vibrante transition duration-300">{{ $work->title }}</h3>
+                        <span class="bg-azul-profundo bg-opacity-20 text-azul-profundo text-xs px-2 py-1 rounded-lg capitalize font-medium">
                             {{ $work->type }}
                         </span>
                     </div>
@@ -84,12 +84,12 @@
                     <div class="space-y-1 mb-3">
                         @if($work->year)
                             <p class="text-sm text-gray-600">
-                                <i class="fas fa-calendar mr-1"></i>{{ $work->year }}
+                                <i class="fas fa-calendar mr-1 text-naranja-vibrante"></i>{{ $work->year }}
                             </p>
                         @endif
                         
                         <p class="text-sm text-gray-600">
-                            <i class="fas fa-users mr-1"></i>{{ $work->actors_count }} actores
+                            <i class="fas fa-users mr-1 text-verde-menta"></i>{{ $work->actors_count }} actores
                         </p>
                     </div>
 
@@ -97,18 +97,18 @@
                         <p class="text-gray-700 text-sm mb-4 line-clamp-2">{{ Str::limit($work->description, 80) }}</p>
                     @endif
 
-                    <a href="{{ route('works.show', $work) }}" class="block w-full bg-blue-600 text-white text-center py-2 rounded hover:bg-blue-700 text-sm">
-                        Ver Detalles
-                    </a>
+                    <div class="text-morado-vibrante text-sm font-semibold group-hover:text-morado-vibrante transition duration-300">
+                        Ver detalles <i class="fas fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+                    </div>
                 </div>
-            </div>
+            </a>
         @empty
             <div class="col-span-full text-center py-12">
                 <i class="fas fa-film text-4xl text-gray-300 mb-4"></i>
                 <h3 class="text-xl font-semibold text-gray-500 mb-2">No hay obras registradas</h3>
                 <p class="text-gray-400">No se encontraron obras con los filtros aplicados.</p>
                 @if(request()->anyFilled(['type', 'year', 'sort']))
-                    <a href="{{ route('works.index') }}" class="text-blue-600 hover:underline mt-2 inline-block">
+                    <a href="{{ route('works.index') }}" class="text-rosa-electrico hover:underline mt-2 inline-block font-semibold">
                         Limpiar filtros
                     </a>
                 @endif
@@ -128,12 +128,6 @@
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

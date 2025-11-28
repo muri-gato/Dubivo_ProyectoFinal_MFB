@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-7xl mx-auto">
     <!-- Header -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6 border-l-4 border-rosa-electrico">
         <h1 class="text-3xl font-bold text-gray-800">Panel de Administración</h1>
         <p class="text-gray-600 mt-2">Gestiona todos los aspectos de la aplicación</p>
     </div>
@@ -13,96 +13,96 @@
     <!-- Estadísticas -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         
-    <!-- Total Usuarios -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-        <div class="flex items-center">
-            <div class="bg-blue-100 p-3 rounded-full">
-                <i class="fas fa-users text-blue-600 text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Total Usuarios</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_users'] }}</p>
+        <!-- Total Usuarios -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-rosa-electrico">
+            <div class="flex items-center">
+                <div class="bg-rosa-electrico bg-opacity-10 p-3 rounded-full">
+                    <i class="fas fa-users text-rosa-electrico text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Total Usuarios</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_users'] }}</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Total Actores -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
-        <div class="flex items-center">
-            <div class="bg-green-100 p-3 rounded-full">
-                <i class="fas fa-user-tie text-green-600 text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Actores</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_actors'] }}</p>
+        <!-- Total Actores -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-naranja-vibrante">
+            <div class="flex items-center">
+                <div class="bg-naranja-vibrante bg-opacity-10 p-3 rounded-full">
+                    <i class="fas fa-user-tie text-naranja-vibrante text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Actores</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_actors'] }}</p>
+                </div>
             </div>
         </div>
-    </div>
 
         <!-- Total Clientes -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
-        <div class="flex items-center">
-            <div class="bg-purple-100 p-3 rounded-full">
-                <i class="fas fa-user text-purple-600 text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Clientes</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_clients'] }}</p>
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-ambar">
+            <div class="flex items-center">
+                <div class="bg-ambar bg-opacity-10 p-3 rounded-full">
+                    <i class="fas fa-user text-ambar text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Clientes</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_clients'] }}</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Total Administradores -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
-        <div class="flex items-center">
-            <div class="bg-red-100 p-3 rounded-full">
-                <i class="fas fa-user-shield text-red-600 text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Administradores</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_admins'] }}</p>
+        <!-- Total Administradores -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-rojo-intenso">
+            <div class="flex items-center">
+                <div class="bg-rojo-intenso bg-opacity-10 p-3 rounded-full">
+                    <i class="fas fa-user-shield text-rojo-intenso text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Administradores</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_admins'] }}</p>
+                </div>
             </div>
         </div>
-    </div>
 
         <!-- Total Escuelas -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
-        <div class="flex items-center">
-            <div class="bg-orange-100 p-3 rounded-full">
-                <i class="fas fa-school text-orange-600 text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Escuelas</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_schools'] }}</p>
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-verde-menta">
+            <div class="flex items-center">
+                <div class="bg-verde-menta bg-opacity-10 p-3 rounded-full">
+                    <i class="fas fa-school text-verde-menta text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Escuelas</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_schools'] }}</p>
+                </div>
             </div>
         </div>
-    </div>
 
         <!-- Total Obras -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-500">
-        <div class="flex items-center">
-            <div class="bg-indigo-100 p-3 rounded-full">
-                <i class="fas fa-film text-indigo-600 text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Obras</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_works'] }}</p>
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-azul-profundo">
+            <div class="flex items-center">
+                <div class="bg-azul-profundo bg-opacity-10 p-3 rounded-full">
+                    <i class="fas fa-film text-azul-profundo text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Obras</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_works'] }}</p>
+                </div>
             </div>
         </div>
-    </div>
 
         <!-- Total Profesores -->
-    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-500">
-        <div class="flex items-center">
-            <div class="bg-indigo-100 p-3 rounded-full">
-                <i class="fas fa-film text-green-600 text-xl"></i>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Profesores</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_teacher_actors'] }}</p>
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-morado-vibrante">
+            <div class="flex items-center">
+                <div class="bg-morado-vibrante bg-opacity-10 p-3 rounded-full">
+                    <i class="fas fa-chalkboard-teacher text-morado-vibrante text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Profesores</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_teacher_actors'] }}</p>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <!-- Acciones Rápidas -->
@@ -110,13 +110,13 @@
 
         <!-- Gestionar Actores -->
         <a href="{{ route('admin.actors') }}"
-            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 border border-gray-200">
+            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 border border-gray-200 hover:border-naranja-vibrante group">
             <div class="flex items-center">
-                <div class="bg-purple-100 p-3 rounded-full">
-                    <i class="fas fa-users text-purple-600 text-xl"></i>
+                <div class="bg-naranja-vibrante bg-opacity-10 p-3 rounded-full group-hover:bg-naranja-vibrante group-hover:bg-opacity-20 transition-colors duration-300">
+                    <i class="fas fa-users text-naranja-vibrante text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-800">Gestionar Actores</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 group-hover:text-naranja-vibrante transition-colors duration-300">Gestionar Actores</h3>
                     <p class="text-gray-600 text-sm mt-1">Administrar todos los actores registrados</p>
                 </div>
             </div>
@@ -124,13 +124,13 @@
 
         <!-- Gestionar Escuelas -->
         <a href="{{ route('admin.schools') }}"
-            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 border border-gray-200">
+            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 border border-gray-200 hover:border-ambar group">
             <div class="flex items-center">
-                <div class="bg-blue-100 p-3 rounded-full">
-                    <i class="fas fa-school text-blue-600 text-xl"></i>
+                <div class="bg-ambar bg-opacity-10 p-3 rounded-full group-hover:bg-ambar group-hover:bg-opacity-20 transition-colors duration-300">
+                    <i class="fas fa-school text-ambar text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-800">Gestionar Escuelas</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 group-hover:text-ambar transition-colors duration-300">Gestionar Escuelas</h3>
                     <p class="text-gray-600 text-sm mt-1">Añadir, editar o eliminar escuelas</p>
                 </div>
             </div>
@@ -138,28 +138,28 @@
 
         <!-- Gestionar Obras -->
         <a href="{{ route('admin.works') }}"
-            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 border border-gray-200">
+            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 border border-gray-200 hover:border-verde-menta group">
             <div class="flex items-center">
-                <div class="bg-green-100 p-3 rounded-full">
-                    <i class="fas fa-film text-green-600 text-xl"></i>
+                <div class="bg-verde-menta bg-opacity-10 p-3 rounded-full group-hover:bg-verde-menta group-hover:bg-opacity-20 transition-colors duration-300">
+                    <i class="fas fa-film text-verde-menta text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-800">Gestionar Obras</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 group-hover:text-verde-menta transition-colors duration-300">Gestionar Obras</h3>
                     <p class="text-gray-600 text-sm mt-1">Administrar películas y series</p>
                 </div>
             </div>
         </a>
 
-        <!-- Ver Solicitudes -->
-        <a href="{{ route('requests.index') }}"
-            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 border border-gray-200">
+        <!-- Gestionar Usuarios -->
+        <a href="{{ route('admin.users') }}"
+            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300 border border-gray-200 hover:border-rosa-electrico group">
             <div class="flex items-center">
-                <div class="bg-purple-100 p-3 rounded-full">
-                    <i class="fas fa-envelope text-purple-600 text-xl"></i>
+                <div class="bg-rosa-electrico bg-opacity-10 p-3 rounded-full group-hover:bg-rosa-electrico group-hover:bg-opacity-20 transition-colors duration-300">
+                    <i class="fas fa-user-cog text-rosa-electrico text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-800">Ver Solicitudes</h3>
-                    <p class="text-gray-600 text-sm mt-1">Revisar todas las solicitudes</p>
+                    <h3 class="text-lg font-semibold text-gray-800 group-hover:text-rosa-electrico transition-colors duration-300">Gestionar Usuarios</h3>
+                    <p class="text-gray-600 text-sm mt-1">Administrar usuarios del sistema</p>
                 </div>
             </div>
         </a>
@@ -167,37 +167,12 @@
 
     <!-- Actividad Reciente -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Últimas Solicitudes -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Solicitudes Recientes</h2>
-            <div class="space-y-3">
-                @forelse($recentRequests as $request)
-                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div>
-                        <p class="font-medium text-gray-800">{{ $request->subject }}</p>
-                        <p class="text-sm text-gray-600">
-                            De: {{ $request->client->name }} → Para: {{ $request->actor->name }}
-                        </p>
-                    </div>
-                    <span class="px-2 py-1 text-xs rounded-full 
-                            {{ $request->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                            {{ $request->status == 'accepted' ? 'bg-green-100 text-green-800' : '' }}
-                            {{ $request->status == 'rejected' ? 'bg-red-100 text-red-800' : '' }}">
-                        {{ ucfirst($request->status) }}
-                    </span>
-                </div>
-                @empty
-                <p class="text-gray-500 text-center py-4">No hay solicitudes recientes</p>
-                @endforelse
-            </div>
-        </div>
-
         <!-- Últimos Actores Registrados -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Actores Recientes</h2>
             <div class="space-y-3">
                 @forelse($recentActors as $actor)
-                <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:border-naranja-vibrante transition-colors duration-300">
                     @if($actor->photo)
                     <img src="{{ asset('storage/' . $actor->photo) }}"
                         alt="{{ $actor->user->name }}"
@@ -210,17 +185,27 @@
                     <div class="flex-1">
                         <p class="font-medium text-gray-800">{{ $actor->user->name }}</p>
                         <p class="text-sm text-gray-600 capitalize">
-    {{ $actor->genders_string ?: 'Género no especificado' }}
-    • 
-    {{ $actor->voice_ages_string ?: 'Edad no especificada' }}
-</p>
+                            {{ $actor->genders_string ?: 'Género no especificado' }}
+                            • 
+                            {{ $actor->voice_ages_string ?: 'Edad no especificada' }}
+                        </p>
+                    </div>
+                </div>
+                @empty
+                <p class="text-gray-500 text-center py-4">No hay actores registrados recientemente</p>
+                @endforelse
             </div>
         </div>
-        @empty
-        <p class="text-gray-500 text-center py-4">No hay actores registrados recientemente</p>
-        @endforelse
-    </div>
-</div>
+
+        <!-- Espacio para otro widget -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Actividad Reciente</h2>
+            <div class="space-y-3">
+                <div class="p-3 border border-gray-200 rounded-lg">
+                    <p class="text-gray-600">Aquí puedes agregar más estadísticas o información relevante</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
