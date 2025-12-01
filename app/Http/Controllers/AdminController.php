@@ -6,19 +6,18 @@ use App\Models\School;
 use App\Models\Work;
 use App\Models\User;
 use App\Models\Actor;
-use App\Models\Request as ContactRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth; // ¡FALTABA ESTE IMPORT!
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
-        // Verificación manual de admin
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        // Verificar manualmente si es admin
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
         $stats = [
@@ -31,7 +30,6 @@ class AdminController extends Controller
             'total_teacher_actors' => Actor::has('teachingSchools')->count(),
         ];
 
-        // Datos para actividad reciente
         $recentActors = Actor::with('user')
             ->latest()
             ->take(5)
@@ -42,24 +40,28 @@ class AdminController extends Controller
 
     public function schools(Request $request)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        // Verificar manualmente si es admin
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
         $query = School::withCount(['actors', 'teachers']);
 
-        // Filtro por ciudad
+        // Filtros
         if ($request->has('city') && $request->city != '') {
             $query->where('city', 'like', '%' . $request->city . '%');
         }
 
-        // Filtro por estado (activo/inactivo)
         if ($request->has('status') && $request->status != '') {
             if ($request->status == 'active') {
                 $query->has('actors', '>', 0);
             } elseif ($request->status == 'inactive') {
                 $query->doesntHave('actors');
             }
+        }
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'like', '%' . $request->search . '%');
         }
 
         // Ordenamiento
@@ -82,14 +84,15 @@ class AdminController extends Controller
         }
 
         $schools = $query->paginate(10);
+        $cities = School::whereNotNull('city')->distinct()->pluck('city')->sort();
 
-        return view('admin.schools.index', compact('schools'));
+        return view('admin.schools.index', compact('schools', 'cities'));
     }
 
     public function createSchool()
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
         return view('admin.schools.create');
@@ -97,8 +100,8 @@ class AdminController extends Controller
 
     public function storeSchool(Request $request)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
         $validated = $request->validate([
@@ -110,10 +113,10 @@ class AdminController extends Controller
             'website' => 'nullable|url'
         ]);
 
-        // Manejar la subida del logo
         if ($request->hasFile('logo')) {
             $validated['logo'] = $request->file('logo')->store('schools/logos', 'public');
         }
+
         School::create($validated);
 
         return redirect()->route('admin.schools')->with('success', 'Escuela creada exitosamente.');
@@ -121,8 +124,8 @@ class AdminController extends Controller
 
     public function editSchool(School $school)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
         return view('admin.schools.edit', compact('school'));
@@ -130,8 +133,8 @@ class AdminController extends Controller
 
     public function updateSchool(Request $request, School $school)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
         $validated = $request->validate([
@@ -142,13 +145,14 @@ class AdminController extends Controller
             'logo' => 'nullable|image|max:2048',
             'website' => 'nullable|url'
         ]);
-        // Manejar la subida del logo si se proporciona uno nuevo
+
         if ($request->hasFile('logo')) {
             if ($school->logo) {
                 Storage::disk('public')->delete($school->logo);
             }
             $validated['logo'] = $request->file('logo')->store('schools/logos', 'public');
         }
+
         $school->update($validated);
 
         return redirect()->route('admin.schools')->with('success', 'Escuela actualizada exitosamente.');
@@ -156,81 +160,83 @@ class AdminController extends Controller
 
     public function destroySchool(School $school)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
         $school->delete();
         return redirect()->route('admin.schools')->with('success', 'Escuela eliminada exitosamente.');
     }
 
-    // Métodos para works
+    // Métodos para Works (similar estructura)
     public function works(Request $request)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
-
+        
         $query = Work::withCount('actors');
 
-        // Filtros
-        if ($request->has('type') && $request->type != '') {
+        // Aplicar filtros directamente aquí (sin método auxiliar)
+        if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
 
-        if ($request->has('year') && $request->year != '') {
+        if ($request->filled('year')) {
             $query->where('year', $request->year);
         }
 
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
         // Ordenamiento
-        if ($request->has('sort')) {
-            switch ($request->sort) {
-                case 'oldest':
-                    $query->oldest();
-                    break;
-                case 'title':
-                    $query->orderBy('title');
-                    break;
-                case 'actors':
-                    $query->orderBy('actors_count', 'desc');
-                    break;
-                default:
-                    $query->latest();
-            }
-        } else {
-            $query->latest();
+        $sort = $request->get('sort', 'latest');
+        switch ($sort) {
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'title':
+                $query->orderBy('title');
+                break;
+            case 'actors':
+                $query->orderBy('actors_count', 'desc');
+                break;
+            default:
+                $query->latest();
         }
 
         $works = $query->paginate(10);
+        $types = Work::getTypeOptions();
+        $years = Work::whereNotNull('year')->distinct()->pluck('year')->sort();
 
-        return view('admin.works.index', compact('works'));
+        return view('admin.works.index', compact('works', 'types', 'years'));
     }
 
     public function createWork()
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
-
+        
         $types = Work::getTypeOptions();
         return view('admin.works.create', compact('types'));
     }
 
     public function storeWork(Request $request)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
-
+        
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'type' => 'required|in:movie,series,commercial,animation,videogame,documentary,other', // ← ESPAÑOL
+            'type' => 'required|in:' . implode(',', array_keys(Work::getTypeOptions())),
             'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
             'description' => 'nullable|string|max:1000',
-            'poster' => 'nullable|image|max:2048'
+            'poster' => 'nullable|image|max:2048|mimes:jpg,jpeg,png,gif'
         ]);
 
-        // Manejar la subida del póster
         if ($request->hasFile('poster')) {
             $validated['poster'] = $request->file('poster')->store('works/posters', 'public');
         }
@@ -240,31 +246,20 @@ class AdminController extends Controller
         return redirect()->route('admin.works')->with('success', 'Obra creada exitosamente.');
     }
 
-    public function editWork(Work $work)
-    {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
-        }
-
-        $types = Work::getTypeOptions();
-        return view('admin.works.edit', compact('work', 'types'));
-    }
-
     public function updateWork(Request $request, Work $work)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
-
+        
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'type' => 'required|in:movie,series,commercial,animation,videogame,documentary,other',
+            'type' => 'required|in:' . implode(',', array_keys(Work::getTypeOptions())),
             'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
             'description' => 'nullable|string|max:1000',
-            'poster' => 'nullable|image|max:2048'
+            'poster' => 'nullable|image|max:2048|mimes:jpg,jpeg,png,gif'
         ]);
 
-        // Manejar la subida del póster si se proporciona uno nuevo
         if ($request->hasFile('poster')) {
             // Eliminar el póster anterior si existe
             if ($work->poster) {
@@ -280,65 +275,57 @@ class AdminController extends Controller
 
     public function destroyWork(Work $work)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
-
+        
         // Eliminar el póster si existe
         if ($work->poster) {
             Storage::disk('public')->delete($work->poster);
         }
-
+        
         $work->delete();
 
         return redirect()->route('admin.works')->with('success', 'Obra eliminada exitosamente.');
     }
 
-
-    // Métodos para actores
+    // Métodos para Actors
     public function actors(Request $request)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
-
+        
         $query = Actor::with(['user', 'schools', 'works']);
 
-        // Filtros - ACTUALIZAR para usar los nuevos campos JSON
-        if ($request->has('gender') && $request->gender != '') {
-            $query->whereJsonContains('genders', $request->gender);
+        // Aplicar filtros directamente
+        if ($request->filled('search')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
         }
 
-        if ($request->has('voice_age') && $request->voice_age != '') {
-            $query->whereJsonContains('voice_ages', $request->voice_age);
+        if ($request->filled('gender')) {
+            $gender = $request->gender;
+            $query->where(function ($q) use ($gender) {
+                $q->whereJsonContains('genders', $gender)
+                    ->orWhere('genders', 'like', '%"' . $gender . '"%');
+            });
         }
 
-        if ($request->has('availability') && $request->availability != '') {
+        if ($request->filled('voice_age')) {
+            $voiceAge = $request->voice_age;
+            $query->where(function ($q) use ($voiceAge) {
+                $q->whereJsonContains('voice_ages', $voiceAge)
+                    ->orWhere('voice_ages', 'like', '%"' . $voiceAge . '"%');
+            });
+        }
+
+        if ($request->filled('availability')) {
             $query->where('is_available', $request->availability == 'available');
         }
 
-        // Ordenamiento
-        if ($request->has('sort')) {
-            switch ($request->sort) {
-                case 'oldest':
-                    $query->oldest();
-                    break;
-                case 'name':
-                    $query->join('users', 'actors.user_id', '=', 'users.id')
-                        ->orderBy('users.name');
-                    break;
-                case 'works':
-                    $query->withCount('works')->orderBy('works_count', 'desc');
-                    break;
-                default:
-                    $query->latest();
-            }
-        } else {
-            $query->latest();
-        }
-
         $actors = $query->paginate(10);
-
         $schools = School::all();
         $genders = Actor::getGenderOptions();
         $voiceAges = Actor::getVoiceAgeOptions();
@@ -346,161 +333,57 @@ class AdminController extends Controller
         return view('admin.actors.index', compact('actors', 'schools', 'genders', 'voiceAges'));
     }
 
-    public function createActor()
-    {
-        $schools = School::all();
-        $works = Work::all();
-        $genders = Actor::getGenderOptions();
-        $voiceAges = Actor::getVoiceAgeOptions();
-
-        return view('admin.actors.create', compact('schools', 'works', 'genders', 'voiceAges'));
-    }
-
-    // Método para guardar nuevo actor
-    public function storeActor(Request $request)
-    {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
-        }
-
-        $validated = $request->validate([
-            // Datos del usuario
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-
-            // Datos del actor
-            'bio' => 'nullable|string|max:1000',
-            'photo' => 'nullable|image|max:2048',
-            'audio_path' => 'nullable|file|mimes:mp3,wav|max:5120',
-            'genders' => 'required|array|min:1',
-            'genders.*' => 'in:Masculino,Femenino,Otro',
-            'voice_ages' => 'required|array|min:1',
-            'voice_ages.*' => 'in:Niño,Adolescente,Adulto joven,Adulto,Anciano,Atipada',
-            'is_available' => 'required|boolean',
-            'schools' => 'nullable|array',
-            'works' => 'nullable|array',
-            'teaching_schools' => 'nullable|array',
-        ]);
-
-        try {
-            // Crear el usuario
-            $user = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => bcrypt($validated['password']),
-                'role' => 'actor'
-            ]);
-
-            // Crear el perfil de actor
-            $actorData = [
-                'user_id' => $user->id,
-                'bio' => $validated['bio'],
-                'genders' => json_encode($validated['genders']),
-                'voice_ages' => json_encode($validated['voice_ages']),
-                'is_available' => $validated['is_available'],
-            ];
-
-            // Manejar archivos
-            if ($request->hasFile('photo')) {
-                $actorData['photo'] = $request->file('photo')->store('actors/photos', 'public');
-            }
-
-            if ($request->hasFile('audio_path')) {
-                $actorData['audio_path'] = $request->file('audio_path')->store('actors/audios', 'public');
-            }
-
-            // Crear el actor
-            $actor = Actor::create($actorData);
-
-            // Sincronizar relaciones
-            if ($request->has('schools')) {
-                $actor->schools()->sync($request->schools);
-            }
-
-            // Sincronizar obras con nombres de personaje
-            if ($request->has('works')) {
-                $worksData = [];
-                foreach ($request->works as $workId) {
-                    $worksData[$workId] = [
-                        'character_name' => $request->character_names[$workId] ?? null
-                    ];
-                }
-                $actor->works()->sync($worksData);
-            }
-
-            if ($request->has('teaching_schools')) {
-                $teachingSchoolsData = [];
-                foreach ($request->teaching_schools as $schoolId) {
-                    $teachingSchoolsData[$schoolId] = [
-                        'is_active_teacher' => true
-                    ];
-                }
-                $actor->teachingSchools()->sync($teachingSchoolsData);
-            }
-
-
-            return redirect()->route('admin.actors')->with('success', 'Actor y usuario creados exitosamente.');
-        } catch (\Exception $e) {
-            // Si hay error, eliminar el usuario creado
-            if (isset($user)) {
-                $user->delete();
-            }
-
-            return redirect()->back()
-                ->with('error', 'Error al crear el actor: ' . $e->getMessage())
-                ->withInput();
-        }
-    }
-
     public function editActor(Actor $actor)
     {
-        $users = User::where('role', 'actor')->get();
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
+        }
+        
         $schools = School::all();
         $works = Work::all();
         $genders = Actor::getGenderOptions();
         $voiceAges = Actor::getVoiceAgeOptions();
 
-        // Obtener las escuelas donde enseña actualmente
         $currentTeachingSchools = $actor->teachingSchools()
             ->where('is_active_teacher', true)
             ->pluck('schools.id')
             ->toArray();
 
-        return view('admin.actors.edit', compact(
-            'actor',
-            'users',
-            'schools',
-            'works',
-            'genders',
-            'voiceAges',
-            'currentTeachingSchools'
-        ));
-
-        return view('admin.actors.edit', compact('actor', 'users', 'schools', 'works', 'genders', 'voiceAges'));
+        // Pasamos la bandera isAdmin para la vista unificada
+        return view('actors.edit', [
+            'actor' => $actor,
+            'schools' => $schools,
+            'works' => $works,
+            'genders' => $genders,
+            'voiceAges' => $voiceAges,
+            'currentTeachingSchools' => $currentTeachingSchools,
+            'isAdmin' => true
+        ]);
     }
 
     public function updateActor(Request $request, Actor $actor)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
+        
+        $validated = $request->validate([
+            'bio' => 'nullable|string|max:1000',
+            'photo' => 'nullable|image|max:2048|mimes:jpg,jpeg,png,gif',
+            'audio_path' => 'nullable|file|mimes:mp3,wav,m4a|max:5120',
+            'genders' => 'required|array|min:1',
+            'genders.*' => 'in:' . implode(',', Actor::getGenderOptions()),
+            'voice_ages' => 'required|array|min:1',
+            'voice_ages.*' => 'in:' . implode(',', Actor::getVoiceAgeOptions()),
+            'is_available' => 'required|boolean',
+            'schools' => 'nullable|array',
+            'works' => 'nullable|array',
+            'teaching_schools' => 'nullable|array',
+            'teaching_subjects.*' => 'nullable|string|max:255',
+            'teaching_bios.*' => 'nullable|string|max:500'
+        ]);
 
         try {
-            $validated = $request->validate([
-                'user_id' => 'required|exists:users,id',
-                'bio' => 'nullable|string|max:1000',
-                'photo' => 'nullable|image|max:2048',
-                'audio_path' => 'nullable|file|mimes:mp3,wav|max:5120',
-                'genders' => 'required|array|min:1',
-                'genders.*' => 'in:Masculino,Femenino,Otro',
-                'voice_ages' => 'required|array|min:1',
-                'voice_ages.*' => 'in:Niño,Adolescente,Adulto joven,Adulto,Anciano,Atipada',
-                'is_available' => 'required|boolean',
-                'schools' => 'nullable|array',
-                'works' => 'nullable|array'
-            ]);
-
             // Manejar archivos
             if ($request->hasFile('photo')) {
                 if ($actor->photo) {
@@ -516,7 +399,7 @@ class AdminController extends Controller
                 $validated['audio_path'] = $request->file('audio_path')->store('actors/audios', 'public');
             }
 
-            // CONVERTIR A JSON ANTES DE ACTUALIZAR
+            // Convertir arrays a JSON
             $validated['genders'] = json_encode($validated['genders']);
             $validated['voice_ages'] = json_encode($validated['voice_ages']);
 
@@ -525,7 +408,6 @@ class AdminController extends Controller
             // Sincronizar relaciones
             $actor->schools()->sync($request->schools ?? []);
 
-            // Sincronizar obras con nombres de personaje
             $worksData = [];
             if ($request->has('works')) {
                 foreach ($request->works as $workId) {
@@ -536,8 +418,7 @@ class AdminController extends Controller
             }
             $actor->works()->sync($worksData);
 
-
-            // SINCRONIZAR ESCUELAS DONDE ENSEÑA
+            // Sincronizar escuelas donde enseña
             $teachingSchoolsData = [];
             if ($request->has('teaching_schools')) {
                 foreach ($request->teaching_schools as $schoolId) {
@@ -551,13 +432,8 @@ class AdminController extends Controller
             $actor->teachingSchools()->sync($teachingSchoolsData);
 
             return redirect()->route('admin.actors')->with('success', 'Actor actualizado exitosamente.');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Redirigir de vuelta con errores de validación
-            return redirect()->back()
-                ->withErrors($e->validator)
-                ->withInput();
         } catch (\Exception $e) {
-            // Manejar otros errores
+            Log::error('Error updating actor: ' . $e->getMessage());
             return redirect()->back()
                 ->with('error', 'Error al actualizar el actor: ' . $e->getMessage())
                 ->withInput();
@@ -566,10 +442,10 @@ class AdminController extends Controller
 
     public function destroyActor(Actor $actor)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
-
+        
         // Eliminar archivos si existen
         if ($actor->photo) {
             Storage::disk('public')->delete($actor->photo);
@@ -583,21 +459,20 @@ class AdminController extends Controller
         return redirect()->route('admin.actors')->with('success', 'Actor eliminado exitosamente.');
     }
 
-    // Métodos para gestión de usuarios
+    // Métodos para Users
     public function users(Request $request)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
-
+        
         $query = User::query();
 
-        // Filtros
-        if ($request->has('role') && $request->role != '') {
+        if ($request->filled('role')) {
             $query->where('role', $request->role);
         }
 
-        if ($request->has('search') && $request->search != '') {
+        if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
                     ->orWhere('email', 'like', '%' . $request->search . '%');
@@ -609,91 +484,16 @@ class AdminController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-    // Crear usuario
-    public function createUser()
+    // Métodos auxiliares para manejo de archivos (sin verificación de admin)
+    private function storeFile($file, $directory)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
-        }
-
-        return view('admin.users.create');
+        return $file->store($directory, 'public');
     }
 
-    public function storeUser(Request $request)
+    private function deleteFile($path)
     {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
+        if ($path && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
         }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,actor,client'
-        ]);
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-            'role' => $validated['role']
-        ]);
-
-        return redirect()->route('admin.users')->with('success', 'Usuario creado exitosamente.');
-    }
-
-    public function editUser(User $user)
-    {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
-        }
-
-        return view('admin.users.edit', compact('user'));
-    }
-
-    public function updateUser(Request $request, User $user)
-    {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'required|in:admin,actor,client'
-        ]);
-
-        // Si se proporciona nueva contraseña
-        if ($request->filled('password')) {
-            $request->validate([
-                'password' => 'required|string|min:8|confirmed'
-            ]);
-            $validated['password'] = bcrypt($request->password);
-        }
-
-        $user->update($validated);
-
-        return redirect()->route('admin.users')->with('success', 'Usuario actualizado exitosamente.');
-    }
-
-    public function destroyUser(User $user)
-    {
-        if (Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
-        }
-
-        // No permitir eliminar al propio usuario admin
-        if ($user->id === Auth::id()) {
-            return redirect()->route('admin.users')->with('error', 'No puedes eliminar tu propio usuario.');
-        }
-
-        // Si es actor y tiene perfil, eliminar el perfil primero
-        if ($user->role === 'actor' && $user->actorProfile) {
-            $user->actorProfile->delete();
-        }
-
-        $user->delete();
-
-        return redirect()->route('admin.users')->with('success', 'Usuario creado exitosamente.');
     }
 }

@@ -23,6 +23,7 @@ export default {
                 'crema': '#FAEDD9',
                 'negro': '#000000',
                 'blanco-crema': '#FFF8F2',
+                'off-white': '#FFF8F2',
                 'gris-azulado': '#787F8F',
                 'verde-menta': '#02AC66',
                 'azul-profundo': '#3B82F6',

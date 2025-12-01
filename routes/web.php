@@ -5,48 +5,59 @@ use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SchoolTeacherController;
-use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 
 // Página principal
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 // Rutas públicas
 Route::get('/actors', [ActorController::class, 'index'])->name('actors.index');
+Route::get('/actors/{actor}', [ActorController::class, 'show'])->name('actors.show');
+
 Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
 Route::get('/schools/{school}', [SchoolController::class, 'show'])->name('schools.show');
+
 Route::get('/works', [WorkController::class, 'index'])->name('works.index');
 Route::get('/works/{work}', [WorkController::class, 'show'])->name('works.show');
 
-// Búsqueda de obras para autocompletar
-Route::get('/works/search', [WorkController::class, 'search'])->name('works.search');
+// Registro específico
+Route::middleware('guest')->group(function () {
+    Route::get('/register/actor', [App\Http\Controllers\Auth\RegisterController::class, 'showActorRegistrationForm'])
+        ->name('register.actor');
+    Route::post('/register/actor', [App\Http\Controllers\Auth\RegisterController::class, 'registerActor'])
+        ->name('register.actor.submit');
 
-// Ruta para actualizar disponibilidad via AJAX
-Route::put('/actors/{actor}/availability', [ActorController::class, 'updateAvailability'])->name('actors.update-availability');
+    Route::get('/register/client', [App\Http\Controllers\Auth\RegisterController::class, 'showClientRegistrationForm'])
+        ->name('register.client');
+    Route::post('/register/client', [App\Http\Controllers\Auth\RegisterController::class, 'registerClient'])
+        ->name('register.client.submit');
+});
 
-// Rutas de registro separadas
-Route::get('/register/actor', [App\Http\Controllers\Auth\RegisterController::class, 'showActorRegistrationForm'])->name('register.actor');
-Route::get('/register/client', [App\Http\Controllers\Auth\RegisterController::class, 'showClientRegistrationForm'])->name('register.client');
-Route::post('/register/actor', [App\Http\Controllers\Auth\RegisterController::class, 'registerActor'])->name('register.actor.submit');
-Route::post('/register/client', [App\Http\Controllers\Auth\RegisterController::class, 'registerClient'])->name('register.client.submit');
+// Autenticación
+require __DIR__ . '/auth.php';
 
-// Dashboard general
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+// Rutas autenticadas
+Route::middleware('auth')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// Rutas que requieren autenticación
-Route::middleware(['auth'])->group(function () {
-    // PERFIL DE ACTOR - debe ir ANTES de la ruta pública de actors.show
-    Route::get('/actor/profile/create', [ActorController::class, 'create'])->name('actors.create');
-    Route::post('/actor/profile', [ActorController::class, 'store'])->name('actors.store');
-    Route::get('/actor/profile/{actor}/edit', [ActorController::class, 'edit'])->name('actors.edit');
-    Route::put('/actor/profile/{actor}', [ActorController::class, 'update'])->name('actors.update');
-    Route::delete('/actor/profile/{actor}', [ActorController::class, 'destroy'])->name('actors.destroy');
+    // Perfil de actor
+    Route::prefix('actor/profile')->group(function () {
+        Route::get('/create', [ActorController::class, 'create'])->name('actors.create');
+        Route::post('/', [ActorController::class, 'store'])->name('actors.store');
+        Route::get('/{actor}/edit', [ActorController::class, 'edit'])->name('actors.edit');
+        Route::put('/{actor}', [ActorController::class, 'update'])->name('actors.update');
+        Route::delete('/{actor}', [ActorController::class, 'destroy'])->name('actors.destroy');
+    });
 
-    // ADMIN ROUTES - SIN MIDDLEWARE DUPLICADO
+    // AJAX
+    Route::put('/actors/{actor}/availability', [ActorController::class, 'updateAvailability'])
+        ->name('actors.update-availability');
+
+    // Admin routes
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
@@ -73,10 +84,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/actors/{actor}/edit', [AdminController::class, 'editActor'])->name('admin.actors.edit');
         Route::put('/actors/{actor}', [AdminController::class, 'updateActor'])->name('admin.actors.update');
         Route::delete('/actors/{actor}', [AdminController::class, 'destroyActor'])->name('admin.actors.destroy');
-        //Favoritos
-        Route::middleware(['auth'])->group(function () {
-            Route::post('/actors/{actor}/favorite', [FavoriteController::class, 'toggleFavorite'])->name('actors.favorite.toggle');
-        });
 
         // Usuarios
         Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
@@ -86,17 +93,13 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
         Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 
-        // Rutas para gestión de profesores
-        Route::get('/schools/{school}/teachers/create', [SchoolTeacherController::class, 'create'])->name('admin.schools.teachers.create');
-        Route::post('/schools/{school}/teachers', [SchoolTeacherController::class, 'store'])->name('admin.schools.teachers.store');
-        Route::get('/schools/{school}/teachers/{actor}/edit', [SchoolTeacherController::class, 'edit'])->name('admin.schools.teachers.edit');
-        Route::put('/schools/{school}/teachers/{actor}', [SchoolTeacherController::class, 'update'])->name('admin.schools.teachers.update');
-        Route::delete('/schools/{school}/teachers/{actor}', [SchoolTeacherController::class, 'destroy'])->name('admin.schools.teachers.destroy');
+        // Profesores
+        Route::prefix('schools/{school}/teachers')->group(function () {
+            Route::get('/create', [SchoolTeacherController::class, 'create'])->name('admin.schools.teachers.create');
+            Route::post('/', [SchoolTeacherController::class, 'store'])->name('admin.schools.teachers.store');
+            Route::get('/{actor}/edit', [SchoolTeacherController::class, 'edit'])->name('admin.schools.teachers.edit');
+            Route::put('/{actor}', [SchoolTeacherController::class, 'update'])->name('admin.schools.teachers.update');
+            Route::delete('/{actor}', [SchoolTeacherController::class, 'destroy'])->name('admin.schools.teachers.destroy');
+        });
     });
 });
-
-// RUTA PÚBLICA DE ACTORES
-Route::get('/actors/{actor}', [ActorController::class, 'show'])->name('actors.show');
-
-// Rutas de autenticación de Laravel
-require __DIR__ . '/auth.php';

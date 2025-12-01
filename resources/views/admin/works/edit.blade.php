@@ -3,13 +3,13 @@
 @section('title', 'Editar ' . $work->title . ' - Admin')
 
 @section('content')
-<div class="max-w-3xl mx-auto">
-    <div class="bg-white rounded-lg shadow-md p-6">
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-md p-6">
         <!-- Header -->
         <div class="border-b border-gray-200 pb-4 mb-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <div class="bg-blue-100 p-3 rounded-full mr-4">
+                    <div class="bg-blue-100 p-3 mr-4">
                         <i class="fas fa-film text-blue-600 text-xl"></i>
                     </div>
                     <div>
@@ -24,7 +24,7 @@
         </div>
 
         <!-- Información Actual -->
-        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <div class="bg-gray-50 p-4 mb-6 border border-gray-200">
             <h3 class="font-semibold text-gray-700 mb-2">Información Actual</h3>
             <div class="grid grid-cols-2 gap-4 text-sm">
                 <div>
@@ -40,7 +40,7 @@
                     <span class="font-medium">Póster actual:</span>
                     <img src="{{ asset('storage/' . $work->poster) }}"
                         alt="{{ $work->title }}"
-                        class="h-20 object-cover rounded mt-2">
+                        class="h-20 object-cover mt-2">
                     @else
                     <span class="font-medium">Póster:</span>
                     <span class="ml-2 text-gray-500">No tiene póster</span>
@@ -64,7 +64,7 @@
                     id="title"
                     required
                     value="{{ old('title', $work->title) }}"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('title')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -76,7 +76,7 @@
                     Tipo <span class="text-red-500">*</span>
                 </label>
                 <select name="type" id="type" required
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"> <!-- ← AÑADIR CLASE -->
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                     <option value="">Selecciona un tipo</option>
                     @foreach($types as $key => $label)
                     <option value="{{ $key }}" {{ old('type', $work->type) == $key ? 'selected' : '' }}>
@@ -100,7 +100,7 @@
                     value="{{ old('year', $work->year) }}"
                     min="1900"
                     max="{{ date('Y') + 5 }}"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('year')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -115,7 +115,7 @@
                     name="poster"
                     id="poster"
                     accept="image/*"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 <p class="text-xs text-gray-500 mt-1">Dejar vacío para mantener el póster actual</p>
                 @error('poster')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -131,7 +131,7 @@
                     id="description"
                     rows="6"
                     placeholder="Describe la obra, su trama, personajes principales..."
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description', $work->description) }}</textarea>
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description', $work->description) }}</textarea>
                 @error('description')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -149,11 +149,11 @@
                 </div>
                 <div class="flex space-x-4">
                     <a href="{{ route('admin.works') }}"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
+                        class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
                         Cancelar
                     </a>
                     <button type="submit"
-                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
+                        class="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
                         <i class="fas fa-save mr-2"></i>
                         Actualizar Obra
                     </button>

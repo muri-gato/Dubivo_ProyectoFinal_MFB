@@ -3,12 +3,12 @@
 @section('title', 'Crear Nueva Escuela - Admin')
 
 @section('content')
-<div class="max-w-3xl mx-auto">
-    <div class="bg-white rounded-lg shadow-md p-6">
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-md p-6">
         <!-- Header -->
         <div class="border-b border-gray-200 pb-4 mb-6">
             <div class="flex items-center">
-                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                <div class="bg-blue-100 p-3 mr-4">
                     <i class="fas fa-school text-blue-600 text-xl"></i>
                 </div>
                 <div>
@@ -33,7 +33,7 @@
                        required
                        value="{{ old('name') }}"
                        placeholder="Ej: Escuela Superior de Doblaje de Madrid"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('name')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -50,7 +50,7 @@
                        required
                        value="{{ old('city') }}"
                        placeholder="Ej: Madrid, Barcelona, Sevilla..."
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('city')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -68,22 +68,23 @@
                        min="1900" 
                        max="{{ date('Y') }}"
                        placeholder="Ej: 1995"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('founded_year')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
-            {{-- Campo para logo --}}
-<div class="mb-4">
-    <label class="block text-gray-700 text-sm font-bold mb-2" for="logo">
-        Logo de la escuela
-    </label>
-    <input type="file" name="logo" id="logo" 
-           class="w-full px-3 py-2 border border-gray-300 rounded-md">
-    @error('logo')
-        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-    @enderror
-</div>
+
+            <!-- Logo -->
+            <div>
+                <label for="logo" class="block text-sm font-medium text-gray-700 mb-2">
+                    Logo de la escuela
+                </label>
+                <input type="file" name="logo" id="logo" 
+                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                @error('logo')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
             <!-- Sitio Web -->
             <div>
@@ -95,7 +96,7 @@
                        id="website" 
                        value="{{ old('website') }}"
                        placeholder="Ej: https://www.escuela-doblaje.com"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('website')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -111,7 +112,7 @@
                           rows="6"
                           required
                           placeholder="Describe la escuela, su metodología, profesores destacados, instalaciones..."
-                          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description') }}</textarea>
+                          class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description') }}</textarea>
                 @error('description')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -120,11 +121,11 @@
             <!-- Botones -->
             <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                 <a href="{{ route('admin.schools') }}" 
-                   class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
+                   class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
                     Cancelar
                 </a>
                 <button type="submit" 
-                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
+                        class="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
                     <i class="fas fa-save mr-2"></i>
                     Crear Escuela
                 </button>
@@ -133,7 +134,7 @@
     </div>
 
     <!-- Información de Ayuda -->
-    <div class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+    <div class="mt-6 bg-green-50 border border-green-200 p-4">
         <div class="flex">
             <div class="flex-shrink-0">
                 <i class="fas fa-lightbulb text-green-400 text-xl"></i>

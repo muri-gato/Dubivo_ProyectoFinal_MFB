@@ -3,12 +3,12 @@
 @section('title', 'Crear Nuevo Actor - Admin')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-lg shadow-md p-6">
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-md p-6">
         <!-- Header -->
         <div class="border-b border-gray-200 pb-4 mb-6">
             <div class="flex items-center">
-                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                <div class="bg-blue-100 p-3 mr-4">
                     <i class="fas fa-user-plus text-blue-600 text-xl"></i>
                 </div>
                 <div>
@@ -23,7 +23,7 @@
             @csrf
 
             <!-- Información del Usuario -->
-            <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="bg-gray-50 p-4 border border-gray-200">
                 <h3 class="text-lg font-semibold mb-4">Información del Usuario</h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -34,7 +34,7 @@
                         </label>
                         <input type="text" name="name" id="name" required
                             value="{{ old('name') }}"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         @error('name')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -47,7 +47,7 @@
                         </label>
                         <input type="email" name="email" id="email" required
                             value="{{ old('email') }}"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         @error('email')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -59,7 +59,7 @@
                             Contraseña <span class="text-red-500">*</span>
                         </label>
                         <input type="password" name="password" id="password" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         @error('password')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -71,13 +71,13 @@
                             Confirmar Contraseña <span class="text-red-500">*</span>
                         </label>
                         <input type="password" name="password_confirmation" id="password_confirmation" required
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
             </div>
 
             <!-- Información del Actor -->
-            <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="bg-gray-50 p-4 border border-gray-200">
                 <h3 class="text-lg font-semibold mb-4">Información del Actor</h3>
 
                 <!-- Información Básica -->
@@ -89,10 +89,10 @@
                         </label>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             @foreach($genders as $gender)
-                            <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-150">
+                            <label class="flex items-center p-3 border border-gray-300 hover:bg-gray-50 cursor-pointer transition duration-150">
                                 <input type="checkbox" name="genders[]" value="{{ $gender }}"
                                     {{ in_array($gender, old('genders', [])) ? 'checked' : '' }}
-                                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    class="border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="ml-3 text-sm font-medium text-gray-700">{{ $gender }}</span>
                             </label>
                             @endforeach
@@ -109,10 +109,10 @@
                         </label>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                             @foreach($voiceAges as $age)
-                            <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition duration-150">
+                            <label class="flex items-center p-3 border border-gray-300 hover:bg-gray-50 cursor-pointer transition duration-150">
                                 <input type="checkbox" name="voice_ages[]" value="{{ $age }}"
                                     {{ in_array($age, old('voice_ages', [])) ? 'checked' : '' }}
-                                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    class="border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="ml-3 text-sm font-medium text-gray-700">{{ $age }}</span>
                             </label>
                             @endforeach
@@ -128,7 +128,7 @@
                     <label class="flex items-center space-x-3 cursor-pointer">
                         <input type="hidden" name="is_available" value="0">
                         <input type="checkbox" name="is_available" value="1"
-                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            class="border-gray-300 text-blue-600 focus:ring-blue-500"
                             {{ old('is_available', 1) ? 'checked' : '' }}>
                         <span class="text-sm font-medium text-gray-700">Disponible para nuevos proyectos</span>
                     </label>
@@ -143,7 +143,7 @@
                         Biografía
                     </label>
                     <textarea name="bio" id="bio" rows="4"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Describe la experiencia, formación y especialidades del actor...">{{ old('bio') }}</textarea>
                     @error('bio')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -159,7 +159,7 @@
                         </label>
                         <input type="file" name="photo" id="photo"
                             accept="image/*"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <p class="text-xs text-gray-500 mt-1">Formatos: JPG, PNG, GIF. Máx: 2MB</p>
                         @error('photo')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -173,7 +173,7 @@
                         </label>
                         <input type="file" name="audio_path" id="audio_path"
                             accept="audio/*"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <p class="text-xs text-gray-500 mt-1">Formatos: MP3, WAV. Máx: 5MB</p>
                         @error('audio_path')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -186,11 +186,11 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Formación Académica
                     </label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-48 overflow-y-auto border border-gray-200 p-4">
                         @forelse($schools as $school)
                         <label class="flex items-center space-x-3 cursor-pointer">
                             <input type="checkbox" name="schools[]" value="{{ $school->id }}"
-                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                class="border-gray-300 text-blue-600 focus:ring-blue-500"
                                 {{ in_array($school->id, old('schools', [])) ? 'checked' : '' }}>
                             <span class="text-sm text-gray-700">
                                 {{ $school->name }}
@@ -209,21 +209,18 @@
                 </div>
 
                 <!-- Profesor -->
-                <div class="bg-yellow-50 rounded-lg p-6 mb-6">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center">
-                        <i class="fas fa-chalkboard-teacher text-yellow-600 mr-2"></i>
-                        Información como Profesor
-                    </h2>
+                <div class="bg-yellow-50 p-6 mb-6 border border-yellow-200">
+                    <h2 class="text-xl font-semibold mb-4">Información como Profesor</h2>
 
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Escuelas donde enseña</label>
                         <div class="space-y-3">
                             @foreach($schools as $school)
-                            <div class="flex items-center justify-between p-3 border border-yellow-200 rounded-lg bg-white">
+                            <div class="flex items-center justify-between p-3 border border-yellow-200 bg-white">
                                 <label class="flex items-center">
                                     <input type="checkbox" name="teaching_schools[]" value="{{ $school->id }}"
                                         {{ in_array($school->id, old('teaching_schools', [])) ? 'checked' : '' }}
-                                        class="rounded text-yellow-600 focus:ring-yellow-500 teaching-school-checkbox">
+                                        class="text-yellow-600 focus:ring-yellow-500 teaching-school-checkbox">
                                     <span class="ml-2 text-sm text-gray-700">{{ $school->name }}</span>
                                 </label>
                             </div>
@@ -237,11 +234,11 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Trabajos Destacados
                     </label>
-                    <div class="space-y-3 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-4">
+                    <div class="space-y-3 max-h-48 overflow-y-auto border border-gray-200 p-4">
                         @forelse($works as $work)
                         <div class="flex items-start space-x-3">
                             <input type="checkbox" name="works[]" value="{{ $work->id }}"
-                                class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                class="mt-1 border-gray-300 text-blue-600 focus:ring-blue-500"
                                 {{ in_array($work->id, old('works', [])) ? 'checked' : '' }}>
                             <div class="flex-1">
                                 <span class="text-sm font-medium text-gray-700">{{ $work->title }}</span>
@@ -253,7 +250,7 @@
                                 </div>
                                 <input type="text" name="character_names[{{ $work->id }}]"
                                     placeholder="Personaje que interpretó"
-                                    class="mt-1 w-full text-xs border border-gray-300 rounded px-2 py-1"
+                                    class="mt-1 w-full text-xs border border-gray-300 px-2 py-1"
                                     value="{{ old('character_names.' . $work->id) }}">
                             </div>
                         </div>
@@ -270,11 +267,11 @@
             <!-- Botones -->
             <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                 <a href="{{ route('admin.actors') }}"
-                    class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
+                    class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
                     Cancelar
                 </a>
                 <button type="submit"
-                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
+                    class="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
                     <i class="fas fa-plus mr-2"></i>
                     Crear Actor y Usuario
                 </button>

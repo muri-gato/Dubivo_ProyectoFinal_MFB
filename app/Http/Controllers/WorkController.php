@@ -9,41 +9,44 @@ class WorkController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Work::withCount('actors');
+        $works = Work::withCount('actors')->paginate(12);
+        $types = [
+        'movie' => 'Película',
+        'series' => 'Serie', 
+        'commercial' => 'Comercial',
+        'animation' => 'Animación',
+        'videogame' => 'Videojuego',
+        'documentary' => 'Documental',
+        'other' => 'Otro'
+    ];
 
-        if ($request->has('type') && $request->type != '') {
-            $query->where('type', $request->type);
-        }
-
-        $works = $query->latest()->paginate(12);
-        return view('works.index', compact('works'));
+        return view('works.index', compact('works', 'types'));
     }
 
     public function show(Work $work)
-{
-    $work->load(['actors.user', 'actors.schools']);
-    $work->loadCount('actors');
-    
-    // Obtener obras relacionadas (mismo tipo, excluyendo la actual)
-    $relatedWorks = Work::where('type', $work->type)
-                        ->where('id', '!=', $work->id)
-                        ->withCount('actors')
-                        ->latest()
-                        ->take(3)
-                        ->get();
+    {
+        $work->load(['actors.user', 'actors.schools']);
+        $work->loadCount('actors');
 
-    return view('works.show', compact('work', 'relatedWorks'));
-}
+        // Obtener obras relacionadas (mismo tipo, excluyendo la actual)
+        $relatedWorks = Work::where('type', $work->type)
+            ->where('id', '!=', $work->id)
+            ->withCount('actors')
+            ->latest()
+            ->take(3)
+            ->get();
 
-public function search(Request $request)
-{
-    $query = $request->get('q');
-    
-    $works = Work::where('title', 'like', '%' . $query . '%')
-        ->limit(10)
-        ->get(['id', 'title', 'type', 'year']);
-    
-    return response()->json($works);
-}
+        return view('works.show', compact('work', 'relatedWorks'));
+    }
 
+    public function search(Request $request)
+    {
+        $query = $request->get('q');
+
+        $works = Work::where('title', 'like', '%' . $query . '%')
+            ->limit(10)
+            ->get(['id', 'title', 'type', 'year']);
+
+        return response()->json($works);
+    }
 }

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Actores de Voz - Dubivo')
+
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
@@ -15,6 +17,12 @@
         @endif
         @endauth
     </div>
+
+    <!-- Descripción -->
+    <p class="text-gray-600 mb-8 max-w-3xl text-lg">
+        Descubre a las mejores voces del doblaje doblaje de España y al talento emergente en nuestra plataforma.
+        Explora su trayectoria, escucha sus demos y encuentra a la voz que buscabas.
+    </p>
 
     <!-- Botón para mostrar/ocultar filtros en móvil -->
     <div class="lg:hidden mb-4">
@@ -41,30 +49,17 @@
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Buscar Actor</label>
                         <div class="relative">
-                            <input type="text" 
-                                   id="searchActor" 
-                                   placeholder="Ej: Constantino..."
-                                   class="w-full border border-gray-300 px-4 py-2 pl-10 focus:border-azul-profundo focus:ring-azul-profundo transition duration-200"
-                                   value="{{ request('search') }}">
+                            <input type="text"
+                                id="searchActor"
+                                placeholder="Ej: Constantino..."
+                                class="w-full border border-gray-300 px-4 py-2 pl-10 focus:border-azul-profundo focus:ring-azul-profundo transition duration-200"
+                                value="{{ request('search') }}">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-search text-gray-400"></i>
                             </div>
                         </div>
                         <p class="text-xs text-gray-500 mt-1">Busca por nombre en tiempo real</p>
                     </div>
-
-                    <!-- Favoritos -->
-                    @auth
-                    @if(Auth::user()->role == 'client')
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Favoritos</label>
-                        <select name="favorites" class="w-full border border-gray-300 px-3 py-2 focus:border-rosa-electrico focus:ring-rosa-electrico">
-                            <option value="">Todos los actores</option>
-                            <option value="true" {{ request('favorites') == 'true' ? 'selected' : '' }}>Solo mis favoritos</option>
-                        </select>
-                    </div>
-                    @endif
-                    @endauth
 
                     <!-- Disponibilidad (Radio buttons) -->
                     <div class="mb-6">
@@ -88,9 +83,9 @@
                     <!-- Géneros (Checkboxes) -->
                     <div class="mb-6">
                         <h3 class="font-medium text-gray-700 mb-3">Géneros</h3>
-                        <div class="space-y-2">
+                        <div class="filter-scroll-container">
                             @foreach($genders as $gender)
-                            <label class="flex items-center">
+                            <label class="flex items-center py-1">
                                 <input type="checkbox" name="genders[]" value="{{ $gender }}"
                                     {{ in_array($gender, request('genders', [])) ? 'checked' : '' }}
                                     class="text-rosa-electrico focus:ring-rosa-electrico">
@@ -103,9 +98,9 @@
                     <!-- Edades Vocales (Checkboxes) -->
                     <div class="mb-6">
                         <h3 class="font-medium text-gray-700 mb-3">Edades Vocales</h3>
-                        <div class="space-y-2">
+                        <div class="filter-scroll-container">
                             @foreach($voiceAges as $age)
-                            <label class="flex items-center">
+                            <label class="flex items-center py-1">
                                 <input type="checkbox" name="voice_ages[]" value="{{ $age }}"
                                     {{ in_array($age, request('voice_ages', [])) ? 'checked' : '' }}
                                     class="text-naranja-vibrante focus:ring-naranja-vibrante">
@@ -118,9 +113,9 @@
                     <!-- Escuelas (Checkboxes) -->
                     <div class="mb-6">
                         <h3 class="font-medium text-gray-700 mb-3">Escuelas</h3>
-                        <div class="space-y-2">
+                        <div class="filter-scroll-container">
                             @foreach($schools as $school)
-                            <label class="flex items-center">
+                            <label class="flex items-center py-1">
                                 <input type="checkbox" name="schools[]" value="{{ $school->id }}"
                                     {{ in_array($school->id, request('schools', [])) ? 'checked' : '' }}
                                     class="text-azul-profundo focus:ring-azul-profundo">
@@ -172,12 +167,12 @@
             <div id="actorsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 @foreach($actors as $actor)
                 <div class="actor-card bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-naranja-vibrante hover:scale-105 transform group cursor-pointer flex flex-col h-full"
-                     data-name="{{ strtolower($actor->name) }}"
-                     data-genders="{{ strtolower($actor->genders_string ?? '') }}"
-                     data-voice-ages="{{ strtolower($actor->voice_ages_string ?? '') }}"
-                     data-available="{{ $actor->is_available ? 'true' : 'false' }}"
-                     data-schools="{{ $actor->schools->pluck('id')->implode(',') }}">
-                    
+                    data-name="{{ strtolower($actor->name) }}"
+                    data-genders="{{ strtolower($actor->genders_string ?? '') }}"
+                    data-voice-ages="{{ strtolower($actor->voice_ages_string ?? '') }}"
+                    data-available="{{ $actor->is_available ? 'true' : 'false' }}"
+                    data-schools="{{ $actor->schools->pluck('id')->implode(',') }}">
+
                     <!-- Contenedor de la foto con audio -->
                     <div class="relative flex-1 photo-container" data-audio-src="{{ $actor->audio_path ? asset('storage/' . $actor->audio_path) : '' }}">
                         <!-- CÍRCULO DE DISPONIBILIDAD (arriba a la derecha) -->
@@ -189,24 +184,6 @@
                             @endif
                         </div>
 
-                        <!-- BOTÓN DE FAVORITOS -->
-                        @auth
-                        @if(Auth::user()->role == 'client')
-                        <form action="{{ route('actors.favorite.toggle', $actor) }}" method="POST" class="absolute top-2 left-2 z-20" onclick="event.stopPropagation()">
-                            @csrf
-                            <button type="submit" class="bg-white bg-opacity-90 p-2 hover:bg-opacity-100 transition shadow-sm hover:shadow-md"
-                                title="{{ $actor->isFavoritedBy(Auth::id()) ? 'Quitar de favoritos' : 'Añadir a favoritos' }}">
-                                <svg class="w-5 h-5 {{ $actor->isFavoritedBy(Auth::id()) ? 'text-rojo-intenso fill-current' : 'text-gray-400 hover:text-rojo-intenso' }}"
-                                    fill="{{ $actor->isFavoritedBy(Auth::id()) ? 'currentColor' : 'none' }}"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                            </button>
-                        </form>
-                        @endif
-                        @endauth
-
                         @if($actor->photo)
                         <img src="{{ asset('storage/' . $actor->photo) }}" alt="{{ $actor->name }}" class="w-full h-64 object-cover">
                         @else
@@ -214,15 +191,15 @@
                             <i class="fas fa-user text-gray-400 text-4xl"></i>
                         </div>
                         @endif
-                        
+
                         <!-- Overlay de audio que aparece al hacer hover -->
                         @if($actor->audio_path)
                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                            <button class="bg-azul-profundo bg-opacity-90 hover:bg-opacity-100 text-white p-4 transform scale-90 group-hover:scale-100 transition-all duration-300 audio-play">
-                                <i class="fas fa-play text-2xl"></i>
+                            <button class="text-white transform scale-90 group-hover:scale-100 transition-all duration-300 audio-play">
+                                <i class="fas fa-play text-4xl"></i>
                             </button>
-                            <button class="bg-azul-profundo bg-opacity-90 hover:bg-opacity-100 text-white p-4 transform scale-90 group-hover:scale-100 transition-all duration-300 audio-pause hidden">
-                                <i class="fas fa-pause text-2xl"></i>
+                            <button class="text-white transform scale-90 group-hover:scale-100 transition-all duration-300 audio-pause hidden">
+                                <i class="fas fa-pause text-4xl"></i>
                             </button>
                         </div>
                         @endif
@@ -235,7 +212,7 @@
                         <!-- Géneros -->
                         <div class="mb-2">
                             <p class="text-gray-600 text-sm leading-tight">
-                                <strong class="text-rosa-electrico">Géneros:</strong> 
+                                <strong class="text-rosa-electrico">Géneros:</strong>
                                 <span class="text-gray-700 actor-genders">{{ $actor->genders_string ?: 'No especificado' }}</span>
                             </p>
                         </div>
@@ -243,7 +220,7 @@
                         <!-- Edades vocales -->
                         <div class="mb-3">
                             <p class="text-gray-600 text-sm leading-tight">
-                                <strong class="text-naranja-vibrante">Edades vocales:</strong> 
+                                <strong class="text-naranja-vibrante">Edades vocales:</strong>
                                 <span class="text-gray-700 actor-voice-ages">{{ $actor->voice_ages_string ?: 'No especificado' }}</span>
                             </p>
                         </div>
@@ -277,239 +254,9 @@
 
 <!-- Audio global para todas las tarjetas -->
 <audio id="globalAudio" class="hidden"></audio>
+@endsection
 
-<script>
-// Sistema de audio global
-let currentAudio = null;
-let currentPlayButton = null;
-let currentPauseButton = null;
-
-// Sistema de búsqueda y filtros en tiempo real
-let searchTimeout = null;
-
-// Sistema de filtros desplegables
-document.addEventListener('DOMContentLoaded', function() {
-    const filterToggle = document.getElementById('filterToggle');
-    const filterColumn = document.getElementById('filterColumn');
-    const closeFilters = document.getElementById('closeFilters');
-
-    // Toggle de filtros en móvil
-    if (filterToggle && filterColumn) {
-        filterToggle.addEventListener('click', function() {
-            filterColumn.classList.toggle('hidden');
-            filterToggle.innerHTML = filterColumn.classList.contains('hidden') 
-                ? '<i class="fas fa-filter mr-2"></i>Mostrar Filtros'
-                : '<i class="fas fa-times mr-2"></i>Ocultar Filtros';
-        });
-    }
-
-    // Cerrar filtros en móvil
-    if (closeFilters) {
-        closeFilters.addEventListener('click', function() {
-            filterColumn.classList.add('hidden');
-            filterToggle.innerHTML = '<i class="fas fa-filter mr-2"></i>Mostrar Filtros';
-        });
-    }
-
-    // Configurar todos los controles de audio en las fotos
-    const photoContainers = document.querySelectorAll('.photo-container');
-    
-    photoContainers.forEach(container => {
-        const audioSrc = container.getAttribute('data-audio-src');
-        
-        if (audioSrc) {
-            const playButton = container.querySelector('.audio-play');
-            const pauseButton = container.querySelector('.audio-pause');
-            
-            // Click en la foto para reproducir/pausar
-            container.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                if (currentPlayButton === playButton && currentAudio && !currentAudio.paused) {
-                    // Si ya está reproduciendo, pausar
-                    pauseAudio(playButton, pauseButton);
-                } else {
-                    // Si no está reproduciendo, reproducir
-                    playAudio(audioSrc, playButton, pauseButton);
-                }
-            });
-            
-            // Click específico en botones de audio
-            if (playButton) {
-                playButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    playAudio(audioSrc, playButton, pauseButton);
-                });
-            }
-            
-            if (pauseButton) {
-                pauseButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    pauseAudio(playButton, pauseButton);
-                });
-            }
-        }
-    });
-
-    // Configurar buscador en tiempo real
-    const searchInput = document.getElementById('searchActor');
-    
-    searchInput.addEventListener('input', function(e) {
-        clearTimeout(searchTimeout);
-        
-        searchTimeout = setTimeout(() => {
-            applyAllFilters();
-        }, 300);
-    });
-
-    // Configurar filtros para aplicar en tiempo real
-    const filterInputs = document.querySelectorAll('#filter-form input[type="checkbox"], #filter-form input[type="radio"]');
-    filterInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            applyAllFilters();
-        });
-    });
-
-    // Aplicar filtros iniciales si hay parámetros en la URL
-    applyAllFilters();
-});
-
-function applyAllFilters() {
-    const searchTerm = document.getElementById('searchActor').value.toLowerCase().trim();
-    const selectedAvailability = document.querySelector('input[name="availability"]:checked')?.value;
-    const selectedGenders = Array.from(document.querySelectorAll('input[name="genders[]"]:checked')).map(cb => cb.value.toLowerCase());
-    const selectedVoiceAges = Array.from(document.querySelectorAll('input[name="voice_ages[]"]:checked')).map(cb => cb.value.toLowerCase());
-    const selectedSchools = Array.from(document.querySelectorAll('input[name="schools[]"]:checked')).map(cb => cb.value);
-
-    filterActors(searchTerm, selectedAvailability, selectedGenders, selectedVoiceAges, selectedSchools);
-}
-
-function filterActors(searchTerm, selectedAvailability, selectedGenders, selectedVoiceAges, selectedSchools) {
-    const actorCards = document.querySelectorAll('.actor-card');
-    const noResults = document.getElementById('noResults');
-    const resultsCount = document.getElementById('resultsCount');
-    const paginationContainer = document.getElementById('paginationContainer');
-    
-    let visibleCount = 0;
-    
-    actorCards.forEach(card => {
-        const actorName = card.getAttribute('data-name');
-        const actorGenders = card.getAttribute('data-genders').split(',');
-        const actorVoiceAges = card.getAttribute('data-voice-ages').split(',');
-        const actorAvailable = card.getAttribute('data-available');
-        const actorSchools = card.getAttribute('data-schools').split(',');
-
-        // Aplicar todos los filtros con lógica AND entre categorías
-        const matchesSearch = !searchTerm || 
-                             actorName.includes(searchTerm);
-        
-        const matchesAvailability = !selectedAvailability || 
-                                  (selectedAvailability === '1' && actorAvailable === 'true') ||
-                                  (selectedAvailability === '0' && actorAvailable === 'false');
-        
-        // Lógica OR dentro de cada categoría
-        const matchesGenders = selectedGenders.length === 0 || 
-                             selectedGenders.some(gender => actorGenders.includes(gender));
-        
-        const matchesVoiceAges = selectedVoiceAges.length === 0 || 
-                               selectedVoiceAges.some(age => actorVoiceAges.includes(age));
-        
-        const matchesSchools = selectedSchools.length === 0 || 
-                             selectedSchools.some(school => actorSchools.includes(school));
-        
-        // AND entre todas las categorías
-        const isVisible = matchesSearch && 
-                         matchesAvailability && 
-                         matchesGenders && 
-                         matchesVoiceAges && 
-                         matchesSchools;
-        
-        if (isVisible) {
-            card.style.display = 'flex';
-            visibleCount++;
-        } else {
-            card.style.display = 'none';
-        }
-    });
-    
-    // Actualizar contador de resultados
-    resultsCount.textContent = visibleCount;
-    
-    // Mostrar/ocultar mensaje de no resultados
-    if (visibleCount === 0) {
-        noResults.classList.remove('hidden');
-        paginationContainer.classList.add('hidden');
-    } else {
-        noResults.classList.add('hidden');
-        paginationContainer.classList.remove('hidden');
-    }
-}
-
-function playAudio(audioSrc, playBtn, pauseBtn) {
-    const globalAudio = document.getElementById('globalAudio');
-    
-    // Pausar audio actual si hay uno reproduciéndose
-    if (currentAudio && currentAudio !== globalAudio) {
-        currentAudio.pause();
-        if (currentPlayButton && currentPauseButton) {
-            currentPlayButton.classList.remove('hidden');
-            currentPauseButton.classList.add('hidden');
-        }
-    }
-    
-    // Configurar y reproducir nuevo audio
-    globalAudio.src = audioSrc;
-    globalAudio.play();
-    
-    // Actualizar controles
-    playBtn.classList.add('hidden');
-    pauseBtn.classList.remove('hidden');
-    
-    // Guardar referencias actuales
-    currentAudio = globalAudio;
-    currentPlayButton = playBtn;
-    currentPauseButton = pauseBtn;
-    
-    // Cuando el audio termine, resetear controles
-    globalAudio.onended = function() {
-        pauseAudio(playBtn, pauseBtn);
-    };
-}
-
-function pauseAudio(playBtn, pauseBtn) {
-    const globalAudio = document.getElementById('globalAudio');
-    
-    if (globalAudio) {
-        globalAudio.pause();
-        globalAudio.currentTime = 0;
-    }
-    
-    // Resetear controles
-    playBtn.classList.remove('hidden');
-    pauseBtn.classList.add('hidden');
-    
-    // Limpiar referencias
-    currentAudio = null;
-    currentPlayButton = null;
-    currentPauseButton = null;
-}
-
-// Pausar audio cuando se hace clic en cualquier parte de la tarjeta (excepto la foto)
-document.addEventListener('click', function() {
-    if (currentAudio && currentPlayButton && currentPauseButton) {
-        pauseAudio(currentPlayButton, currentPauseButton);
-    }
-});
-
-// Pausar audio al cambiar de página
-window.addEventListener('beforeunload', function() {
-    if (currentAudio) {
-        currentAudio.pause();
-    }
-});
-</script>
-
+@section('styles')
 <style>
     .line-clamp-2 {
         display: -webkit-box;
@@ -517,28 +264,71 @@ window.addEventListener('beforeunload', function() {
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    
-    /* Mejorar la apariencia de las imágenes verticales */
+
     .object-cover {
         object-fit: cover;
         object-position: center top;
     }
-    
-    /* Remover bordes redondeados de todos los elementos */
+
     * {
         border-radius: 0 !important;
     }
 
-    /* Asegurar que los cuadraditos de disponibilidad sean visibles */
+    .filter-scroll-container {
+        max-height: 10rem;
+        overflow-y: auto;
+        padding: 8px 12px;
+        /* Más padding para que no se corten los bordes */
+        margin: 0 -12px;
+        /* Compensa el padding extra */
+        border: 1px solid #e5e7eb;
+        /* Borde suave para definir el área */
+        background-color: #f9fafb;
+        /* Fondo ligeramente diferente */
+    }
+
+    /* Espaciado entre items de filtro */
+    .filter-scroll-container label {
+        padding: 6px 4px;
+        /* Espacio interno para cada item */
+        margin: 2px 0;
+        /* Espacio entre items */
+        border-radius: 0 !important;
+        /* Asegurar bordes cuadrados */
+    }
+
+    /* Mejorar el focus de los checkboxes */
+    .filter-scroll-container input[type="checkbox"]:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+
+    /* Personalizar scrollbar */
+    .filter-scroll-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .filter-scroll-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .filter-scroll-container::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 0;
+    }
+
+    .filter-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
     .bg-verde-menta {
         background-color: #10b981 !important;
     }
-    
+
     .bg-rojo-intenso {
         background-color: #ef4444 !important;
     }
 
-    /* Mejorar la experiencia móvil */
     @media (max-width: 1023px) {
         #filterColumn {
             position: fixed;
@@ -552,10 +342,55 @@ window.addEventListener('beforeunload', function() {
             transform: translateX(-100%);
             transition: transform 0.3s ease;
         }
-        
+
         #filterColumn:not(.hidden) {
             transform: translateX(0);
         }
     }
 </style>
+
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('filter-form');
+    const filterInputs = filterForm.querySelectorAll('input, select');
+    
+    // Auto-enviar el formulario cuando cambien los filtros
+    filterInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    });
+    
+    // Para el buscador en tiempo real
+    const searchInput = document.getElementById('searchActor');
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            filterForm.submit();
+        }, 500);
+    });
+    
+    // Para el botón de mostrar/ocultar filtros en móvil
+    const filterToggle = document.getElementById('filterToggle');
+    const filterColumn = document.getElementById('filterColumn');
+    const closeFilters = document.getElementById('closeFilters');
+    
+    if (filterToggle && filterColumn) {
+        filterToggle.addEventListener('click', function() {
+            filterColumn.classList.toggle('hidden');
+        });
+        
+        if (closeFilters) {
+            closeFilters.addEventListener('click', function() {
+                filterColumn.classList.add('hidden');
+            });
+        }
+    }
+});
+</script>
+
 @endsection

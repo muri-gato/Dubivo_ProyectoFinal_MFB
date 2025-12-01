@@ -41,11 +41,6 @@ class User extends Authenticatable
         return $this->hasManyThrough(School::class, Actor::class);
     }
 
-        public function favoriteActors()
-    {
-        return $this->belongsToMany(Actor::class, 'actor_user_favorites')
-            ->withTimestamps();
-    }
 
     // SCOPES PARA ROLES
     public function scopeActors($query)

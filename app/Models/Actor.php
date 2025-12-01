@@ -166,14 +166,5 @@ class Actor extends Model
         return $this->teachingSchools()->where('is_active_teacher', true)->get();
     }
 
-    public function favoritedByUsers()
-    {
-        return $this->belongsToMany(User::class, 'actor_user_favorites')
-            ->withTimestamps();
-    }
 
-    public function isFavoritedBy($userId)
-    {
-        return $this->favoritedByUsers()->where('user_id', $userId)->exists();
-    }
 }

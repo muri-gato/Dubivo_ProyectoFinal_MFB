@@ -5,50 +5,50 @@ namespace App\Http\Controllers;
 use App\Models\Actor;
 use App\Models\School;
 use App\Models\Work;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class ActorController extends Controller
 {
     public function index(Request $request)
     {
+        // Consulta base - TODOS los actores, disponibles y no disponibles
         $query = Actor::with(['user', 'schools', 'works']);
 
-        // Aplicar filtros
-        if ($request->has('search') && $request->search != '') {
+        // Filtro de búsqueda por nombre
+        if ($request->filled('search')) {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%');
             });
         }
 
-        if ($request->has('availability') && $request->availability !== '') {
-            $query->filterByAvailability($request->availability);
+        // Filtro de disponibilidad (opcional para todos)
+        if ($request->filled('availability')) {
+            $availability = $request->availability === '1' ? true : false;
+            $query->filterByAvailability($availability);
         }
 
-        if ($request->has('genders')) {
-            $query->filterByGenders($request->genders);
+        // Usar los scopes que ya tienes definidos en el modelo
+        if ($request->filled('genders')) {
+            $genders = is_array($request->genders) ? $request->genders : [$request->genders];
+            $query->filterByGenders($genders);
         }
 
-        if ($request->has('voice_ages')) {
-            $query->filterByVoiceAges($request->voice_ages);
+        if ($request->filled('voice_ages')) {
+            $voiceAges = is_array($request->voice_ages) ? $request->voice_ages : [$request->voice_ages];
+            $query->filterByVoiceAges($voiceAges);
         }
 
-        if ($request->has('schools')) {
-            $query->filterBySchools($request->schools);
-        }
-
-        if ($request->has('favorites') && $request->favorites == 'true' && Auth::check()) {
-            $query->whereHas('favoritedByUsers', function ($q) {
-                $q->where('user_id', Auth::id());
-            });
+        if ($request->filled('schools')) {
+            $schoolIds = is_array($request->schools) ? $request->schools : [$request->schools];
+            $query->filterBySchools($schoolIds);
         }
 
         $actors = $query->paginate(12);
         $schools = School::all();
 
-        // Pasar opciones para los filtros
         $genders = Actor::getGenderOptions();
         $voiceAges = Actor::getVoiceAgeOptions();
 
@@ -57,7 +57,12 @@ class ActorController extends Controller
 
     public function create()
     {
-        if (Auth::user()->actorProfile) {
+        // Solo actores pueden crear perfil (o admin creando para otros)
+        if (Auth::user()->role !== 'actor' && Auth::user()->role !== 'admin') {
+            abort(403, 'Solo actores pueden crear perfiles.');
+        }
+
+        if (Auth::user()->actorProfile && Auth::user()->role !== 'admin') {
             return redirect()->route('actors.show', Auth::user()->actorProfile)
                 ->with('info', 'Ya tienes un perfil de actor.');
         }
@@ -66,14 +71,13 @@ class ActorController extends Controller
         $works = Work::all();
         $genders = Actor::getGenderOptions();
         $voiceAges = Actor::getVoiceAgeOptions();
-        // ELIMINA esta línea: $availabilities = Actor::getAvailabilityOptions();
 
         return view('actors.create', compact('schools', 'works', 'genders', 'voiceAges'));
     }
 
     public function store(Request $request)
     {
-        if (Auth::user()->actorProfile) {
+        if (Auth::user()->actorProfile && Auth::user()->role !== 'admin') {
             return redirect()->route('actors.show', Auth::user()->actorProfile)
                 ->with('error', 'Ya tienes un perfil de actor.');
         }
@@ -86,7 +90,7 @@ class ActorController extends Controller
             'genders.*' => 'in:' . implode(',', Actor::getGenderOptions()),
             'voice_ages' => 'required|array',
             'voice_ages.*' => 'in:' . implode(',', Actor::getVoiceAgeOptions()),
-            'is_available' => 'sometimes|boolean', // CAMBIADO: de availabilities a is_available
+            'is_available' => 'sometimes|boolean',
             'schools' => 'nullable|array',
             'works' => 'nullable|array'
         ]);
@@ -96,7 +100,7 @@ class ActorController extends Controller
         $actor->bio = $validated['bio'];
         $actor->genders = $validated['genders'];
         $actor->voice_ages = $validated['voice_ages'];
-        $actor->is_available = $request->has('is_available'); // CAMBIADO
+        $actor->is_available = $request->has('is_available');
 
         if ($request->hasFile('photo')) {
             $actor->photo = $request->file('photo')->store('actors/photos', 'public');
@@ -108,7 +112,6 @@ class ActorController extends Controller
 
         $actor->save();
 
-        // Sincronizar relaciones
         if ($request->has('schools')) {
             $actor->schools()->sync($request->schools);
         }
@@ -129,6 +132,7 @@ class ActorController extends Controller
 
     public function edit(Actor $actor)
     {
+        // Verificar permisos: dueño o admin
         if (Auth::id() != $actor->user_id && Auth::user()->role != 'admin') {
             abort(403, 'No autorizado.');
         }
@@ -143,6 +147,7 @@ class ActorController extends Controller
 
     public function update(Request $request, Actor $actor)
     {
+        // Verificar permisos: dueño o admin
         if (Auth::id() != $actor->user_id && Auth::user()->role != 'admin') {
             abort(403, 'No autorizado.');
         }
@@ -160,7 +165,6 @@ class ActorController extends Controller
             'works' => 'nullable|array'
         ]);
 
-        // Manejar archivos
         if ($request->hasFile('photo')) {
             if ($actor->photo) {
                 Storage::disk('public')->delete($actor->photo);
@@ -177,7 +181,6 @@ class ActorController extends Controller
 
         $actor->update($validated);
 
-        // Sincronizar relaciones
         $actor->schools()->sync($request->schools ?? []);
 
         $worksData = [];
@@ -225,31 +228,30 @@ class ActorController extends Controller
     }
 
     public function updateAvailability(Request $request, Actor $actor)
-{
-    // Verificar que el usuario es el dueño del perfil o admin
-    if (Auth::id() !== $actor->user_id && Auth::user()->role !== 'admin') {
-        return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
-    }
+    {
+        if (Auth::id() !== $actor->user_id && Auth::user()->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+        }
 
-    $request->validate([
-        'is_available' => 'required|boolean'
-    ]);
-
-    try {
-        $actor->update([
-            'is_available' => $request->is_available
+        $request->validate([
+            'is_available' => 'required|boolean'
         ]);
 
-        return response()->json([
-            'success' => true,
-            'is_available' => $actor->is_available,
-            'message' => 'Disponibilidad actualizada correctamente'
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Error al actualizar la disponibilidad'
-        ], 500);
+        try {
+            $actor->update([
+                'is_available' => $request->is_available
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'is_available' => $actor->is_available,
+                'message' => 'Disponibilidad actualizada correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la disponibilidad'
+            ], 500);
+        }
     }
-}
 }

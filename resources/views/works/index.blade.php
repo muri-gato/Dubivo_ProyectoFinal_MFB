@@ -7,129 +7,271 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-800">Obras y Producciones</h1>
         @auth
-            @if(auth()->user()->role === 'admin')
-                <a href="{{ route('admin.works.create') }}" class="bg-verde-menta text-white px-6 py-3 rounded-lg hover:bg-verde-menta hover:bg-opacity-90 transition duration-200 flex items-center font-semibold">
-                    <i class="fas fa-plus mr-2"></i>Nueva Obra
-                </a>
-            @endif
+        @if(auth()->user()->role === 'admin')
+        <a href="{{ route('admin.works.create') }}"
+            class="bg-verde-menta text-white px-6 py-3 hover:bg-verde-menta hover:bg-opacity-90 transition duration-200 flex items-center font-semibold">
+            <i class="fas fa-plus mr-2"></i>Nueva Obra
+        </a>
+        @endif
         @endauth
     </div>
 
-    <!-- Filtros -->
-    <div class="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-200">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">Filtrar Obras</h2>
-        <form method="GET" action="{{ route('works.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-                <select name="type" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-rosa-electrico focus:ring-rosa-electrico">
-                    <option value="">Todos los tipos</option>
-                    <option value="movie" {{ request('type') == 'movie' ? 'selected' : '' }}>Película</option>
-                    <option value="series" {{ request('type') == 'series' ? 'selected' : '' }}>Serie</option>
-                    <option value="commercial" {{ request('type') == 'commercial' ? 'selected' : '' }}>Comercial</option>
-                    <option value="animation" {{ request('type') == 'animation' ? 'selected' : '' }}>Animación</option>
-                    <option value="videogame" {{ request('type') == 'videogame' ? 'selected' : '' }}>Videojuego</option>
-                    <option value="documentary" {{ request('type') == 'documentary' ? 'selected' : '' }}>Documental</option>
-                    <option value="other" {{ request('type') == 'other' ? 'selected' : '' }}>Otro</option>
-                </select>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Año</label>
-                <input type="number" name="year" value="{{ request('year') }}" 
-                       placeholder="Ej: 2023" 
-                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-naranja-vibrante focus:ring-naranja-vibrante"
-                       min="1900" max="{{ date('Y') + 5 }}">
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Ordenar por</label>
-                <select name="sort" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-azul-profundo focus:ring-azul-profundo">
-                    <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Más recientes</option>
-                    <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Más antiguas</option>
-                    <option value="title" {{ request('sort') == 'title' ? 'selected' : '' }}>Título A-Z</option>
-                </select>
-            </div>
-            
-            <div class="flex items-end">
-                <button type="submit" class="bg-rosa-electrico text-white px-4 py-2 rounded-lg hover:bg-rosa-electrico hover:bg-opacity-90 w-full font-semibold transition duration-200">
-                    <i class="fas fa-filter mr-2"></i>Filtrar
-                </button>
-            </div>
-        </form>
+    <!-- Descripción -->
+    <p class="text-gray-600 mb-8 max-w-3xl text-lg">
+        Explora nuestro catálogo de películas, series, videojuegos y otras producciones con talento de doblaje español.
+    </p>
+
+    <!-- Botón para mostrar/ocultar filtros en móvil -->
+    <div class="lg:hidden mb-4">
+        <button id="filterToggle" class="bg-azul-profundo text-white px-4 py-2 hover:bg-azul-profundo hover:bg-opacity-90 transition duration-200 flex items-center font-semibold w-full justify-center">
+            <i class="fas fa-filter mr-2"></i>
+            Mostrar Filtros
+        </button>
     </div>
 
-    <!-- Lista de Obras -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        @forelse($works as $work)
-            <a href="{{ route('works.show', $work) }}" class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-morado-vibrante hover:scale-105 transform group cursor-pointer">
-                <!-- Poster -->
-                @if($work->poster)
-                    <img src="{{ asset('storage/' . $work->poster) }}" alt="{{ $work->title }}" 
-                         class="w-full h-48 object-cover">
-                @else
-                    <div class="w-full h-48 bg-gradient-to-br from-morado-vibrante to-rosa-electrico flex items-center justify-center group-hover:from-rosa-electrico group-hover:to-morado-vibrante transition duration-300">
-                        <i class="fas fa-{{ $work->type == 'movie' ? 'film' : ($work->type == 'series' ? 'tv' : 'gamepad') }} text-white text-4xl"></i>
-                    </div>
-                @endif
-                
-                <!-- Contenido -->
-                <div class="p-4">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-semibold text-lg leading-tight text-gray-800 group-hover:text-morado-vibrante transition duration-300">{{ $work->title }}</h3>
-                        <span class="bg-azul-profundo bg-opacity-20 text-azul-profundo text-xs px-2 py-1 rounded-lg capitalize font-medium">
-                            {{ $work->type }}
-                        </span>
-                    </div>
-                    
-                    <div class="space-y-1 mb-3">
-                        @if($work->year)
-                            <p class="text-sm text-gray-600">
-                                <i class="fas fa-calendar mr-1 text-naranja-vibrante"></i>{{ $work->year }}
-                            </p>
-                        @endif
-                        
-                        <p class="text-sm text-gray-600">
-                            <i class="fas fa-users mr-1 text-verde-menta"></i>{{ $work->actors_count }} actores
-                        </p>
-                    </div>
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Columna de Filtros - Desplegable -->
+        <div id="filterColumn" class="lg:w-1/4 hidden lg:block">
+            <div class="bg-white p-6 shadow-md sticky top-4 border border-gray-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Filtros</h2>
+                    <button id="closeFilters" class="lg:hidden text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
 
-                    @if($work->description)
-                        <p class="text-gray-700 text-sm mb-4 line-clamp-2">{{ Str::limit($work->description, 80) }}</p>
-                    @endif
+                <!-- Buscador en Tiempo Real -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Buscar Obra</label>
+                    <div class="relative">
+                        <input type="text"
+                            id="searchWork"
+                            placeholder="Ej: Película, serie..."
+                            class="w-full border border-gray-300 px-4 py-2 pl-10 focus:border-azul-profundo focus:ring-azul-profundo transition duration-200">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Busca por título en tiempo real</p>
+                </div>
 
-                    <div class="text-morado-vibrante text-sm font-semibold group-hover:text-morado-vibrante transition duration-300">
-                        Ver detalles <i class="fas fa-arrow-right ml-1 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+                <!-- Filtro por Tipo -->
+                <div class="mb-6">
+                    <h3 class="font-medium text-gray-700 mb-3">Tipo</h3>
+                    <div class="filter-scroll-container">
+                        @foreach($types as $key => $label)
+                        <label class="flex items-center py-1">
+                            <input type="checkbox" name="types[]" value="{{ $key }}"
+                                class="text-rosa-electrico focus:ring-rosa-electrico type-filter">
+                            <span class="ml-2 text-sm text-gray-700">{{ $label }}</span>
+                        </label>
+                        @endforeach
                     </div>
                 </div>
-            </a>
-        @empty
-            <div class="col-span-full text-center py-12">
-                <i class="fas fa-film text-4xl text-gray-300 mb-4"></i>
-                <h3 class="text-xl font-semibold text-gray-500 mb-2">No hay obras registradas</h3>
-                <p class="text-gray-400">No se encontraron obras con los filtros aplicados.</p>
-                @if(request()->anyFilled(['type', 'year', 'sort']))
-                    <a href="{{ route('works.index') }}" class="text-rosa-electrico hover:underline mt-2 inline-block font-semibold">
-                        Limpiar filtros
-                    </a>
-                @endif
+
+                <!-- Filtro por Año -->
+                <div class="mb-6">
+                    <h3 class="font-medium text-gray-700 mb-3">Año mínimo</h3>
+                    <input type="number"
+                        id="yearFilter"
+                        min="1900"
+                        max="{{ date('Y') }}"
+                        placeholder="Ej: 2000"
+                        class="w-full border border-gray-300 px-3 py-2 focus:border-naranja-vibrante focus:ring-naranja-vibrante transition duration-200">
+                </div>
+
+                <!-- Filtro por Número de Actores -->
+                <div class="mb-6">
+                    <h3 class="font-medium text-gray-700 mb-3">Mínimo de actores</h3>
+                    <select id="actorsCountFilter" class="w-full border border-gray-300 px-3 py-2 focus:border-verde-menta focus:ring-verde-menta">
+                        <option value="">Cualquier cantidad</option>
+                        <option value="1">1+ actores</option>
+                        <option value="5">5+ actores</option>
+                        <option value="10">10+ actores</option>
+                        <option value="20">20+ actores</option>
+                    </select>
+                </div>
+
+                <!-- Botón Limpiar Filtros -->
+                <div>
+                    <button id="clearFilters" class="bg-gray-500 text-white px-4 py-2 hover:bg-gray-600 w-full inline-flex items-center justify-center font-semibold transition duration-200">
+                        <i class="fas fa-times mr-2"></i>Limpiar Filtros
+                    </button>
+                </div>
             </div>
-        @endforelse
+        </div>
+
+        <!-- Columna de Resultados -->
+        <div class="lg:w-3/4">
+            <!-- Contador de resultados -->
+            <div class="mb-4">
+                <p class="text-sm text-gray-600">
+                    <span id="resultsCount">{{ $works->count() }}</span> obras encontradas
+                </p>
+            </div>
+
+            <!-- Lista de Obras -->
+<div id="worksContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+    @foreach($works as $work)
+    <div class="work-card bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-morado-vibrante hover:scale-105 transform group cursor-pointer flex flex-col h-full"
+        data-title="{{ strtolower($work->title) }}"
+        data-type="{{ $work->type }}"
+        data-year="{{ $work->year ?? '' }}"
+        data-actors-count="{{ $work->actors_count }}">
+
+        <!-- Poster -->
+        <div class="relative">
+            @if($work->poster)
+            <img src="{{ asset('storage/' . $work->poster) }}"
+                alt="{{ $work->title }}"
+                class="w-full h-48 object-cover">
+            @else
+            <div class="w-full h-48 bg-gradient-to-br from-morado-vibrante to-rosa-electrico flex items-center justify-center group-hover:from-rosa-electrico group-hover:to-morado-vibrante transition duration-300">
+                @php
+                $icon = match($work->type) {
+                'movie' => 'film',
+                'series' => 'tv',
+                'commercial' => 'ad',
+                'animation' => 'drawing',
+                'videogame' => 'gamepad',
+                'documentary' => 'document',
+                default => 'film'
+                };
+                @endphp
+                <i class="fas fa-{{ $icon }} text-white text-4xl"></i>
+            </div>
+            @endif
+
+            <!-- Badge de tipo -->
+            <div class="absolute top-3 right-3">
+                <span class="bg-azul-profundo bg-opacity-90 text-white text-xs px-2 py-1 capitalize font-medium work-type">
+                    {{ $types[$work->type] ?? $work->type }}
+                </span>
+            </div>
+        </div> <!-- Cierre del div relative -->
+
+        <!-- Contenido -->
+        <a href="{{ route('works.show', $work) }}" class="block p-4 flex flex-col flex-1">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="font-semibold text-lg leading-tight text-gray-800 group-hover:text-morado-vibrante transition duration-300 work-title flex-1 mr-2">
+                    {{ $work->title }}
+                </h3>
+            </div>
+
+            <div class="space-y-2 mb-4 flex-shrink-0">
+                @if($work->year)
+                <div class="flex items-center text-gray-600">
+                    <i class="fas fa-calendar mr-2 text-naranja-vibrante w-4 flex-shrink-0"></i>
+                    <span class="text-sm work-year">{{ $work->year }}</span>
+                </div>
+                @endif
+
+                <div class="flex items-center text-gray-600">
+                    <i class="fas fa-users mr-2 text-verde-menta w-4 flex-shrink-0"></i>
+                    <span class="text-sm work-actors-count">{{ $work->actors_count }} actores</span>
+                </div>
+            </div>
+
+            @if($work->description)
+            <div class="flex-1 min-h-[60px] mb-4">
+                <p class="text-gray-700 text-sm line-clamp-2 leading-relaxed work-description">
+                    {{ $work->description }}
+                </p>
+            </div>
+            @else
+            <div class="flex-1 min-h-[60px]"></div>
+            @endif
+        </a>
+    </div> <!-- Cierre del div work-card -->
+    @endforeach
+</div>
+        </div>
     </div>
 
-    <!-- Paginación -->
-    @if($works->hasPages())
-        <div class="mt-8">
-            {{ $works->links() }}
-        </div>
-    @endif
-</div>
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
 
-<style>
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-</style>
-@endsection
+        /* Remover bordes redondeados */
+        * {
+            border-radius: 0 !important;
+        }
+
+        /* CONTENEDOR DE FILTROS CORREGIDO - SIN CORTAR BORDES */
+        .filter-scroll-container {
+            max-height: 10rem;
+            overflow-y: auto;
+            padding: 8px 12px;
+            /* Más padding para que no se corten los bordes */
+            margin: 0 -12px;
+            /* Compensa el padding extra */
+            border: 1px solid #e5e7eb;
+            /* Borde suave para definir el área */
+            background-color: #f9fafb;
+            /* Fondo ligeramente diferente */
+        }
+
+        /* Espaciado entre items de filtro */
+        .filter-scroll-container label {
+            padding: 6px 4px;
+            /* Espacio interno para cada item */
+            margin: 2px 0;
+            /* Espacio entre items */
+            border-radius: 0 !important;
+            /* Asegurar bordes cuadrados */
+        }
+
+        /* Mejorar el focus de los checkboxes */
+        .filter-scroll-container input[type="checkbox"]:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Personalizar scrollbar */
+        .filter-scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .filter-scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .filter-scroll-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 0;
+        }
+
+        .filter-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Scroll para lista de tipos */
+        .max-h-40 {
+            max-height: 10rem;
+        }
+
+        /* Mejorar la experiencia móvil */
+        @media (max-width: 1023px) {
+            #filterColumn {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                z-index: 50;
+                overflow-y: auto;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            #filterColumn:not(.hidden) {
+                transform: translateX(0);
+            }
+        }
+    </style>
+    @endsection

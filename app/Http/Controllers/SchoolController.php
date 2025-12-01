@@ -9,8 +9,10 @@ class SchoolController extends Controller
 {
     public function index()
     {
-        $schools = School::withCount('actors')->latest()->paginate(12);
-        return view('schools.index', compact('schools'));
+         $schools = School::withCount('actors')->paginate(12);
+    $cities = School::whereNotNull('city')->distinct()->pluck('city')->sort();
+    
+    return view('schools.index', compact('schools', 'cities'));
     }
 
     public function show(School $school)
