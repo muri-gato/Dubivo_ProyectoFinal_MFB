@@ -18,14 +18,13 @@ export class ActorFilters {
 
     initActorIndex() {
         console.log('Inicializando para índice de actores');
-        // Solo el código esencial para filtros
         this.setupBasicFilters();
     }
 
     initActorForm() {
         console.log('Inicializando para formulario de actor');
-        // Solo mejoras visuales básicas, NO toggle
         this.enhanceFormVisuals();
+        // ELIMINADO: this.setupDynamicScrollContainers(); ← ¡Ya no lo necesitas!
     }
 
     setupBasicFilters() {
@@ -38,7 +37,6 @@ export class ActorFilters {
             });
         }
         
-        // Filtros básicos
         document.querySelectorAll('#filter-form input').forEach(input => {
             input.addEventListener('change', () => this.filterActors());
         });
@@ -55,10 +53,9 @@ export class ActorFilters {
     }
 
     enhanceFormVisuals() {
-        // Mejorar visualmente los radio buttons de disponibilidad
+        // Solo mantener esto si realmente lo necesitas
         document.querySelectorAll('input[name="is_available"]').forEach(radio => {
             radio.addEventListener('change', function() {
-                // Actualizar estilos de los labels
                 document.querySelectorAll('input[name="is_available"]').forEach(r => {
                     const label = r.closest('label');
                     if (r.checked) {
@@ -72,7 +69,7 @@ export class ActorFilters {
             });
         });
         
-        // Previsualización de imagen
+        // Previsualización de imagen (opcional)
         const photoInput = document.getElementById('photo');
         if (photoInput) {
             photoInput.addEventListener('change', function(e) {
@@ -94,12 +91,14 @@ export class ActorFilters {
             });
         }
     }
+
+    // ¡ELIMINA TODOS LOS MÉTODOS DE SCROLL! 
+    // setupDynamicScrollContainers, setupScrollContainer, etc.
+    // El scroll ahora se maneja SOLO con CSS
 }
 
-// Auto-inicialización
 if (typeof window !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
-        // Solo crear instancia si es necesario
         if (document.querySelector('.actor-card') || document.querySelector('form[action*="actors"]')) {
             window.actorFilters = new ActorFilters();
         }

@@ -8,16 +8,16 @@
     <!-- Header diferenciado según rol -->
     <?php if(isset($isAdmin) && $isAdmin): ?>
     <!-- Header Admin -->
-    <div class="bg-white shadow-md p-6 mb-6 rounded-lg">
+    <div class="bg-white shadow-md p-6 mb-6">
         <div class="border-b border-gray-200 pb-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <?php if($actor->photo): ?>
                     <img src="<?php echo e(asset('storage/' . $actor->photo)); ?>"
                         alt="<?php echo e($actor->user->name); ?>"
-                        class="w-16 h-16 object-cover mr-4 rounded-lg">
+                        class="w-16 h-16 object-cover mr-4">
                     <?php else: ?>
-                    <div class="w-16 h-16 bg-gradient-to-br from-naranja-vibrante to-ambar flex items-center justify-center mr-4 rounded-lg">
+                    <div class="w-16 h-16 bg-gradient-to-br from-naranja-vibrante to-ambar flex items-center justify-center mr-4">
                         <i class="fas fa-user text-white text-xl"></i>
                     </div>
                     <?php endif; ?>
@@ -41,7 +41,7 @@
 
     
     <?php if(session('success') && str_contains(session('success'), 'Completa tu información adicional')): ?>
-    <div class="bg-gradient-to-r from-naranja-vibrante/10 to-ambar/10 p-4 mb-6 border border-ambar/20 rounded-lg">
+    <div class="bg-gradient-to-r from-naranja-vibrante/10 to-ambar/10 p-4 mb-6 border border-ambar/20">
         <div class="flex">
             <div class="flex-shrink-0">
                 <i class="fas fa-star text-naranja-vibrante text-xl"></i>
@@ -60,7 +60,7 @@
     <div class="flex flex-col lg:flex-row gap-6">
         <!-- Formulario Principal -->
         <div class="<?php echo e(isset($isAdmin) && $isAdmin ? 'w-full' : 'lg:w-3/4'); ?>">
-            <div class="bg-white shadow-md p-6 border border-gray-200 rounded-lg">
+            <div class="bg-white shadow-md p-6 border border-gray-200">
                 <?php if(!isset($isAdmin)): ?>
                 <div class="border-b border-gray-200 pb-4 mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800">Actualiza tu información</h2>
@@ -87,7 +87,7 @@
                                     Géneros que puede<?php echo e(!isset($isAdmin) ? 's' : ''); ?> interpretar
                                     <span class="text-rojo-intenso">*</span>
                                 </label>
-                                <div class="filter-scroll-container border border-gray-200 bg-gray-50 rounded-lg">
+                                <div class="filter-scroll-container border border-gray-200 bg-gray-50">
                                     <?php
                                     $currentGenders = is_array($actor->genders) ? $actor->genders : json_decode($actor->genders, true) ?? [];
                                     $currentGenders = old('genders', $currentGenders);
@@ -120,7 +120,7 @@ unset($__errorArgs, $__bag); ?>
                                     Edades vocales que puede<?php echo e(!isset($isAdmin) ? 's' : ''); ?> interpretar
                                     <span class="text-rojo-intenso">*</span>
                                 </label>
-                                <div class="filter-scroll-container border border-gray-200 bg-gray-50 rounded-lg">
+                                <div class="filter-scroll-container border border-gray-200 bg-gray-50">
                                     <?php
                                     $currentVoiceAges = is_array($actor->voice_ages) ? $actor->voice_ages : json_decode($actor->voice_ages, true) ?? [];
                                     $currentVoiceAges = old('voice_ages', $currentVoiceAges);
@@ -156,7 +156,7 @@ unset($__errorArgs, $__bag); ?>
                                     Biografía
                                 </label>
                                 <textarea name="bio" id="bio" rows="6"
-                                    class="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-rosa-electrico focus:border-rosa-electrico transition duration-200"
+                                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-rosa-electrico focus:border-rosa-electrico transition duration-200"
                                     placeholder="<?php echo e(!isset($isAdmin) ? 'Cuéntanos sobre tu experiencia, formación y especialidades...' : 'Biografía profesional del actor...'); ?>"><?php echo e(old('bio', $actor->bio)); ?></textarea>
                                 <?php $__errorArgs = ['bio'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -171,29 +171,24 @@ unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <!-- Disponibilidad -->
-                            <div class="p-4 border border-gray-200 bg-gray-50 rounded-lg">
+                            <div class="p-4 border border-gray-200 bg-gray-50">
                                 <label class="block text-sm font-medium text-gray-700 mb-3">
                                     Estado de disponibilidad
                                 </label>
 
-                                <div class="space-y-3">
-                                    <?php
-                                    // Calcular estado actual
-                                    $currentAvailability = old('is_available', $actor->is_available);
-                                    // Convertir a booleano
-                                    if (is_string($currentAvailability)) {
-                                    $currentAvailability = $currentAvailability === '1' || $currentAvailability === 'true';
-                                    }
-                                    $currentAvailability = (bool) $currentAvailability;
-                                    ?>
+                                <?php
+                                $availabilityValue = old('is_available', $actor->is_available);
+                                $isAvailable = filter_var($availabilityValue, FILTER_VALIDATE_BOOLEAN);
+                                ?>
 
+                                <div class="space-y-3">
                                     <!-- Opción Disponible -->
-                                    <label class="flex items-center p-3 border <?php echo e($currentAvailability ? 'border-verde-menta border-2 bg-green-50' : 'border-gray-300'); ?> rounded-lg hover:bg-green-50 cursor-pointer transition duration-200">
+                                    <label class="flex items-center p-3 border <?php echo e($isAvailable ? 'border-verde-menta border-2 bg-green-50' : 'border-gray-300'); ?> hover:bg-green-50 cursor-pointer transition duration-200">
                                         <input type="radio"
                                             name="is_available"
                                             value="1"
                                             class="h-5 w-5 text-verde-menta focus:ring-verde-menta border-gray-300"
-                                            <?php echo e($currentAvailability ? 'checked' : ''); ?>>
+                                            <?php echo e($isAvailable ? 'checked' : ''); ?>>
                                         <div class="ml-3 flex items-center">
                                             <div class="h-3 w-3 rounded-full bg-verde-menta mr-2"></div>
                                             <span class="text-sm font-medium text-gray-700">Disponible</span>
@@ -202,12 +197,12 @@ unset($__errorArgs, $__bag); ?>
                                     </label>
 
                                     <!-- Opción No Disponible -->
-                                    <label class="flex items-center p-3 border <?php echo e(!$currentAvailability ? 'border-rojo-intenso border-2 bg-red-50' : 'border-gray-300'); ?> rounded-lg hover:bg-red-50 cursor-pointer transition duration-200">
+                                    <label class="flex items-center p-3 border <?php echo e(!$isAvailable ? 'border-rojo-intenso border-2 bg-red-50' : 'border-gray-300'); ?> hover:bg-red-50 cursor-pointer transition duration-200">
                                         <input type="radio"
                                             name="is_available"
                                             value="0"
                                             class="h-5 w-5 text-rojo-intenso focus:ring-rojo-intenso border-gray-300"
-                                            <?php echo e(!$currentAvailability ? 'checked' : ''); ?>>
+                                            <?php echo e(!$isAvailable ? 'checked' : ''); ?>>
                                         <div class="ml-3 flex items-center">
                                             <div class="h-3 w-3 rounded-full bg-rojo-intenso mr-2"></div>
                                             <span class="text-sm font-medium text-gray-700">No disponible</span>
@@ -233,7 +228,7 @@ unset($__errorArgs, $__bag); ?>
                     <!-- Archivos (Foto y Audio) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                         <!-- Foto -->
-                        <div class="p-4 border border-gray-200 bg-gray-50 rounded-lg">
+                        <div class="p-4 border border-gray-200 bg-gray-50">
                             <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">
                                 Foto de perfil
                             </label>
@@ -241,13 +236,13 @@ unset($__errorArgs, $__bag); ?>
                             <div class="flex items-center space-x-4 mb-3">
                                 <img src="<?php echo e(asset('storage/' . $actor->photo)); ?>"
                                     alt="Foto actual"
-                                    class="w-16 h-16 object-cover border-2 border-ambar rounded-lg">
+                                    class="w-16 h-16 object-cover border-2 border-ambar">
                                 <span class="text-sm text-gray-600">Foto actual</span>
                             </div>
                             <?php endif; ?>
                             <input type="file" name="photo" id="photo"
                                 accept="image/*"
-                                class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-naranja-vibrante focus:border-naranja-vibrante">
+                                class="w-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-naranja-vibrante focus:border-naranja-vibrante">
                             <p class="text-xs text-gray-500 mt-1">Dejar vacío para mantener la actual</p>
                             <?php $__errorArgs = ['photo'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -262,7 +257,7 @@ unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Audio -->
-                        <div class="p-4 border border-gray-200 bg-gray-50 rounded-lg">
+                        <div class="p-4 border border-gray-200 bg-gray-50">
                             <label for="audio_path" class="block text-sm font-medium text-gray-700 mb-2">
                                 Muestra de voz
                             </label>
@@ -276,7 +271,7 @@ unset($__errorArgs, $__bag); ?>
                             <?php endif; ?>
                             <input type="file" name="audio_path" id="audio_path"
                                 accept="audio/*"
-                                class="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-rosa-electrico focus:border-rosa-electrico">
+                                class="w-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rosa-electrico focus:border-rosa-electrico">
                             <p class="text-xs text-gray-500 mt-1">Dejar vacío para mantener la actual</p>
                             <?php $__errorArgs = ['audio_path'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -294,11 +289,11 @@ unset($__errorArgs, $__bag); ?>
                     <!-- Escuelas y Obras -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                         <!-- Escuelas -->
-                        <div class="p-4 border border-gray-200 bg-gray-50 rounded-lg">
+                        <div class="p-4 border border-gray-200 bg-gray-50">
                             <label class="block text-sm font-medium text-gray-700 mb-3">
                                 Escuelas de formación
                             </label>
-                            <div class="filter-scroll-container border border-gray-200 bg-white rounded-lg">
+                            <div id="schools-container" class="filter-scroll-container border border-gray-200 bg-white">
                                 <?php $__currentLoopData = $schools; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $school): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <label class="flex items-center p-3 border-b border-gray-100 last:border-b-0 hover:bg-ambar/10 cursor-pointer">
                                     <input type="checkbox" name="schools[]" value="<?php echo e($school->id); ?>"
@@ -320,12 +315,13 @@ endif;
 unset($__errorArgs, $__bag); ?>
                         </div>
 
+
                         <!-- Obras -->
-                        <div class="p-4 border border-gray-200 bg-gray-50 rounded-lg">
+                        <div class="p-4 border border-gray-200 bg-gray-50">
                             <label class="block text-sm font-medium text-gray-700 mb-3">
                                 Obras participadas
                             </label>
-                            <div class="filter-scroll-container border border-gray-200 bg-white rounded-lg">
+                            <div id="works-container" class="filter-scroll-container border border-gray-200 bg-white">
                                 <?php $__currentLoopData = $works; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $work): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="flex items-start p-3 border-b border-gray-100 last:border-b-0 hover:bg-rosa-electrico/5">
                                     <input type="checkbox" name="works[]" value="<?php echo e($work->id); ?>"
@@ -345,7 +341,7 @@ unset($__errorArgs, $__bag); ?>
                                         ?>
                                         <input type="text" name="character_names[<?php echo e($work->id); ?>]"
                                             placeholder="Nombre del personaje"
-                                            class="mt-2 w-full text-sm border border-gray-300 px-3 py-1 rounded focus:border-rosa-electrico focus:ring-rosa-electrico focus:ring-1"
+                                            class="mt-2 w-full text-sm border border-gray-300 px-3 py-1 focus:border-rosa-electrico focus:ring-rosa-electrico focus:ring-1"
                                             value="<?php echo e(old('character_names.' . $work->id, $characterName)); ?>">
                                     </div>
                                 </div>
@@ -356,11 +352,11 @@ unset($__errorArgs, $__bag); ?>
 
                     <!-- Sección de Profesor (Solo para Admin) -->
                     <?php if(isset($isAdmin) && $isAdmin): ?>
-                    <div class="mt-6 p-4 border border-gray-200 bg-gray-50 rounded-lg">
+                    <div class="mt-6 p-4 border border-gray-200 bg-gray-50">
                         <h2 class="text-xl font-semibold text-gray-800 mb-4">Información como Profesor</h2>
-                        <div class="space-y-3">
+                        <div id="teaching-container" class="teaching-scroll-container space-y-3">
                             <?php $__currentLoopData = $schools; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $school): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div class="flex items-center justify-between p-3 border border-gray-200 bg-white rounded-lg">
+                            <div class="flex items-center justify-between p-3 border border-gray-200 bg-white">
                                 <label class="flex items-center">
                                     <input type="checkbox" name="teaching_schools[]" value="<?php echo e($school->id); ?>"
                                         <?php echo e(in_array($school->id, $currentTeachingSchools ?? []) ? 'checked' : ''); ?>
@@ -373,10 +369,10 @@ unset($__errorArgs, $__bag); ?>
                                     <input type="text" name="teaching_subjects[<?php echo e($school->id); ?>]"
                                         placeholder="Materia que imparte"
                                         value="<?php echo e($actor->teachingSchools->firstWhere('id', $school->id)?->pivot?->subject); ?>"
-                                        class="border border-gray-300 px-3 py-1 text-sm w-48 rounded">
+                                        class="border border-gray-300 px-3 py-1 text-sm w-48">
                                     <textarea name="teaching_bios[<?php echo e($school->id); ?>]"
                                         placeholder="Bio como profesor"
-                                        class="border border-gray-300 px-3 py-1 text-sm w-48 ml-2 rounded"><?php echo e($actor->teachingSchools->firstWhere('id', $school->id)?->pivot?->teaching_bio); ?></textarea>
+                                        class="border border-gray-300 px-3 py-1 text-sm w-48 ml-2"><?php echo e($actor->teachingSchools->firstWhere('id', $school->id)?->pivot?->teaching_bio); ?></textarea>
                                 </div>
                             </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -397,11 +393,11 @@ unset($__errorArgs, $__bag); ?>
                         <?php endif; ?>
                         <div class="flex space-x-4">
                             <a href="<?php echo e(isset($isAdmin) && $isAdmin ? route('admin.actors') : route('actors.show', $actor)); ?>"
-                                class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium rounded-lg">
+                                class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
                                 Cancelar
                             </a>
                             <button type="submit"
-                                class="px-6 py-3 <?php echo e(isset($isAdmin) && $isAdmin ? 'bg-naranja-vibrante hover:bg-naranja-vibrante/90 focus:ring-naranja-vibrante' : 'bg-verde-menta hover:bg-verde-menta/90 focus:ring-verde-menta'); ?> text-white hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200 font-medium flex items-center rounded-lg">
+                                class="px-6 py-3 <?php echo e(isset($isAdmin) && $isAdmin ? 'bg-naranja-vibrante hover:bg-naranja-vibrante/90 focus:ring-naranja-vibrante' : 'bg-verde-menta hover:bg-verde-menta/90 focus:ring-verde-menta'); ?> text-white hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
                                 <i class="fas fa-save mr-2"></i>
                                 <?php echo e(isset($isAdmin) && $isAdmin ? 'Actualizar Actor' : 'Actualizar Perfil'); ?>
 
@@ -415,7 +411,7 @@ unset($__errorArgs, $__bag); ?>
         <!-- Columna de Información Lateral (Solo para Actor) -->
         <?php if(!isset($isAdmin)): ?>
         <div class="lg:w-1/4">
-            <div class="bg-white p-6 shadow-md sticky top-4 border border-gray-200 rounded-lg">
+            <div class="bg-white p-6 shadow-md sticky top-4 border border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Estado del perfil</h2>
 
                 <div class="space-y-3 mb-6">
@@ -465,134 +461,26 @@ unset($__errorArgs, $__bag); ?>
 
 <?php $__env->startSection('styles'); ?>
 <style>
-    .filter-scroll-container {
-        max-height: 12rem;
-        overflow-y: auto;
-        padding: 0;
-    }
+/* SOLO estas 3 reglas CSS - eliminamos TODO lo demás */
+#schools-container.filter-scroll-container {
+    max-height: 12rem;
+    overflow-y: auto;
+}
 
-    .filter-scroll-container::-webkit-scrollbar {
-        width: 6px;
-    }
+#works-container.filter-scroll-container {
+    max-height: 12rem;
+    overflow-y: auto;
+}
 
-    .filter-scroll-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 3px;
-    }
+#teaching-container.teaching-scroll-container {
+    max-height: 16rem;
+    overflow-y: auto;
+}
 
-    .filter-scroll-container::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 3px;
-    }
-
-    .filter-scroll-container::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
-    }
-
-    /* Colores personalizados según tu paleta */
-    .text-naranja-vibrante {
-        color: #f97316;
-    }
-
-    /* Naranja para actores */
-    .text-ambar {
-        color: #f59e0b;
-    }
-
-    /* Amarillo yema para escuelas */
-    .text-rosa-electrico {
-        color: #ec4899;
-    }
-
-    /* Rosa para obras */
-    .text-verde-menta {
-        color: #10b981;
-    }
-
-    /* Verde para disponibilidad */
-    .text-rojo-intenso {
-        color: #ef4444;
-    }
-
-    /* Rojo para errores */
-
-    .bg-naranja-vibrante {
-        background-color: #f97316;
-    }
-
-    .bg-ambar {
-        background-color: #f59e0b;
-    }
-
-    .bg-rosa-electrico {
-        background-color: #ec4899;
-    }
-
-    .bg-verde-menta {
-        background-color: #10b981;
-    }
-
-    .bg-rojo-intenso {
-        background-color: #ef4444;
-    }
-
-    .border-naranja-vibrante {
-        border-color: #f97316;
-    }
-
-    .border-ambar {
-        border-color: #f59e0b;
-    }
-
-    .border-rosa-electrico {
-        border-color: #ec4899;
-    }
-
-    .border-verde-menta {
-        border-color: #10b981;
-    }
-
-    .border-rojo-intenso {
-        border-color: #ef4444;
-    }
-
-    .focus\:ring-naranja-vibrante:focus {
-        --tw-ring-color: #f97316;
-    }
-
-    .focus\:ring-ambar:focus {
-        --tw-ring-color: #f59e0b;
-    }
-
-    .focus\:ring-rosa-electrico:focus {
-        --tw-ring-color: #ec4899;
-    }
-
-    .focus\:ring-verde-menta:focus {
-        --tw-ring-color: #10b981;
-    }
-
-    .from-naranja-vibrante {
-        --tw-gradient-from: #f97316;
-    }
-
-    .to-ambar {
-        --tw-gradient-to: #f59e0b;
-    }
+#schools-container.filter-scroll-container::-webkit-scrollbar,
+#works-container.filter-scroll-container::-webkit-scrollbar,
+#teaching-container.teaching-scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
 </style>
-<?php $__env->stopSection(); ?>
-
-<?php $__env->startPush('scripts'); ?>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('=== EDIT PAGE DEBUG ===');
-        console.log('Toggle:', document.getElementById('availabilityToggle'));
-        console.log('Input:', document.getElementById('availabilityInput'));
-        console.log('Valor inicial:', document.getElementById('availabilityInput')?.value);
-
-        // Verificar si ActorFilters se cargó
-        console.log('ActorFilters en window:', window.actorFilters);
-    });
-</script>
-<?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Programas\laragon\www\ProyectoFinalMFB\resources\views/actors/edit.blade.php ENDPATH**/ ?>
