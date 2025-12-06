@@ -27,15 +27,15 @@
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                     Nombre de la Escuela <span class="text-red-500">*</span>
                 </label>
-                <input type="text" 
-                       name="name" 
-                       id="name" 
-                       required
-                       value="{{ old('name') }}"
-                       placeholder="Ej: Escuela Superior de Doblaje de Madrid"
-                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="text"
+                    name="name"
+                    id="name"
+                    required
+                    value="{{ old('name') }}"
+                    placeholder="Ej: Escuela Superior de Doblaje de Madrid"
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('name')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -44,15 +44,15 @@
                 <label for="city" class="block text-sm font-medium text-gray-700 mb-2">
                     Ciudad <span class="text-red-500">*</span>
                 </label>
-                <input type="text" 
-                       name="city" 
-                       id="city" 
-                       required
-                       value="{{ old('city') }}"
-                       placeholder="Ej: Madrid, Barcelona, Sevilla..."
-                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="text"
+                    name="city"
+                    id="city"
+                    required
+                    value="{{ old('city') }}"
+                    placeholder="Ej: Madrid, Barcelona, Sevilla..."
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('city')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -61,16 +61,16 @@
                 <label for="founded_year" class="block text-sm font-medium text-gray-700 mb-2">
                     Año de Fundación
                 </label>
-                <input type="number" 
-                       name="founded_year" 
-                       id="founded_year" 
-                       value="{{ old('founded_year') }}"
-                       min="1900" 
-                       max="{{ date('Y') }}"
-                       placeholder="Ej: 1995"
-                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="number"
+                    name="founded_year"
+                    id="founded_year"
+                    value="{{ old('founded_year') }}"
+                    min="1900"
+                    max="{{ date('Y') }}"
+                    placeholder="Ej: 1995"
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('founded_year')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -79,10 +79,10 @@
                 <label for="logo" class="block text-sm font-medium text-gray-700 mb-2">
                     Logo de la escuela
                 </label>
-                <input type="file" name="logo" id="logo" 
-                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <input type="file" name="logo" id="logo"
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 @error('logo')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -91,14 +91,14 @@
                 <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
                     Sitio Web
                 </label>
-                <input type="url" 
-                       name="website" 
-                       id="website" 
-                       value="{{ old('website') }}"
-                       placeholder="Ej: https://www.escuela-doblaje.com"
-                       class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                <input type="url"
+                    name="website"
+                    id="website"
+                    value="{{ old('website') }}"
+                    placeholder="Ej: https://www.escuela-doblaje.com"
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
                 @error('website')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -107,25 +107,25 @@
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
                     Descripción <span class="text-red-500">*</span>
                 </label>
-                <textarea name="description" 
-                          id="description" 
-                          rows="6"
-                          required
-                          placeholder="Describe la escuela, su metodología, profesores destacados, instalaciones..."
-                          class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description') }}</textarea>
+                <textarea name="description"
+                    id="description"
+                    rows="6"
+                    required
+                    placeholder="Describe la escuela, su metodología, profesores destacados, instalaciones..."
+                    class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('description') }}</textarea>
                 @error('description')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Botones -->
             <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                <a href="{{ route('admin.schools') }}" 
-                   class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
+                <a href="{{ route('admin.schools') }}"
+                    class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
                     Cancelar
                 </a>
-                <button type="submit" 
-                        class="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
+                <button type="submit"
+                    class="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
                     <i class="fas fa-save mr-2"></i>
                     Crear Escuela
                 </button>

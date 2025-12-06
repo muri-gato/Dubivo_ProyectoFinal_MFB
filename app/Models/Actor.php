@@ -10,7 +10,7 @@ class Actor extends Model
 {
     use HasFactory;
 
-    //Campos que podemos llenar masivamente
+    //Campos que se pueden llenar masivamente
     protected $fillable = [
         'user_id',
         'bio',
@@ -19,7 +19,6 @@ class Actor extends Model
         'genders',
         'voice_ages',
         'is_available',
-        'voice_characteristics'
     ];
 
     //Conversiones automáticas
@@ -27,7 +26,6 @@ class Actor extends Model
         'genders' => 'array',
         'voice_ages' => 'array',
         'is_available' => 'boolean',
-        'voice_characteristics' => 'array',
     ];
 
     //Opciones para géneros
@@ -42,78 +40,68 @@ class Actor extends Model
         return ['Niño', 'Adolescente', 'Adulto joven', 'Adulto', 'Anciano', 'Atipada'];
     }
 
-    //Filtramos actores según los parámetros recibidos
+    // Scope para filtrar actores según request
     public function scopeFiltrar($query, $request)
     {
-        //Por disponibilidad
         if ($request->filled('availability')) {
-            $isAvailable = $request->availability === '1' ? true : false;
-            $query->filterByAvailability($isAvailable);
+            $query->where('is_available', $request->availability === '1');
         }
 
-        //Por géneros
         if ($request->filled('genders')) {
-            $genders = is_array($request->genders) ? $request->genders : [$request->genders];
-            $query->filterByGenders($genders);
+            foreach ($request->genders as $gender) {
+                $query->whereJsonContains('genders', $gender);
+            }
         }
 
-        //Por edades de voz
         if ($request->filled('voice_ages')) {
-            $voiceAges = is_array($request->voice_ages) ? $request->voice_ages : [$request->voice_ages];
-            $query->filterByVoiceAges($voiceAges);
+            foreach ($request->voice_ages as $age) {
+                $query->whereJsonContains('voice_ages', $age);
+            }
         }
 
-        //Por escuelas
         if ($request->filled('schools')) {
-            $schoolIds = is_array($request->schools) ? $request->schools : [$request->schools];
-            $query->filterBySchools($schoolIds);
+            foreach ($request->schools as $schoolId) {
+                $query->whereHas('schools', function ($q) use ($schoolId) {
+                    $q->where('schools.id', $schoolId);
+                });
+            }
         }
 
-        //Por búsqueda de nombre
         if ($request->filled('search')) {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
+            $search = strtolower($request->search);
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%$search%"]);
             });
         }
 
         return $query;
     }
 
-    //Agregamos trabajos con sus personajes
+    // Agregamos trabajos con sus personajes
     public function agregarTrabajos($workIds, $characterNames = [])
     {
         $worksData = [];
-        
         foreach ($workIds as $workId) {
             $worksData[$workId] = [
                 'character_name' => $characterNames[$workId] ?? null
             ];
         }
-        
         $this->works()->sync($worksData);
     }
 
-    //Obtenemos la URL de la foto (o una por defecto)
+    // Obtenemos la URL de la foto (o por defecto)
     public function getFotoUrlAttribute()
     {
-        if ($this->photo) {
-            return Storage::url($this->photo);
-        }
-        
-        return asset('images/default-actor.jpg');
+        return $this->photo ? Storage::url($this->photo) : asset('images/default-actor.jpg');
     }
 
-    //Obtenemos la URL del audio
+    // Obtenemos la URL del audio
     public function getAudioUrlAttribute()
     {
-        if ($this->audio_path) {
-            return Storage::url($this->audio_path);
-        }
-        
-        return null;
+        return $this->audio_path ? Storage::url($this->audio_path) : null;
     }
 
-    //Accesores (getters)
+    // Accesores para nombre y email del usuario
     public function getNameAttribute()
     {
         return $this->user->name;
@@ -124,47 +112,32 @@ class Actor extends Model
         return $this->user->email;
     }
 
-    //Convertimos a string para mostrar
+    // Convertimos arrays a strings para mostrar
     public function getVoiceAgesStringAttribute()
     {
-        $voiceAges = $this->voice_ages;
-        if (is_string($voiceAges)) {
-            $voiceAges = json_decode($voiceAges, true) ?? [];
-        }
-        $voiceAges = is_array($voiceAges) ? $voiceAges : [];
-        return $voiceAges ? implode(', ', $voiceAges) : '';
+        $voiceAges = $this->voice_ages ?? [];
+        return is_array($voiceAges) ? implode(', ', $voiceAges) : '';
     }
-
     public function getGendersStringAttribute()
     {
-        $genders = $this->genders;
-        if (is_string($genders)) {
-            $genders = json_decode($genders, true) ?? [];
-        }
-        $genders = is_array($genders) ? $genders : [];
-        return $genders ? implode(', ', $genders) : '';
+        $genders = $this->genders ?? [];
+        return is_array($genders) ? implode(', ', $genders) : '';
     }
 
-    //Obtenemos arrays seguros
+    // Arrays seguros
     public function getGendersArrayAttribute()
     {
-        $genders = $this->genders;
-        if (is_string($genders)) {
-            $genders = json_decode($genders, true) ?? [];
-        }
+        $genders = is_string($this->genders) ? json_decode($this->genders, true) : $this->genders;
         return is_array($genders) ? $genders : [];
     }
 
     public function getVoiceAgesArrayAttribute()
     {
-        $voiceAges = $this->voice_ages;
-        if (is_string($voiceAges)) {
-            $voiceAges = json_decode($voiceAges, true) ?? [];
-        }
+        $voiceAges = is_string($this->voice_ages) ? json_decode($this->voice_ages, true) : $this->voice_ages;
         return is_array($voiceAges) ? $voiceAges : [];
     }
 
-    //Relaciones
+    // Relaciones
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -185,19 +158,32 @@ class Actor extends Model
     public function teachingSchools()
     {
         return $this->belongsToMany(School::class, 'actor_school_teacher')
-            ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
+            ->withPivot('is_active_teacher')
             ->withTimestamps();
     }
 
-    //Verificamos si es profesor
+    // Verificamos si es profesor
     public function isTeacher()
     {
         return $this->teachingSchools()->where('is_active_teacher', true)->exists();
     }
 
-    //Obtenemos escuelas donde enseña
+    // Obtenemos escuelas donde enseña
     public function getActiveTeachingSchools()
     {
         return $this->teachingSchools()->where('is_active_teacher', true)->get();
+    }
+    /**
+     * Verifica si el perfil del actor tiene la información mínima requerida.
+     * * @return bool
+     */
+    public function isComplete(): bool
+    {
+        // Define las reglas mínimas para que un perfil se considere "completo"
+        return !empty($this->photo) &&
+            !empty($this->audio_path) &&
+            !empty($this->bio) &&
+            count($this->genders ?? []) > 0 &&
+            count($this->voice_ages ?? []) > 0;
     }
 }

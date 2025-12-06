@@ -12,7 +12,7 @@
 
     <!-- Estadísticas -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        
+
         <!-- Total Usuarios -->
         <div class="bg-white shadow-md p-6 border border-gray-200 border-l-4 border-rosa-electrico">
             <div class="flex items-center">

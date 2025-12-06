@@ -9,226 +9,257 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
 
 class ActorController extends Controller
 {
-    //Listamos los actores con los filtros aplicados
+    // Listamos los actores con los filtros aplicados
     public function index(Request $request)
     {
-        $actors = Actor::filtrar($request)
-            ->with(['user', 'schools', 'works'])
-            ->paginate(12);
+        $actors = Actor::with('user', 'schools');
 
-        $schools = School::all();
-        $genders = Actor::getGenderOptions();
-        $voiceAges = Actor::getVoiceAgeOptions();
+        // Filtro por disponibilidad
+        if ($request->filled('availability')) {
+            $actors->where('is_available', $request->availability === '1');
+        }
 
-        return view('actors.index', compact('actors', 'schools', 'genders', 'voiceAges'));
+        // Filtro por géneros - AND
+        if ($request->filled('genders')) {
+            foreach ($request->genders as $gender) {
+                $actors->whereJsonContains('genders', $gender);
+            }
+        }
+
+        // Filtro por edades vocales - AND
+        if ($request->filled('voice_ages')) {
+            foreach ($request->voice_ages as $age) {
+                $actors->whereJsonContains('voice_ages', $age);
+            }
+        }
+
+        // Filtro por escuelas (many-to-many) - AND
+        if ($request->filled('schools')) {
+            foreach ($request->schools as $schoolId) { // Por cada ID de escuela seleccionada, añadimos una cláusula whereHas separada.
+                $actors->whereHas('schools', function ($q) use ($schoolId) { // Laravel las encadena con AND.
+                    $q->where('schools.id', $schoolId);
+                });
+            }
+        }
+
+        // Búsqueda por nombre (user)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $actors->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Ordenamiento (ej. por fecha de creación)
+        $actors = $actors->latest()->paginate(15)->withQueryString();
+
+        // Datos para filtros
+        $genders = ['Femenino', 'Masculino', 'Otro'];
+        $voiceAges = ['Niño', 'Adolescente', 'Adulto Joven', 'Adulto', 'Anciano', 'Atipada'];
+        $schools = School::orderBy('name')->get();
+
+        return view('actors.index', compact('actors', 'genders', 'voiceAges', 'schools'));
     }
 
-    //Mostramos el formulario para crear un perfil de actor
+
+    public function edit()
+    {
+        // 1. Nos aseguramos de que el usuario logueado sea un actor y tenga un perfil
+        Auth::user()->actorProfile;
+        if (!$actor) {
+            return redirect()->route('dashboard')->with('error', 'Tu perfil de actor no fue encontrado.');
+        }
+
+        // 2. Cargamos los datos necesarios para las pestañas de Formación y Experiencia
+        $schools = School::orderBy('name')->get();
+        $works = Work::orderBy('title')->get();
+
+        // 3. Devolvemos la vista del ACTOR (simple)
+        return view('actors.edit', compact('actor', 'schools', 'works'));
+    }
+
     public function create()
     {
-        //Solo los actores pueden crear perfiles
-        if (Auth::user()->role !== 'actor') {
-            abort(403, 'Solo actores pueden crear perfiles.');
-        }
-
-        //Si ya tiene perfil, lo redirigimos
+        // Si ya tiene perfil, lo redirigimos a editar.
         if (Auth::user()->actorProfile) {
-            return redirect()->route('actors.show', Auth::user()->actorProfile)
-                ->with('info', 'Ya tienes un perfil.');
+            return redirect()->route('actors.profile.edit');
         }
+        // Asegúrate de pasar los datos necesarios para el formulario de creación si es necesario.
+        $schools = School::orderBy('name')->get();
+        $works = Work::orderBy('title')->get();
 
-        $data = [
-            'schools' => School::all(),
-            'works' => Work::all(),
-            'genders' => Actor::getGenderOptions(),
-            'voiceAges' => Actor::getVoiceAgeOptions()
-        ];
-
-        return view('actors.create', $data);
+        return view('actors.create', compact('schools', 'works'));
     }
 
-    //Guardamos un nuevo actor en la base de datos
     public function store(Request $request)
     {
-        //Validamos los datos recibidos
-        $data = $request->validate([
-            'bio' => 'nullable|string|max:1000',
-            'photo' => 'nullable|image|max:2048',
-            'audio' => 'nullable|file|mimes:mp3,wav|max:5120',
+        // 1. Verificación: Si el actor ya tiene un perfil, no puede crearlo de nuevo.
+        if (Auth::user()->actorProfile) {
+            return redirect()->route('dashboard')->with('error', 'Tu perfil de actor ya existe. Por favor, edítalo.');
+        }
+
+        // 2. Validación (Ajusta estas reglas)
+        $request->validate([
+            'bio' => 'required|string|max:1000',
+            'photo' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+            'audio_path' => 'nullable|file|mimes:mp3,wav|max:5120',
             'genders' => 'required|array',
             'voice_ages' => 'required|array',
-            'is_available' => 'sometimes|boolean',
-            'schools' => 'nullable|array',
-            'works' => 'nullable|array'
-        ], [
-            //Mensajes de error en español
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser texto.',
-            'max' => [
-                'string' => 'El campo :attribute no puede tener más de :max caracteres.',
-                'file' => 'El archivo :attribute no puede pesar más de :max KB.',
-            ],
-            'image' => 'El campo :attribute debe ser una imagen.',
-            'file' => 'El campo :attribute debe ser un archivo.',
-            'mimes' => 'El campo :attribute debe ser MP3 o WAV.',
-            'array' => 'El campo :attribute debe ser una lista.',
-            'boolean' => 'El campo :attribute debe ser sí o no.',
-        ], [
-            //Nombres de campos en español
-            'bio' => 'biografía',
-            'photo' => 'foto',
-            'audio' => 'audio',
-            'genders' => 'géneros',
-            'voice_ages' => 'edades de voz',
-            'is_available' => 'disponibilidad',
-            'schools' => 'escuelas',
-            'works' => 'trabajos',
+            'schools' => 'required|array',
+            'schools.*' => 'exists:schools,id',
+            'works' => 'nullable|array',
+            'works.*' => 'exists:works,id',
+            'character_names' => 'nullable|array',
         ]);
 
-        //Creamos el actor
-        $actor = new Actor();
-        $actor->user_id = Auth::id();
-        $actor->bio = $data['bio'] ?? null;
-        $actor->genders = $data['genders'];
-        $actor->voice_ages = $data['voice_ages'];
-        $actor->is_available = $request->has('is_available');
+        // 3. Manejo de archivos
+        $photoPath = $request->hasFile('photo') ?
+            $this->guardarArchivo($request->file('photo'), 'photos') : null;
 
-        //Guardamos los archivos si se subieron
-        if ($request->hasFile('photo')) {
-            $actor->photo = $this->guardarArchivo($request->file('photo'), 'actors/photos');
-        }
+        $audioPath = $request->hasFile('audio_path') ?
+            $this->guardarArchivo($request->file('audio_path'), 'audios') : null;
 
-        if ($request->hasFile('audio')) {
-            $actor->audio_path = $this->guardarArchivo($request->file('audio'), 'actors/audios');
-        }
-
-        $actor->save();
-
-        //Asociamos escuelas y trabajos
-        if ($request->has('schools')) {
-            $actor->schools()->sync($request->schools);
-        }
-
-        if ($request->has('works')) {
-            $actor->agregarTrabajos($request->works, $request->character_names ?? []);
-        }
-
-        return redirect()->route('actors.show', $actor)
-            ->with('success', 'Perfil creado.');
-    }
-
-    //Mostramos el formulario para editar un actor
-    public function edit(Actor $actor)
-    {
-        //Verificamos que el usuario tenga permiso
-        if (Auth::id() != $actor->user_id && Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
-        }
-
-        $data = [
-            'actor' => $actor,
-            'schools' => School::all(),
-            'works' => Work::all(),
-            'genders' => Actor::getGenderOptions(),
-            'voiceAges' => Actor::getVoiceAgeOptions()
-        ];
-
-        return view('actors.edit', $data);
-    }
-
-    //Actualizamos la información de un actor
-    public function update(Request $request, Actor $actor)
-    {
-        //Verificamos permisos
-        if (Auth::id() != $actor->user_id && Auth::user()->role != 'admin') {
-            abort(403, 'No autorizado.');
-        }
-
-        //Validamos los datos
-        $data = $request->validate([
-            'bio' => 'nullable|string|max:1000',
-            'photo' => 'nullable|image|max:2048',
-            'audio' => 'nullable|file|mimes:mp3,wav|max:5120',
-            'genders' => 'required|array',
-            'voice_ages' => 'required|array',
-            'is_available' => 'sometimes|boolean',
-            'schools' => 'nullable|array',
-            'works' => 'nullable|array'
-        ], [
-            //Mensajes de error en español
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser texto.',
-            'max' => [
-                'string' => 'El campo :attribute no puede tener más de :max caracteres.',
-                'file' => 'El archivo :attribute no puede pesar más de :max KB.',
-            ],
-            'image' => 'El campo :attribute debe ser una imagen.',
-            'file' => 'El campo :attribute debe ser un archivo.',
-            'mimes' => 'El campo :attribute debe ser MP3 o WAV.',
-            'array' => 'El campo :attribute debe ser una lista.',
-            'boolean' => 'El campo :attribute debe ser sí o no.',
-        ], [
-            //Nombres de campos en español
-            'bio' => 'biografía',
-            'photo' => 'foto',
-            'audio' => 'audio',
-            'genders' => 'géneros',
-            'voice_ages' => 'edades de voz',
-            'is_available' => 'disponibilidad',
-            'schools' => 'escuelas',
-            'works' => 'trabajos',
+        // 4. Creación del modelo Actor
+        $actor = Actor::create([
+            'user_id' => Auth::id(),
+            'bio' => $request->bio,
+            'photo' => $photoPath,
+            'audio_path' => $audioPath,
+            'genders' => $request->genders,
+            'voice_ages' => $request->voice_ages,
+            'is_available' => $request->boolean('is_available', true),
         ]);
 
-        //Manejamos los archivos subidos
+        // 5. Sincronización de relaciones
+        $actor->schools()->sync($request->schools);
+        $actor->works()->sync($request->works ?? []);
+
+        return redirect()->route('dashboard')->with('success', '¡Perfil de actor creado con éxito!');
+    }
+
+
+    public function update(Request $request)
+    {
+        $actor = Auth::user()->actorProfile;
+        $request->validate([
+            'is_available' => ['required', 'boolean'],
+            'genders' => ['nullable', 'array'],
+            'voice_ages' => ['nullable', 'array'],
+            'bio' => ['nullable', 'string', 'max:1000'],
+            'photo' => ['nullable', 'image', 'max:2048'],
+            'audio_path' => ['nullable', 'file', 'mimes:mp3,wav', 'max:5120'],
+            'schools' => ['nullable', 'array'],
+            'teaching_schools' => ['nullable', 'array'],
+            'works' => ['nullable', 'array'],
+        ]);
+
+        // Manejo de archivos
         if ($request->hasFile('photo')) {
             $this->eliminarArchivo($actor->photo);
-            $actor->photo = $this->guardarArchivo($request->file('photo'), 'actors/photos');
+            $actor->photo = $this->guardarArchivo($request->file('photo'), 'photos');
         }
 
-        if ($request->hasFile('audio')) {
+        if ($request->hasFile('audio_path')) {
             $this->eliminarArchivo($actor->audio_path);
-            $actor->audio_path = $this->guardarArchivo($request->file('audio'), 'actors/audios');
+            $actor->audio_path = $this->guardarArchivo($request->file('audio_path'), 'audios');
         }
 
-        //Actualizamos los datos del actor
-        $actor->update([
-            'bio' => $data['bio'] ?? null,
-            'genders' => $data['genders'],
-            'voice_ages' => $data['voice_ages'],
-            'is_available' => $request->has('is_available')
-        ]);
+        // Actualización de datos simples
+        $actor->fill($request->only([
+            'is_available',
+            'bio',
+            'experience_notes'
+        ]));
+        $actor->genders = $request->genders ?? [];
+        $actor->voice_ages = $request->voice_ages ?? [];
+        $actor->save();
 
-        //Sincronizamos las relaciones
+
+        // Sincronización de relaciones Many-to-Many
         $actor->schools()->sync($request->schools ?? []);
+        $actor->teachingSchools()->sync($request->teaching_schools ?? []);
+        $actor->works()->sync($request->works ?? []);
 
-        if ($request->has('works')) {
-            $actor->agregarTrabajos($request->works, $request->character_names ?? []);
-        } else {
-            $actor->works()->detach();
-        }
 
-        return redirect()->route('actors.show', $actor)
-            ->with('success', 'Perfil actualizado.');
+        return redirect()->route('dashboard.actor.edit')->with('success', 'Perfil actualizado correctamente.');
     }
 
-    //Eliminamos un actor
+    public function deletePhoto()
+    {
+        $actor = Auth::user()->actorProfile;
+
+        if (!$actor) {
+            return redirect()->back()->with('error', 'Perfil no encontrado.');
+        }
+
+        if ($actor->photo) {
+            $this->eliminarArchivo($actor->photo);
+            $actor->photo = null;
+            $actor->save();
+            return redirect()->back()->with('success', 'Foto de perfil eliminada correctamente.');
+        }
+
+        return redirect()->back();
+    }
+
+    public function deleteAudio()
+    {
+        $actor = Auth::user()->actorProfile;
+        if (!$actor) {
+            return redirect()->back()->with('error', 'Perfil no encontrado.');
+        }
+
+        if ($actor->audio_path) {
+            $this->eliminarArchivo($actor->audio_path);
+            $actor->audio_path = null;
+            $actor->save();
+            return redirect()->back()->with('success', 'Muestra de voz eliminada correctamente.');
+        }
+
+        return redirect()->back();
+    }
+    public function destroyProfile()
+    {
+        $user = Auth::user();
+        $actor = $user->actor;
+
+        if ($actor) {
+            if ($actor->photo) $this->eliminarArchivo($actor->photo);
+            if ($actor->audio_path) $this->eliminarArchivo($actor->audio_path);
+
+            $actor->delete();
+        }
+
+        // Eliminamos el usuario y cerrar sesión
+        $user->delete();
+        Auth::logout();
+
+        return redirect('/')->with('success', 'Tu cuenta ha sido eliminada correctamente.');
+    }
+
+
+    // Eliminamos el perfil del actor y su cuenta de usuario
     public function destroy(Actor $actor)
     {
-        //Verificamos permisos
-        if (Auth::id() != $actor->user_id && Auth::user()->role != 'admin') {
+        // Solo el dueño o el admin pueden eliminar
+        if (Auth::id() !== $actor->user_id && Auth::user()->role !== 'admin') {
             abort(403, 'No tienes permiso.');
         }
 
-        //Si es admin, solo borramos el perfil
+        // Si es admin eliminando desde su panel, redirigimos a la lista de admin
         if (Auth::user()->role == 'admin') {
             $actor->delete();
             return redirect()->route('admin.actors')->with('success', 'Perfil eliminado.');
         }
 
-        //Si el actor borra su cuenta, borramos todo
+        // Si es el actor eliminando su propia cuenta
         $userId = $actor->user_id;
         $actor->delete();
         User::find($userId)->delete();
@@ -238,17 +269,16 @@ class ActorController extends Controller
         return redirect('/')->with('success', 'Tu cuenta ha sido eliminada.');
     }
 
-    //Mostramos los detalles de un actor
+    // Mostramos detalles
     public function show(Actor $actor)
     {
         $actor->load(['user', 'schools', 'works']);
         return view('actors.show', compact('actor'));
     }
 
-    //Actualizamos la disponibilidad de un actor (para AJAX)
+    // Actualizamos disponibilidad vía AJAX
     public function updateAvailability(Request $request, Actor $actor)
     {
-        //Verificamos permisos
         if (Auth::id() !== $actor->user_id && Auth::user()->role !== 'admin') {
             return response()->json(['error' => 'No autorizado'], 403);
         }
@@ -263,19 +293,100 @@ class ActorController extends Controller
         ]);
     }
 
-    // ========== MÉTODOS PRIVADOS ==========
 
-    //Guardamos un archivo en el storage
+
+    // Muestra el formulario de edición del actor logueado
+    public function editProfile()
+    {
+        // Usamos Auth::user() para obtener el perfil del actor logueado
+        $actor = Auth::user()->actorProfile;
+
+        if (!$actor) {
+            return redirect()->route('dashboard')->with('error', 'Tu perfil de actor no está configurado.');
+        }
+
+        // Cargamos los datos necesarios para los selects del formulario
+        $schools = School::orderBy('name')->get();
+        $works = Work::orderBy('title')->get();
+
+        // Devolvemos la vista edit.blade.php (la que ya tienes)
+        return view('actors.edit', compact('actor', 'schools', 'works'));
+    }
+
+    // Procesa y guarda los datos de edición del actor logueado
+    public function updateProfile(Request $request)
+    {
+        $actor = Auth::user()->actorProfile;
+
+        if (!$actor) {
+            return redirect()->route('dashboard')->with('error', 'Perfil no encontrado.');
+        }
+
+        // 1. Validación
+        $request->validate([
+            'bio' => ['required', 'string', 'max:5000'],
+            'genders' => ['nullable', 'array'],
+            'voice_ages' => ['nullable', 'array'],
+            'photo' => ['nullable', 'image', 'max:2048'], // 2MB
+            'audio_path' => ['nullable', 'file', 'mimes:mp3,wav', 'max:5120'], // 5MB
+            'schools' => ['nullable', 'array'],
+            'works' => ['nullable', 'array'],
+            'character_names' => ['nullable', 'array'],
+        ]);
+
+        // 2. Procesamiento de datos y archivos
+        $data = $request->except(['photo', 'audio_path', 'schools', 'works', 'character_names']);
+
+        if ($request->hasFile('photo')) {
+            $this->eliminarArchivo($actor->photo);
+            $data['photo'] = $this->guardarArchivo($request->file('photo'), 'photos/actors');
+        }
+
+        if ($request->hasFile('audio_path')) {
+            $this->eliminarArchivo($actor->audio_path);
+            $data['audio_path'] = $this->guardarArchivo($request->file('audio_path'), 'audio/actors');
+        }
+
+        // 3. Actualización y sincronización
+        $actor->update($data);
+        $actor->schools()->sync($request->schools ?? []);
+
+        if ($request->filled('works')) {
+            $syncData = [];
+            foreach ($request->works as $workId) {
+                $characterName = $request->input("character_names.$workId") ?? '';
+                $syncData[$workId] = ['character_name' => $characterName];
+            }
+            $actor->works()->sync($syncData);
+        } else {
+            $actor->works()->detach();
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Tu perfil se ha actualizado correctamente.');
+    }
+
+    // ======== MÉTODOS PRIVADOS ========
+
     private function guardarArchivo($archivo, $carpeta)
     {
+        // Nos aseguramos de que la carpeta exista y retorna la ruta relativa
         return $archivo->store($carpeta, 'public');
     }
 
-    //Eliminamos un archivo si existe
     private function eliminarArchivo($ruta)
     {
+        // Eliminamos el archivo si la ruta existe y el archivo existe en el storage público
         if ($ruta && Storage::disk('public')->exists($ruta)) {
             Storage::disk('public')->delete($ruta);
         }
+    }
+
+    public function showActorProfile()
+    {
+        $actor = Auth::user()->actorProfile;
+        if (!$actor) {
+            return redirect()->route('dashboard')->with('error', 'Perfil no encontrado.');
+        }
+        return $this->show($actor);
     }
 }

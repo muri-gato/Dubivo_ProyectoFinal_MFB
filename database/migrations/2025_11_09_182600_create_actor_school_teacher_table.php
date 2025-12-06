@@ -13,8 +13,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('actor_id')->constrained()->onDelete('cascade');
             $table->foreignId('school_id')->constrained()->onDelete('cascade');
-            $table->string('subject')->nullable(); //Materia que imparte
-            $table->text('teaching_bio')->nullable(); //Biografía como profesor
             $table->boolean('is_active_teacher')->default(true);
             $table->timestamps();
         });

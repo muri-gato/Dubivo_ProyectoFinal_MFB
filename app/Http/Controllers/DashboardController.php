@@ -15,7 +15,7 @@ class DashboardController extends Controller
         }
 
         $user = Auth::user();
-        
+
         //Los administradores van a su panel especial
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');

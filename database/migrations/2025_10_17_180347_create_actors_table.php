@@ -23,9 +23,6 @@ return new class extends Migration
             //Disponibilidad del actor
             $table->boolean('is_available')->default(true);
             
-            //Características de voz
-            $table->json('voice_characteristics')->nullable();
-            
             $table->timestamps();
         });
     }

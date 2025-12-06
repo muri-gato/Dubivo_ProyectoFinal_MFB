@@ -68,7 +68,7 @@ class Work extends Model
         return [
             'movie' => 'Película',
             'series' => 'Serie',
-            'commercial' => 'Publicidad', 
+            'commercial' => 'Publicidad',
             'animation' => 'Animación',
             'videogame' => 'Videojuego',
             'documentary' => 'Documental',

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('actor_id')->constrained()->onDelete('cascade');
             $table->foreignId('work_id')->constrained()->onDelete('cascade');
-            $table->string('character_name')->nullable(); //Personaje que interpretó
+            $table->string('character_name')->nullable();
             $table->timestamps();
         });
     }

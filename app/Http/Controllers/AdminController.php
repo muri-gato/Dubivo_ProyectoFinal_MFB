@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
@@ -38,16 +40,18 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('stats', 'recentActors'));
     }
 
-    // ========== ESCUELAS ==========
+    // ===================================
+    // ========== ESCUELAS CRUD ==========
+    // ===================================
 
-    //Listamos todas las escuelas con filtros
+    //Listamos todas las escuelas con filtros (Método ya existente)
     public function schools(Request $request)
     {
         $this->verificarAdmin();
 
+        // Contamos actores (alumnos) y teachers (profesores activos)
         $query = School::withCount(['actors', 'teachers']);
 
-        //Aplicamos filtros si se han especificado
         if ($request->filled('city')) {
             $query->where('city', 'like', '%' . $request->city . '%');
         }
@@ -56,161 +60,402 @@ class AdminController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        //Ordenamos los resultados
-        $query = $this->ordenar($query, $request->sort, [
-            'name' => 'name',
-            'actors' => 'actors_count',
-            'oldest' => 'created_at'
-        ]);
-
-        $schools = $query->paginate(10);
-        $cities = School::distinct('city')->orderBy('city')->pluck('city');
+        $schools = $query->latest()->paginate(15);
+        $cities = School::select('city')->distinct()->orderBy('city')->pluck('city');
 
         return view('admin.schools.index', compact('schools', 'cities'));
     }
 
-    //Mostramos el formulario para crear una escuela
+    // Muestra el formulario de creación de escuela
     public function createSchool()
     {
         $this->verificarAdmin();
         return view('admin.schools.create');
     }
 
-    //Guardamos una nueva escuela
+    // Guarda una nueva escuela
     public function storeSchool(Request $request)
     {
         $this->verificarAdmin();
 
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
+        $request->validate([
+            'name' => 'required|string|max:255|unique:schools,name',
+            'city' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
             'founded_year' => 'nullable|integer|min:1900|max:' . date('Y'),
-            'logo' => 'nullable|image|max:2048',
-            'website' => 'nullable|url'
-        ], [
-            //Mensajes de validación en español
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser texto.',
-            'max' => [
-                'string' => 'El campo :attribute no puede tener más de :max caracteres.',
-                'file' => 'El archivo :attribute no puede pesar más de :max KB.',
-            ],
-            'integer' => 'El campo :attribute debe ser un número.',
-            'min' => 'El campo :attribute debe ser al menos :min.',
-            'url' => 'El campo :attribute debe ser una URL válida.',
-            'image' => 'El campo :attribute debe ser una imagen.',
-        ], [
-            //Nombres de campos en español
-            'name' => 'nombre',
-            'city' => 'ciudad',
-            'description' => 'descripción',
-            'founded_year' => 'año de fundación',
-            'logo' => 'logo',
-            'website' => 'sitio web',
+            'website' => 'nullable|url|max:255',
+            'logo' => 'nullable|image|max:1024', // 1MB
         ]);
 
+        $school = School::create($request->only([
+            'name',
+            'city',
+            'description',
+            'founded_year',
+            'website'
+        ]));
+
         if ($request->hasFile('logo')) {
-            $data['logo'] = $this->guardarArchivo($request->file('logo'), 'schools/logos');
+            $school->logo = $this->guardarArchivo($request->file('logo'), 'schools/logos');
+            $school->save();
         }
 
-        School::create($data);
-
-        return redirect()->route('admin.schools')->with('success', 'Escuela creada.');
+        return redirect()->route('admin.schools')->with('success', 'Escuela creada correctamente.');
     }
 
-    //Mostramos el formulario para editar una escuela
+    // Muestra el formulario de edición de escuela
     public function editSchool(School $school)
     {
         $this->verificarAdmin();
         return view('admin.schools.edit', compact('school'));
     }
 
-    //Actualizamos una escuela existente
+    // Actualiza los datos de la escuela
     public function updateSchool(Request $request, School $school)
     {
         $this->verificarAdmin();
 
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
+        $request->validate([
+            'name' => ['required', 'string', 'max:255', Rule::unique('schools')->ignore($school->id)],
+            'city' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
             'founded_year' => 'nullable|integer|min:1900|max:' . date('Y'),
-            'logo' => 'nullable|image|max:2048',
-            'website' => 'nullable|url'
-        ], [
-            //Mensajes de validación en español
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser texto.',
-            'max' => [
-                'string' => 'El campo :attribute no puede tener más de :max caracteres.',
-                'file' => 'El archivo :attribute no puede pesar más de :max KB.',
-            ],
-            'integer' => 'El campo :attribute debe ser un número.',
-            'min' => 'El campo :attribute debe ser al menos :min.',
-            'url' => 'El campo :attribute debe ser una URL válida.',
-            'image' => 'El campo :attribute debe ser una imagen.',
-        ], [
-            //Nombres de campos en español
-            'name' => 'nombre',
-            'city' => 'ciudad',
-            'description' => 'descripción',
-            'founded_year' => 'año de fundación',
-            'logo' => 'logo',
-            'website' => 'sitio web',
+            'website' => 'nullable|url|max:255',
+            'logo' => 'nullable|image|max:1024',
         ]);
+
+        $school->update($request->only([
+            'name',
+            'city',
+            'description',
+            'founded_year',
+            'website'
+        ]));
 
         if ($request->hasFile('logo')) {
             $this->eliminarArchivo($school->logo);
-            $data['logo'] = $this->guardarArchivo($request->file('logo'), 'schools/logos');
+            $school->logo = $this->guardarArchivo($request->file('logo'), 'schools/logos');
+            $school->save();
         }
 
-        $school->update($data);
-
-        return redirect()->route('admin.schools')->with('success', 'Escuela actualizada.');
+        return redirect()->route('admin.schools')->with('success', 'Escuela actualizada correctamente.');
     }
 
-    //Eliminamos una escuela
+    // Elimina el logo de la escuela
+    public function deleteSchoolLogo(School $school)
+    {
+        $this->verificarAdmin();
+        $this->eliminarArchivo($school->logo);
+        $school->logo = null;
+        $school->save();
+        return back()->with('success', 'Logo de la escuela eliminado.');
+    }
+
+    // Elimina la escuela
     public function destroySchool(School $school)
     {
         $this->verificarAdmin();
 
+        // 1. Eliminar archivos (logo)
+        $this->eliminarArchivo($school->logo);
+
+        // 2. Desasociar relaciones (actor_school y actor_school_teacher)
+        $school->actors()->detach();
+        $school->teacherActors()->detach();
+
+        // 3. Eliminar la escuela
         $school->delete();
-        return redirect()->route('admin.schools')->with('success', 'Escuela eliminada.');
+
+        return redirect()->route('admin.schools')->with('success', 'Escuela eliminada correctamente.');
     }
 
-    // ========== OBRAS ==========
+    // ========== ACTORES ==========
 
-    //Listamos todas las obras con filtros
+    // Listamos todos los actores con filtros
+    public function actors(Request $request)
+    {
+        $this->verificarAdmin();
+
+        $query = Actor::with('user');
+
+        if ($request->filled('availability')) {
+            $isAvailable = $request->availability === 'available';
+            $query->where('is_available', $isAvailable);
+        }
+
+        // 2. Búsqueda por nombre/email
+        if ($request->filled('search')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        //3. Filtro por Género
+        if ($request->filled('gender')) {
+            $query->whereJsonContains('genders', $request->gender);
+        }
+
+        //4. Filtro por Edad Vocal
+        if ($request->filled('voice_age')) {
+            $query->whereJsonContains('voice_ages', $request->voice_age);
+        }
+
+        $genders = ['Masculino', 'Femenino', 'Otro'];
+        $voiceAges = ['Niño', 'Adolescente', 'Adulto Joven', 'Adulto', 'Anciano', 'Atipada'];
+
+        // Devolvemos el resultado
+        $actors = $query->latest('id')->paginate(15)->withQueryString();
+
+        return view('admin.actors.index', compact('actors', 'genders', 'voiceAges'));
+    }
+
+    // Mostramos el formulario de creación de actor
+    public function createActor()
+    {
+        $this->verificarAdmin();
+
+        $schools = School::orderBy('name')->get();
+        $works = Work::orderBy('title')->get();
+        $genders = ['Masculino', 'Femenino', 'Otros'];
+
+        //Definimos la lista canónica de edades vocales
+        $voiceAges = ['Niño', 'Adolescente', 'Adulto joven', 'Adulto', 'Anciano', 'Atipada'];
+
+        return view('admin.actors.create', compact('schools', 'works', 'genders', 'voiceAges'))
+            ->with(['isAdmin' => true]);
+    }
+
+    // Guardamos un nuevo actor
+    public function storeActor(Request $request)
+    {
+        // Aseguramos que solo el admin pueda ejecutar esto
+        $this->verificarAdmin();
+
+        // 1. Validaciones
+        $validator = Validator::make($request->all(), [
+            // Datos del Usuario (incluye Nombre completo y Apellidos si se recogen en el campo 'name')
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+
+            // Datos del Actor
+            'bio' => ['required', 'string', 'max:1000'],
+            'photo' => ['nullable', 'image', 'max:2048'],
+            'audio_path' => ['nullable', 'file', 'mimes:mp3,wav', 'max:5120'],
+            'is_available' => ['required', 'boolean'],
+
+            // Arrays JSON
+            'genders' => ['required', 'array'],
+            'genders.*' => ['string', Rule::in(Actor::getGenderOptions())],
+            'voice_ages' => ['required', 'array'],
+            'voice_ages.*' => ['string', Rule::in(Actor::getVoiceAgeOptions())],
+
+            // Relaciones Many-to-Many
+            'schools' => ['nullable', 'array'],
+            'schools.*' => ['exists:schools,id'],
+            'works' => ['nullable', 'array'],
+            'works.*' => ['exists:works,id'],
+            'character_names' => ['nullable', 'array'],
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // 2. Creación del Usuario
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'actor', // Rol fijo
+        ]);
+
+        // 3. Manejo de archivos (Usando tus métodos privados)
+        $photoPath = $request->hasFile('photo') ?
+            $this->guardarArchivo($request->file('photo'), 'photos') : null;
+        $audioPath = $request->hasFile('audio_path') ?
+            $this->guardarArchivo($request->file('audio_path'), 'audios') : null;
+
+        // 4. Creación del Perfil de Actor
+        $actor = Actor::create([
+            'user_id' => $user->id,
+            'bio' => $request->bio,
+            'photo' => $photoPath,
+            'audio_path' => $audioPath,
+            'genders' => $request->genders,
+            'voice_ages' => $request->voice_ages,
+            'is_available' => $request->boolean('is_available'),
+        ]);
+
+        // 5. Sincronización de Formación (Schools)
+        $actor->schools()->sync($request->schools);
+
+        // 6. Sincronización de Obras (Works) con el campo Pivot 'character_name'
+        $worksData = [];
+        $workIds = $request->works ?? [];
+        $characterNames = $request->character_names ?? [];
+
+        foreach ($workIds as $workId) {
+            $worksData[$workId] = [
+                'character_name' => $characterNames[$workId] ?? null
+            ];
+        }
+        $actor->works()->sync($worksData);
+
+        return redirect()->route('admin.actors')->with('success', 'Actor y usuario creados correctamente.');
+    }
+
+    public function editActor(Actor $actor)
+    {
+        $this->verificarAdmin();
+
+        // 1. Cargamos los datos necesarios para las pestañas de Formación y Experiencia
+        $schools = School::orderBy('name')->get();
+        $works = Work::orderBy('title')->get();
+
+        // 2. Devolvemos la vista del ADMIN
+        return view('admin.actors.edit', compact('actor', 'schools', 'works'));
+    }
+
+    /**
+     * Procesa la actualización del perfil por parte del ADMIN.
+     */
+    public function updateActor(Request $request, Actor $actor)
+    {
+        $this->verificarAdmin();
+
+        // Validaciones del Admin (incluye campos de usuario y campos de actor)
+        $request->validate([
+            // Campos de Usuario (editable por Admin)
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($actor->user->id)],
+            'role' => ['required', 'string', Rule::in(['actor', 'client', 'admin'])],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+
+            // Campos de Actor (igual que ActorController)
+            'city' => ['nullable', 'string', 'max:255'],
+            'is_available' => ['required', 'boolean'],
+            'genders' => ['nullable', 'array'],
+            'voice_ages' => ['nullable', 'array'],
+            'bio' => ['nullable', 'string', 'max:1000'],
+            'photo' => ['nullable', 'image', 'max:2048'],
+            'audio_path' => ['nullable', 'file', 'mimes:mp3,wav', 'max:5120'],
+            'schools' => ['nullable', 'array'],
+            'teaching_schools' => ['nullable', 'array'],
+            'works' => ['nullable', 'array'],
+        ]);
+
+        // 1. Actualización del Usuario (Solo Admin)
+        $actor->user->name = $request->name;
+        $actor->user->email = $request->email;
+        $actor->user->role = $request->role;
+        if ($request->filled('password')) {
+            $actor->user->password = Hash::make($request->password);
+        }
+        $actor->user->save();
+
+        // 2. Actualización de Archivos y Datos del Actor (Igual que ActorController)
+        if ($request->hasFile('photo')) {
+            $this->eliminarArchivo($actor->photo);
+            $actor->photo = $this->guardarArchivo($request->file('photo'), 'photos');
+        }
+
+        if ($request->hasFile('audio_path')) {
+            $this->eliminarArchivo($actor->audio_path);
+            $actor->audio_path = $this->guardarArchivo($request->file('audio_path'), 'audios');
+        }
+
+        $actor->fill($request->only([
+            'city',
+            'is_available',
+            'bio',
+            'experience_notes'
+        ]));
+        $actor->genders = $request->genders ?? [];
+        $actor->voice_ages = $request->voice_ages ?? [];
+        $actor->save();
+
+        // 3. Sincronización de relaciones Many-to-Many
+        $actor->schools()->sync($request->schools ?? []);
+        $actor->teachingSchools()->sync($request->teaching_schools ?? []);
+        $actor->works()->sync($request->works ?? []);
+
+
+        return redirect()->route('admin.actors')->with('success', 'Perfil de actor y usuario actualizado correctamente.');
+    }
+
+    // Elimina la foto de perfil del actor.
+    public function deleteActorPhoto(Actor $actor)
+    {
+        $this->verificarAdmin();
+        $this->eliminarArchivo($actor->photo);
+        $actor->photo = null;
+        $actor->save();
+        return back()->with('success', 'Foto de perfil eliminada.');
+    }
+
+    // Elimina la muestra de voz del actor.
+    public function deleteActorAudio(Actor $actor)
+    {
+        $this->verificarAdmin();
+        $this->eliminarArchivo($actor->audio_path);
+        $actor->audio_path = null;
+        $actor->save();
+        return back()->with('success', 'Muestra de voz eliminada.');
+    }
+
+    // Eliminamos un actor
+    public function destroyActor(Actor $actor)
+    {
+        $this->verificarAdmin();
+
+        // Eliminamos archivos
+        $this->eliminarArchivo($actor->photo);
+        $this->eliminarArchivo($actor->audio_path);
+        $this->eliminarArchivo($actor->voice_pdf_path);
+
+        $userId = $actor->user_id;
+        $actor->schools()->detach();
+        $actor->works()->detach();
+        $actor->delete();
+        User::find($userId)->delete();
+
+        return redirect()->route('admin.actors')->with('success', 'Perfil de actor eliminado.');
+    }
+
+    // ===================================
+    // ========== OBRAS CRUD ==========
+    // ===================================
+
+    // Listamos todas las obras con filtros
     public function works(Request $request)
     {
         $this->verificarAdmin();
 
         $query = Work::withCount('actors');
 
-        //Aplicamos filtros si se han especificado
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
-
+        // 1. Búsqueda por título o autor
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        //Ordenamos los resultados
-        $query = $this->ordenar($query, $request->sort, [
-            'title' => 'title',
-            'actors' => 'actors_count',
-            'oldest' => 'created_at'
-        ]);
+        // 2. Filtro por Tipo
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
 
-        $works = $query->paginate(10);
+        // 3. Filtro por Año
+        if ($request->filled('year')) {
+            $query->where('year', $request->year);
+        }
+        $works = $query->latest()->paginate(15);
         $types = Work::getTypeOptions();
 
         return view('admin.works.index', compact('works', 'types'));
     }
 
-    //Mostramos el formulario para crear una obra
+    // Muestra el formulario de creación de obra
     public function createWork()
     {
         $this->verificarAdmin();
@@ -218,48 +463,35 @@ class AdminController extends Controller
         return view('admin.works.create', compact('types'));
     }
 
-    //Guardamos una nueva obra
+    // Guarda una nueva obra
     public function storeWork(Request $request)
     {
         $this->verificarAdmin();
 
-        $data = $request->validate([
+        $request->validate([
             'title' => 'required|string|max:255',
-            'type' => 'required|in:' . implode(',', array_keys(Work::getTypeOptions())),
-            'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
+            'type' => ['required', Rule::in(array_keys(Work::getTypeOptions()))],
+            'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'description' => 'nullable|string|max:1000',
-            'poster' => 'nullable|image|max:2048'
-        ], [
-            //Mensajes de validación en español
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser texto.',
-            'max' => [
-                'string' => 'El campo :attribute no puede tener más de :max caracteres.',
-                'file' => 'El archivo :attribute no puede pesar más de :max KB.',
-            ],
-            'integer' => 'El campo :attribute debe ser un número.',
-            'min' => 'El campo :attribute debe ser al menos :min.',
-            'in' => 'El tipo seleccionado no es válido.',
-            'image' => 'El campo :attribute debe ser una imagen.',
-        ], [
-            //Nombres de campos en español
-            'title' => 'título',
-            'type' => 'tipo',
-            'year' => 'año',
-            'description' => 'descripción',
-            'poster' => 'póster',
+            'poster' => 'nullable|image|max:2048',
         ]);
 
+        $work = Work::create($request->only([
+            'title',
+            'type',
+            'year',
+            'description'
+        ]));
+
         if ($request->hasFile('poster')) {
-            $data['poster'] = $this->guardarArchivo($request->file('poster'), 'works/posters');
+            $work->poster = $this->guardarArchivo($request->file('poster'), 'works/posters');
+            $work->save();
         }
 
-        Work::create($data);
-
-        return redirect()->route('admin.works')->with('success', 'Obra creada.');
+        return redirect()->route('admin.works')->with('success', 'Obra creada correctamente.');
     }
 
-    //Mostramos el formulario para editar una obra
+    // Muestra el formulario de edición de obra
     public function editWork(Work $work)
     {
         $this->verificarAdmin();
@@ -267,268 +499,60 @@ class AdminController extends Controller
         return view('admin.works.edit', compact('work', 'types'));
     }
 
-    //Actualizamos una obra existente
+    // Actualiza los datos de la obra
     public function updateWork(Request $request, Work $work)
     {
         $this->verificarAdmin();
 
-        $data = $request->validate([
+        $request->validate([
             'title' => 'required|string|max:255',
-            'type' => 'required|in:' . implode(',', array_keys(Work::getTypeOptions())),
-            'year' => 'nullable|integer|min:1900|max:' . (date('Y') + 5),
+            'type' => ['required', Rule::in(array_keys(Work::getTypeOptions()))],
+            'year' => 'nullable|integer|min:1900|max:' . date('Y'),
             'description' => 'nullable|string|max:1000',
-            'poster' => 'nullable|image|max:2048'
-        ], [
-            //Mensajes de validación en español
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser texto.',
-            'max' => [
-                'string' => 'El campo :attribute no puede tener más de :max caracteres.',
-                'file' => 'El archivo :attribute no puede pesar más de :max KB.',
-            ],
-            'integer' => 'El campo :attribute debe ser un número.',
-            'min' => 'El campo :attribute debe ser al menos :min.',
-            'in' => 'El tipo seleccionado no es válido.',
-            'image' => 'El campo :attribute debe ser una imagen.',
-        ], [
-            //Nombres de campos en español
-            'title' => 'título',
-            'type' => 'tipo',
-            'year' => 'año',
-            'description' => 'descripción',
-            'poster' => 'póster',
+            'poster' => 'nullable|image|max:2048',
         ]);
+
+        $work->update($request->only([
+            'title',
+            'type',
+            'year',
+            'description'
+        ]));
 
         if ($request->hasFile('poster')) {
             $this->eliminarArchivo($work->poster);
-            $data['poster'] = $this->guardarArchivo($request->file('poster'), 'works/posters');
+            $work->poster = $this->guardarArchivo($request->file('poster'), 'works/posters');
+            $work->save();
         }
 
-        $work->update($data);
-
-        return redirect()->route('admin.works')->with('success', 'Obra actualizada.');
+        return redirect()->route('admin.works')->with('success', 'Obra actualizada correctamente.');
     }
 
-    //Eliminamos una obra
+    // Elimina el poster de la obra
+    public function deleteWorkPoster(Work $work)
+    {
+        $this->verificarAdmin();
+        $this->eliminarArchivo($work->poster);
+        $work->poster = null;
+        $work->save();
+        return back()->with('success', 'Poster de la obra eliminado.');
+    }
+
+    // Elimina la obra
     public function destroyWork(Work $work)
     {
         $this->verificarAdmin();
 
+        // 1. Eliminar archivos (poster)
         $this->eliminarArchivo($work->poster);
+
+        // 2. Desasociar relaciones (actor_work)
+        $work->actors()->detach();
+
+        // 3. Eliminar la obra
         $work->delete();
 
-        return redirect()->route('admin.works')->with('success', 'Obra eliminada.');
-    }
-
-    // ========== ACTORES ==========
-
-    //Listamos todos los actores con filtros
-    public function actors(Request $request)
-    {
-        $this->verificarAdmin();
-
-        $query = Actor::with(['user', 'schools']);
-
-        //Aplicamos filtros si se han especificado
-        if ($request->filled('search')) {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        if ($request->filled('availability')) {
-            $query->where('is_available', $request->availability == 'available');
-        }
-
-        $actors = $query->paginate(10);
-        $genders = Actor::getGenderOptions();
-        $voiceAges = Actor::getVoiceAgeOptions();
-
-        return view('admin.actors.index', compact('actors', 'genders', 'voiceAges'));
-    }
-
-    //Mostramos formulario para crear actor (admin)
-    public function createActor()
-    {
-        $this->verificarAdmin();
-
-        $data = [
-            'schools' => School::all(),
-            'works' => Work::all(),
-            'genders' => Actor::getGenderOptions(),
-            'voiceAges' => Actor::getVoiceAgeOptions(),
-        ];
-
-        return view('admin.actors.create', $data);
-    }
-
-    //Guardamos nuevo actor creado por admin
-    public function storeActor(Request $request)
-    {
-        $this->verificarAdmin();
-
-        // Primero crear usuario
-        $userData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8|confirmed',
-        ], [
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser texto.',
-            'email' => 'El campo :attribute debe ser un email válido.',
-            'unique' => 'Este :attribute ya está registrado.',
-            'min' => [
-                'string' => 'El campo :attribute debe tener al menos :min caracteres.',
-            ],
-            'confirmed' => 'Las contraseñas no coinciden.',
-        ], [
-            'name' => 'nombre',
-            'email' => 'email',
-            'password' => 'contraseña',
-        ]);
-
-        // Crear usuario
-        $user = User::create([
-            'name' => $userData['name'],
-            'email' => $userData['email'],
-            'password' => Hash::make($userData['password']),
-            'role' => 'actor',
-        ]);
-
-        // Luego validar datos del actor
-        $actorData = $request->validate([
-            'bio' => 'nullable|string|max:1000',
-            'photo' => 'nullable|image|max:2048',
-            'audio_path' => 'nullable|file|mimes:mp3,wav|max:5120',
-            'genders' => 'required|array',
-            'voice_ages' => 'required|array',
-            'is_available' => 'sometimes|boolean',
-            'schools' => 'nullable|array',
-            'works' => 'nullable|array'
-        ], [
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser texto.',
-            'max' => [
-                'string' => 'El campo :attribute no puede tener más de :max caracteres.',
-                'file' => 'El archivo :attribute no puede pesar más de :max KB.',
-            ],
-            'image' => 'El campo :attribute debe ser una imagen.',
-            'file' => 'El campo :attribute debe ser un archivo.',
-            'mimes' => 'El campo :attribute debe ser MP3 o WAV.',
-            'array' => 'El campo :attribute debe ser una lista.',
-            'boolean' => 'El campo :attribute debe ser sí o no.',
-        ], [
-            'bio' => 'biografía',
-            'photo' => 'foto',
-            'audio_path' => 'audio',
-            'genders' => 'géneros',
-            'voice_ages' => 'edades de voz',
-            'is_available' => 'disponibilidad',
-            'schools' => 'escuelas',
-            'works' => 'trabajos',
-        ]);
-
-        // Crear actor
-        $actor = new Actor();
-        $actor->user_id = $user->id;
-        $actor->bio = $actorData['bio'] ?? null;
-        $actor->genders = $actorData['genders'];
-        $actor->voice_ages = $actorData['voice_ages'];
-        $actor->is_available = $request->has('is_available');
-
-        // Guardar archivos
-        if ($request->hasFile('photo')) {
-            $actor->photo = $this->guardarArchivo($request->file('photo'), 'actors/photos');
-        }
-
-        if ($request->hasFile('audio_path')) {
-            $actor->audio_path = $this->guardarArchivo($request->file('audio_path'), 'actors/audios');
-        }
-
-        $actor->save();
-
-        // Asociar relaciones
-        if ($request->has('schools')) {
-            $actor->schools()->sync($request->schools);
-        }
-
-        if ($request->has('works')) {
-            $actor->agregarTrabajos($request->works, $request->character_names ?? []);
-        }
-
-        return redirect()->route('admin.actors')->with('success', 'Actor y usuario creados exitosamente.');
-    }
-
-    //Mostramos el formulario para editar un actor
-    public function editActor(Actor $actor)
-    {
-        $this->verificarAdmin();
-
-        $data = [
-            'actor' => $actor,
-            'schools' => School::all(),
-            'works' => Work::all(),
-            'genders' => Actor::getGenderOptions(),
-            'voiceAges' => Actor::getVoiceAgeOptions(),
-            'isAdmin' => true
-        ];
-
-        return view('actors.edit', $data);
-    }
-
-    //Actualizamos un actor (versión simplificada para admin)
-    public function updateActor(Request $request, Actor $actor)
-    {
-        $this->verificarAdmin();
-
-        $data = $request->validate([
-            'bio' => 'nullable|string|max:1000',
-            'genders' => 'required|array|min:1',
-            'voice_ages' => 'required|array|min:1',
-            'is_available' => 'required|boolean',
-            'schools' => 'nullable|array'
-        ], [
-            //Mensajes de validación en español
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser texto.',
-            'max' => [
-                'string' => 'El campo :attribute no puede tener más de :max caracteres.',
-            ],
-            'array' => 'El campo :attribute debe ser una lista.',
-            'min' => [
-                'array' => 'El campo :attribute debe tener al menos :min elemento.',
-            ],
-            'boolean' => 'El campo :attribute debe ser sí o no.',
-        ], [
-            //Nombres de campos en español
-            'bio' => 'biografía',
-            'genders' => 'géneros',
-            'voice_ages' => 'edades de voz',
-            'is_available' => 'disponibilidad',
-            'schools' => 'escuelas',
-        ]);
-
-        //Actualizamos los datos básicos (sin archivos para simplificar)
-        $actor->update($data);
-
-        //Sincronizamos las escuelas
-        $actor->schools()->sync($request->schools ?? []);
-
-        return redirect()->route('admin.actors')->with('success', 'Actor actualizado.');
-    }
-
-    //Eliminamos un actor
-    public function destroyActor(Actor $actor)
-    {
-        $this->verificarAdmin();
-
-        //Eliminamos los archivos si existen
-        $this->eliminarArchivo($actor->photo);
-        $this->eliminarArchivo($actor->audio_path);
-
-        $actor->delete();
-
-        return redirect()->route('admin.actors')->with('success', 'Actor eliminado.');
+        return redirect()->route('admin.works')->with('success', 'Obra eliminada correctamente.');
     }
 
     // ========== USUARIOS ==========
@@ -545,8 +569,7 @@ class AdminController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('email', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%' . $request->search . '%');
         }
 
         $users = $query->latest()->paginate(15);
@@ -561,22 +584,6 @@ class AdminController extends Controller
     {
         if (Auth::user()->role !== 'admin') {
             abort(403, 'Solo administradores pueden acceder.');
-        }
-    }
-
-    //Ordenamos una consulta según el parámetro recibido
-    private function ordenar($query, $sort, $options = [])
-    {
-        switch ($sort) {
-            case 'oldest':
-                return $query->oldest();
-            case 'title':
-            case 'name':
-                return $query->orderBy($options[$sort] ?? $sort);
-            case 'actors':
-                return $query->orderBy($options['actors'], 'desc');
-            default:
-                return $query->latest();
         }
     }
 

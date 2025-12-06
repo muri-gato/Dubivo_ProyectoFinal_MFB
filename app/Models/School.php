@@ -30,7 +30,7 @@ class School extends Model
     public function teachers()
     {
         return $this->belongsToMany(Actor::class, 'actor_school_teacher')
-            ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
+            ->withPivot('is_active_teacher')
             ->wherePivot('is_active_teacher', true)
             ->withTimestamps();
     }
@@ -39,7 +39,7 @@ class School extends Model
     public function teacherActors()
     {
         return $this->belongsToMany(Actor::class, 'actor_school_teacher')
-            ->withPivot('subject', 'teaching_bio', 'is_active_teacher')
+            ->withPivot('is_active_teacher')
             ->withTimestamps();
     }
 
