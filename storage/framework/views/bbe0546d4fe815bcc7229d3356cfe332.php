@@ -9,35 +9,14 @@
         <div class="border-b border-gray-200 pb-4 mb-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <div class="bg-blue-100 p-3 mr-4">
-                        <i class="fas fa-school text-blue-600 text-xl"></i>
-                    </div>
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800">Editar Escuela</h1>
                         <p class="text-gray-600 mt-1">Actualiza la información de <?php echo e($school->name); ?></p>
                     </div>
                 </div>
-                <div class="text-sm text-gray-500">
-                    ID: <?php echo e($school->id); ?> • Creada: <?php echo e($school->created_at->format('d/m/Y')); ?>
-
-                </div>
             </div>
         </div>
 
-        <!-- Información Actual -->
-        <div class="bg-gray-50 p-4 mb-6 border border-gray-200">
-            <h3 class="font-semibold text-gray-700 mb-2">Información Actual</h3>
-            <div class="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                    <span class="font-medium">Actores formados:</span>
-                    <span class="ml-2"><?php echo e($school->actors_count); ?></span>
-                </div>
-                <div>
-                    <span class="font-medium">Última actualización:</span>
-                    <span class="ml-2"><?php echo e($school->updated_at->format('d/m/Y H:i')); ?></span>
-                </div>
-            </div>
-        </div>
 
         <!-- Formulario -->
         <form action="<?php echo e(route('admin.schools.update', $school)); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
@@ -193,8 +172,7 @@ unset($__errorArgs, $__bag); ?>
                         Cancelar
                     </a>
                     <button type="submit" 
-                            class="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
-                        <i class="fas fa-save mr-2"></i>
+ class="bg-rosa-electrico hover:bg-naranja-vibrante text-white px-4 py-2 flex items-center text-m font-semibold transition-colors duration-300">                        <i class="fas fa-save mr-2"></i>
                         Actualizar Escuela
                     </button>
                 </div>

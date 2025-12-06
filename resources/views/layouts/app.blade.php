@@ -7,6 +7,7 @@
     <title>@yield('title', 'Dubivo')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 </head>
 
 <body class="bg-gray-50">
@@ -56,9 +57,11 @@
                                 <i class="fas fa-cog mr-2"></i>Panel de Administración
                             </a>
                             @endif
+                            @if(auth()->user()->role !== 'admin')
                             <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-sm font-medium transition-colors duration-200">
                                 <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                             </a>
+                            @endif
                             @if(auth()->user()->role === 'actor')
                             @if(auth()->user()->actorProfile)
                             <a href="{{ route('actors.show', auth()->user()->actorProfile) }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-sm font-medium transition-colors duration-200">
@@ -223,6 +226,7 @@
             }
         });
     </script>
+    @stack('scripts')
 </body>
 
 </html>

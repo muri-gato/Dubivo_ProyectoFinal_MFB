@@ -12,8 +12,7 @@
                 <p class="text-gray-600 mt-2">Administra todas las escuelas de doblaje registradas</p>
             </div>
             <a href="<?php echo e(route('admin.schools.create')); ?>"
-                class="bg-blue-600 text-white px-6 py-3 hover:bg-blue-700 transition duration-200 flex items-center font-medium">
-                <i class="fas fa-plus mr-2"></i>
+class="bg-naranja-vibrante hover:bg-rosa-electrico text-white transition-colors duration-300  px-4 py-2 flex items-center h-[42px] font-medium">                <i class="fas fa-plus mr-2"></i>
                 Nueva Escuela
             </a>
         </div>
@@ -62,29 +61,8 @@
                 </select>
             </div>
 
-            <!-- Estado -->
-            <div class="min-w-[150px]">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                <select name="status" class="w-full border border-gray-300 px-3 py-2 filter-select">
-                    <option value="">Todos</option>
-                    <option value="active" <?php echo e(request('status') == 'active' ? 'selected' : ''); ?>>Con actores</option>
-                    <option value="inactive" <?php echo e(request('status') == 'inactive' ? 'selected' : ''); ?>>Sin actores</option>
-                </select>
-            </div>
-
-            <!-- Ordenar -->
-            <div class="min-w-[150px]">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ordenar</label>
-                <select name="sort" class="w-full border border-gray-300 px-3 py-2 filter-select">
-                    <option value="newest" <?php echo e(request('sort') == 'newest' ? 'selected' : ''); ?>>Más recientes</option>
-                    <option value="oldest" <?php echo e(request('sort') == 'oldest' ? 'selected' : ''); ?>>Más antiguas</option>
-                    <option value="name" <?php echo e(request('sort') == 'name' ? 'selected' : ''); ?>>Nombre A-Z</option>
-                    <option value="actors" <?php echo e(request('sort') == 'actors' ? 'selected' : ''); ?>>Más actores</option>
-                </select>
-            </div>
-
             <div class="flex items-end space-x-2">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 transition duration-200 flex items-center h-[42px] font-medium">
+                <button type="submit"class="bg-naranja-vibrante hover:bg-rosa-electrico text-white transition-colors duration-300  px-4 py-2 flex items-center h-[42px] font-medium">
                     <i class="fas fa-filter mr-2"></i> Filtrar
                 </button>
                 <a href="<?php echo e(route('admin.schools')); ?>" class="bg-gray-500 text-white px-4 py-2 hover:bg-gray-600 transition duration-200 flex items-center h-[42px] font-medium">
@@ -112,9 +90,6 @@
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actores
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Estado
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Acciones
@@ -186,14 +161,7 @@
                             </div>
                         </td>
 
-                        <!-- Estado -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold 
-                                    <?php echo e($school->actors_count > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'); ?>">
-                                <?php echo e($school->actors_count > 0 ? 'Activa' : 'Sin actores'); ?>
 
-                            </span>
-                        </td>
 
                         <!-- Acciones - SOLO EDITAR Y ELIMINAR -->
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -225,7 +193,7 @@
                                 <p class="text-lg font-medium">No hay escuelas registradas</p>
                                 <p class="mt-2">Comienza añadiendo la primera escuela</p>
                                 <a href="<?php echo e(route('admin.schools.create')); ?>"
-                                    class="inline-block mt-4 bg-blue-600 text-white px-6 py-2 hover:bg-blue-700 font-medium">
+                                    class="bg-naranja-vibrante hover:bg-rosa-electrico text-white transition-colors duration-300  px-4 py-2 flex items-center h-[42px] font-medium">
                                     Crear Primera Escuela
                                 </a>
                             </div>

@@ -3,363 +3,568 @@
 <?php $__env->startSection('title', 'Crear Nuevo Actor - Admin'); ?>
 
 <?php $__env->startSection('content'); ?>
+
 <div class="container mx-auto px-4 py-8">
-    <div class="bg-white shadow-md p-6">
-        <!-- Header -->
-        <div class="border-b border-gray-200 pb-4 mb-6">
-            <div class="flex items-center">
-                <div class="bg-blue-100 p-3 mr-4">
-                    <i class="fas fa-user-plus text-blue-600 text-xl"></i>
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Crear Nuevo Actor</h1>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Formulario Principal -->
+        <div class="lg:w-3/4">
+            <div class="bg-white shadow-md p-6 border border-gray-200">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">Crear nuevo usuario y perfil de actor</h2>
+                    <p class="text-gray-600 mt-2">Completa toda la información necesaria para crear el perfil</p>
                 </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Crear Nuevo Actor</h1>
-                    <p class="text-gray-600 mt-1">Crear nuevo usuario y perfil de actor</p>
+
+                <!-- Mensajes de Estado (Éxito/Error) -->
+                <?php if(session('success')): ?>
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 mb-4" role="alert">
+                    <span class="block sm:inline"><?php echo e(session('success')); ?></span>
                 </div>
+                <?php endif; ?>
+
+                <?php if($errors->any()): ?>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mb-4" role="alert">
+                    <strong class="font-bold">¡Error de Validación!</strong>
+                    <span class="block sm:inline">Por favor, revisa los campos marcados.</span>
+                </div>
+                <?php endif; ?>
+
+                <form action="<?php echo e(route('admin.actors.store')); ?>" method="POST" enctype="multipart/form-data" class="space-y-8">
+                    <?php echo csrf_field(); ?>
+
+                    <!-- Sección 1: Información del Usuario (Cuenta) -->
+                    <div class="bg-white p-6 border border-gray-200">
+                        <h3 class="text-xl font-semibold mb-6 border-b pb-3 text-gray-700">1. Información de Acceso (Usuario)</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Nombre -->
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nombre completo <span class="text-rojo-intenso">*</span>
+                                </label>
+                                <input type="text" name="name" id="name" required
+                                    value="<?php echo e(old('name')); ?>"
+                                    class="w-full border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-rosa-electrico focus:ring-rosa-electrico transition duration-200 <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-rojo-intenso <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Email <span class="text-rojo-intenso">*</span>
+                                </label>
+                                <input type="email" name="email" id="email" required
+                                    value="<?php echo e(old('email')); ?>"
+                                    class="w-full border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-morado-vibrante focus:ring-morado-vibrante transition duration-200 <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-rojo-intenso <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Contraseña -->
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Contraseña <span class="text-rojo-intenso">*</span>
+                                </label>
+                                <input type="password" name="password" id="password" required
+                                    class="w-full border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-verde-menta focus:ring-verde-menta transition duration-200 <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-rojo-intenso <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Confirmar Contraseña -->
+                            <div>
+                                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Confirmar Contraseña <span class="text-rojo-intenso">*</span>
+                                </label>
+                                <input type="password" name="password_confirmation" id="password_confirmation" required
+                                    class="w-full border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-verde-menta focus:ring-verde-menta transition duration-200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección 2: Información del Actor (Perfil) -->
+                    <div class="bg-white p-6 border border-gray-200">
+                        <h3 class="text-xl font-semibold mb-6 border-b pb-3 text-gray-700">2. Detalles del Perfil (Actor)</h3>
+
+                        <!-- Biografía -->
+                        <div class="mb-6">
+                            <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">
+                                Biografía <span class="text-rojo-intenso">*</span>
+                            </label>
+                            <textarea name="bio" id="bio" rows="4" required
+                                class="w-full border border-gray-300 px-4 py-2.5 focus:outline-none focus:border-morado-vibrante focus:ring-morado-vibrante transition duration-200 <?php $__errorArgs = ['bio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-rojo-intenso <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                placeholder="Describe la experiencia, formación y especialidades del actor..."><?php echo e(old('bio')); ?></textarea>
+                            <?php $__errorArgs = ['bio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                        </div>
+
+                        <!-- Géneros y Edades Vocales -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <!-- Géneros -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    Géneros que puede interpretar <span class="text-rojo-intenso">*</span>
+                                </label>
+                                <div class="filter-scroll-container">
+                                    <?php $__currentLoopData = $genders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $gender): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <label class="flex items-center py-1">
+                                        <input type="checkbox" name="genders[]" value="<?php echo e($gender); ?>"
+                                            <?php echo e(in_array($gender, old('genders', [])) ? 'checked' : ''); ?>
+
+                                            class="text-rosa-electrico focus:ring-rosa-electrico">
+                                        <span class="ml-2 text-sm text-gray-700"><?php echo e($gender); ?></span>
+                                    </label>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                                <?php $__errorArgs = ['genders'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Edades Vocales -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    Edades vocales que puede interpretar <span class="text-rojo-intenso">*</span>
+                                </label>
+                                <div class="filter-scroll-container">
+                                    <?php $__currentLoopData = $voiceAges; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $age): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <label class="flex items-center py-1">
+                                        <input type="checkbox" name="voice_ages[]" value="<?php echo e($age); ?>"
+                                            <?php echo e(in_array($age, old('voice_ages', [])) ? 'checked' : ''); ?>
+
+                                            class="text-naranja-vibrante focus:ring-naranja-vibrante">
+                                        <span class="ml-2 text-sm text-gray-700"><?php echo e($age); ?></span>
+                                    </label>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                                <?php $__errorArgs = ['voice_ages'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+                        </div>
+
+                        <!-- Archivos (Foto y Audio) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <!-- Foto -->
+                            <div>
+                                <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Foto de Perfil
+                                </label>
+                                <input type="file" name="photo" id="photo"
+                                    accept="image/*"
+                                    class="w-full text-sm text-gray-500 px-3 py-2 border border-gray-300 focus:border-rosa-electrico focus:ring-rosa-electrico transition duration-200">
+                                <p class="text-xs text-gray-500 mt-1">Formatos: JPG, PNG, GIF. Máx: 2MB</p>
+                                <?php $__errorArgs = ['photo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Audio -->
+                            <div>
+                                <label for="audio_path" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Muestra de Voz
+                                </label>
+                                <input type="file" name="audio_path" id="audio_path"
+                                    accept="audio/*"
+                                    class="w-full text-sm text-gray-500 px-3 py-2 border border-gray-300 focus:border-morado-vibrante focus:ring-morado-vibrante transition duration-200">
+                                <p class="text-xs text-gray-500 mt-1">Formatos: MP3, WAV. Máx: 5MB</p>
+                                <?php $__errorArgs = ['audio_path'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+                        </div>
+
+                        <!-- Disponibilidad -->
+                        <div class="mb-6">
+                            <h3 class="font-medium text-gray-700 mb-3">Disponibilidad</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="is_available" value="1"
+                                        <?php echo e(old('is_available', 1) == 1 ? 'checked' : ''); ?>
+
+                                        class="text-verde-menta focus:ring-verde-menta">
+                                    <span class="ml-2 text-sm text-gray-700">Disponible para nuevos proyectos</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="is_available" value="0"
+                                        <?php echo e(old('is_available') == '0' ? 'checked' : ''); ?>
+
+                                        class="text-rojo-intenso focus:ring-rojo-intenso">
+                                    <span class="ml-2 text-sm text-gray-700">No disponible</span>
+                                </label>
+                            </div>
+                            <?php $__errorArgs = ['is_available'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                        </div>
+                    </div>
+
+                    <!-- Sección 3: Formación y Experiencia -->
+                    <div class="bg-white p-6 border border-gray-200">
+                        <h3 class="text-xl font-semibold mb-6 border-b pb-3 text-gray-700">3. Formación y Trabajos</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Escuelas (Formación) -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Formación Académica (Escuelas donde estudió) <span class="text-rojo-intenso">*</span>
+                                </label>
+                                <div class="filter-scroll-container">
+                                    <?php $__empty_1 = true; $__currentLoopData = $schools; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $school): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                    <label class="flex items-center py-1">
+                                        <input type="checkbox" name="schools[]" value="<?php echo e($school->id); ?>"
+                                            class="text-morado-vibrante focus:ring-morado-vibrante"
+                                            <?php echo e(in_array($school->id, old('schools', [])) ? 'checked' : ''); ?>>
+                                        <span class="ml-2 text-sm text-gray-700">
+                                            <?php echo e($school->name); ?>
+
+                                            <?php if($school->city): ?>
+                                            <span class="text-gray-500 text-xs">(<?php echo e($school->city); ?>)</span>
+                                            <?php endif; ?>
+                                        </span>
+                                    </label>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                    <p class="text-gray-500 text-sm col-span-2">No hay escuelas registradas</p>
+                                    <?php endif; ?>
+                                </div>
+                                <?php $__errorArgs = ['schools'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Escuelas (Profesor) -->
+                            <div>
+                                <div class="bg-yellow-50 p-4 border border-yellow-200">
+                                    <h4 class="text-md font-semibold mb-3 text-yellow-800">Escuelas donde enseña (Opcional)</h4>
+                                    <div class="filter-scroll-container">
+                                        <?php $__currentLoopData = $schools; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $school): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <label class="flex items-center py-1">
+                                            <input type="checkbox" name="teaching_schools[]" value="<?php echo e($school->id); ?>"
+                                                <?php echo e(in_array($school->id, old('teaching_schools', [])) ? 'checked' : ''); ?>
+
+                                                class="text-yellow-600 focus:ring-yellow-500">
+                                            <span class="ml-2 text-sm text-gray-700"><?php echo e($school->name); ?></span>
+                                        </label>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </div>
+                                </div>
+                                <?php $__errorArgs = ['teaching_schools'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+                        </div>
+
+                        <!-- Obras (Trabajos Destacados) -->
+                        <div class="mt-8">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Trabajos Destacados (Rol y Personaje)
+                            </label>
+                            <div class="filter-scroll-container">
+                                <?php $__empty_1 = true; $__currentLoopData = $works; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $work): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <div class="flex flex-col p-3 border border-gray-200 bg-gray-50 mb-2">
+                                    <div class="flex items-start">
+                                        <input type="checkbox" name="works[]" value="<?php echo e($work->id); ?>"
+                                            class="mt-1 text-morado-vibrante focus:ring-morado-vibrante"
+                                            <?php echo e(in_array($work->id, old('works', [])) ? 'checked' : ''); ?>>
+                                        <div class="flex-1 ml-2">
+                                            <span class="text-sm font-semibold text-gray-800"><?php echo e($work->title); ?></span>
+                                            <div class="text-xs text-gray-500">
+                                                <span class="capitalize"><?php echo e($work->type); ?></span>
+                                                <?php if($work->year): ?>
+                                                · <?php echo e($work->year); ?>
+
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 ml-6">
+                                        <input type="text" name="character_names[<?php echo e($work->id); ?>]"
+                                            placeholder="Personaje que interpretó"
+                                            class="w-full text-sm border border-gray-300 px-3 py-1.5 focus:ring-morado-vibrante focus:border-morado-vibrante transition duration-200"
+                                            value="<?php echo e(old('character_names.' . $work->id)); ?>">
+                                    </div>
+                                </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                <p class="text-gray-500 text-sm">No hay obras registradas</p>
+                                <?php endif; ?>
+                            </div>
+                            <?php $__errorArgs = ['works'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-rojo-intenso text-sm mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                        <a href="<?php echo e(route('admin.actors')); ?>"
+                            class="bg-gray-500 text-white px-6 py-2 hover:bg-gray-600 flex items-center font-semibold transition duration-200">
+                            <i class="fas fa-times mr-2"></i>Cancelar
+                        </a>
+                        <button type="submit"
+                            class="bg-verde-menta text-white px-6 py-2 hover:bg-verde-menta hover:bg-opacity-90 flex items-center font-semibold transition duration-200">
+                            <i class="fas fa-plus mr-2"></i>Crear Actor y Usuario
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <!-- Formulario -->
-        <form action="<?php echo e(route('admin.actors.store')); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
-            <?php echo csrf_field(); ?>
+        <!-- Columna de Información Lateral -->
+        <div class="lg:w-1/4">
+            <div class="bg-white p-6 shadow-md sticky top-4 border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Información importante</h2>
 
-            <!-- Información del Usuario -->
-            <div class="bg-gray-50 p-4 border border-gray-200">
-                <h3 class="text-lg font-semibold mb-4">Información del Usuario</h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Nombre -->
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nombre completo <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="name" id="name" required
-                            value="<?php echo e(old('name')); ?>"
-                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <?php $__errorArgs = ['name'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                        <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
+                <div class="space-y-4 text-sm text-gray-600">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-check-circle text-verde-menta mt-1"></i>
+                        <span>Todos los campos marcados con <strong class="text-rojo-intenso">*</strong> son obligatorios</span>
                     </div>
-
-                    <!-- Email -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                            Email <span class="text-red-500">*</span>
-                        </label>
-                        <input type="email" name="email" id="email" required
-                            value="<?php echo e(old('email')); ?>"
-                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <?php $__errorArgs = ['email'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                        <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-check-circle text-verde-menta mt-1"></i>
+                        <span>Se creará tanto el <strong>usuario</strong> como el <strong>perfil de actor</strong></span>
                     </div>
-
-                    <!-- Contraseña -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                            Contraseña <span class="text-red-500">*</span>
-                        </label>
-                        <input type="password" name="password" id="password" required
-                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <?php $__errorArgs = ['password'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                        <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-check-circle text-verde-menta mt-1"></i>
+                        <span>El actor aparecerá en el banco de voces para clientes</span>
                     </div>
-
-                    <!-- Confirmar Contraseña -->
-                    <div>
-                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
-                            Confirmar Contraseña <span class="text-red-500">*</span>
-                        </label>
-                        <input type="password" name="password_confirmation" id="password_confirmation" required
-                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-check-circle text-verde-menta mt-1"></i>
+                        <span>Puedes asignar formación académica y trabajos destacados</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-check-circle text-verde-menta mt-1"></i>
+                        <span>La muestra de voz es opcional pero recomendada</span>
                     </div>
                 </div>
             </div>
-
-            <!-- Información del Actor -->
-            <div class="bg-gray-50 p-4 border border-gray-200">
-                <h3 class="text-lg font-semibold mb-4">Información del Actor</h3>
-
-                <!-- Información Básica -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <!-- Géneros -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">
-                            Géneros que puede interpretar <span class="text-red-500">*</span>
-                        </label>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <?php $__currentLoopData = $genders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $gender): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <label class="flex items-center p-3 border border-gray-300 hover:bg-gray-50 cursor-pointer transition duration-150">
-                                <input type="checkbox" name="genders[]" value="<?php echo e($gender); ?>"
-                                    <?php echo e(in_array($gender, old('genders', [])) ? 'checked' : ''); ?>
-
-                                    class="border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <span class="ml-3 text-sm font-medium text-gray-700"><?php echo e($gender); ?></span>
-                            </label>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </div>
-                        <?php $__errorArgs = ['genders'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                        <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                    </div>
-
-                    <!-- Edades Vocales -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">
-                            Edades vocales que puede interpretar <span class="text-red-500">*</span>
-                        </label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            <?php $__currentLoopData = $voiceAges; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $age): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <label class="flex items-center p-3 border border-gray-300 hover:bg-gray-50 cursor-pointer transition duration-150">
-                                <input type="checkbox" name="voice_ages[]" value="<?php echo e($age); ?>"
-                                    <?php echo e(in_array($age, old('voice_ages', [])) ? 'checked' : ''); ?>
-
-                                    class="border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <span class="ml-3 text-sm font-medium text-gray-700"><?php echo e($age); ?></span>
-                            </label>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </div>
-                        <?php $__errorArgs = ['voice_ages'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                        <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                    </div>
-                </div>
-
-                <!-- Disponibilidad -->
-                <div class="mb-6">
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <input type="hidden" name="is_available" value="0">
-                        <input type="checkbox" name="is_available" value="1"
-                            class="border-gray-300 text-blue-600 focus:ring-blue-500"
-                            <?php echo e(old('is_available', 1) ? 'checked' : ''); ?>>
-                        <span class="text-sm font-medium text-gray-700">Disponible para nuevos proyectos</span>
-                    </label>
-                    <?php $__errorArgs = ['is_available'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                    <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                </div>
-
-                <!-- Biografía -->
-                <div class="mb-6">
-                    <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">
-                        Biografía
-                    </label>
-                    <textarea name="bio" id="bio" rows="4"
-                        class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Describe la experiencia, formación y especialidades del actor..."><?php echo e(old('bio')); ?></textarea>
-                    <?php $__errorArgs = ['bio'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                    <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                </div>
-
-                <!-- Archivos -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <!-- Foto -->
-                    <div>
-                        <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">
-                            Foto de Perfil
-                        </label>
-                        <input type="file" name="photo" id="photo"
-                            accept="image/*"
-                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <p class="text-xs text-gray-500 mt-1">Formatos: JPG, PNG, GIF. Máx: 2MB</p>
-                        <?php $__errorArgs = ['photo'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                        <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                    </div>
-
-                    <!-- Audio -->
-                    <div>
-                        <label for="audio_path" class="block text-sm font-medium text-gray-700 mb-2">
-                            Muestra de Voz
-                        </label>
-                        <input type="file" name="audio_path" id="audio_path"
-                            accept="audio/*"
-                            class="w-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <p class="text-xs text-gray-500 mt-1">Formatos: MP3, WAV. Máx: 5MB</p>
-                        <?php $__errorArgs = ['audio_path'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                        <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                    </div>
-                </div>
-
-                <!-- Escuelas -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Formación Académica
-                    </label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-48 overflow-y-auto border border-gray-200 p-4">
-                        <?php $__empty_1 = true; $__currentLoopData = $schools; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $school): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="checkbox" name="schools[]" value="<?php echo e($school->id); ?>"
-                                class="border-gray-300 text-blue-600 focus:ring-blue-500"
-                                <?php echo e(in_array($school->id, old('schools', [])) ? 'checked' : ''); ?>>
-                            <span class="text-sm text-gray-700">
-                                <?php echo e($school->name); ?>
-
-                                <?php if($school->city): ?>
-                                <span class="text-gray-500">(<?php echo e($school->city); ?>)</span>
-                                <?php endif; ?>
-                            </span>
-                        </label>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                        <p class="text-gray-500 text-sm col-span-2">No hay escuelas registradas</p>
-                        <?php endif; ?>
-                    </div>
-                    <?php $__errorArgs = ['schools'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                    <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                </div>
-
-                <!-- Profesor -->
-                <div class="bg-yellow-50 p-6 mb-6 border border-yellow-200">
-                    <h2 class="text-xl font-semibold mb-4">Información como Profesor</h2>
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Escuelas donde enseña</label>
-                        <div class="space-y-3">
-                            <?php $__currentLoopData = $schools; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $school): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div class="flex items-center justify-between p-3 border border-yellow-200 bg-white">
-                                <label class="flex items-center">
-                                    <input type="checkbox" name="teaching_schools[]" value="<?php echo e($school->id); ?>"
-                                        <?php echo e(in_array($school->id, old('teaching_schools', [])) ? 'checked' : ''); ?>
-
-                                        class="text-yellow-600 focus:ring-yellow-500 teaching-school-checkbox">
-                                    <span class="ml-2 text-sm text-gray-700"><?php echo e($school->name); ?></span>
-                                </label>
-                            </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Obras -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Trabajos Destacados
-                    </label>
-                    <div class="space-y-3 max-h-48 overflow-y-auto border border-gray-200 p-4">
-                        <?php $__empty_1 = true; $__currentLoopData = $works; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $work): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                        <div class="flex items-start space-x-3">
-                            <input type="checkbox" name="works[]" value="<?php echo e($work->id); ?>"
-                                class="mt-1 border-gray-300 text-blue-600 focus:ring-blue-500"
-                                <?php echo e(in_array($work->id, old('works', [])) ? 'checked' : ''); ?>>
-                            <div class="flex-1">
-                                <span class="text-sm font-medium text-gray-700"><?php echo e($work->title); ?></span>
-                                <div class="text-xs text-gray-500">
-                                    <span class="capitalize"><?php echo e($work->type); ?></span>
-                                    <?php if($work->year): ?>
-                                    · <?php echo e($work->year); ?>
-
-                                    <?php endif; ?>
-                                </div>
-                                <input type="text" name="character_names[<?php echo e($work->id); ?>]"
-                                    placeholder="Personaje que interpretó"
-                                    class="mt-1 w-full text-xs border border-gray-300 px-2 py-1"
-                                    value="<?php echo e(old('character_names.' . $work->id)); ?>">
-                            </div>
-                        </div>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                        <p class="text-gray-500 text-sm">No hay obras registradas</p>
-                        <?php endif; ?>
-                    </div>
-                    <?php $__errorArgs = ['works'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                    <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
-                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                </div>
-            </div>
-
-            <!-- Botones -->
-            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                <a href="<?php echo e(route('admin.actors')); ?>"
-                    class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 transition duration-200 font-medium">
-                    Cancelar
-                </a>
-                <button type="submit"
-                    class="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
-                    <i class="fas fa-plus mr-2"></i>
-                    Crear Actor y Usuario
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('styles'); ?>
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .object-cover {
+        object-fit: cover;
+        object-position: center top;
+    }
+
+    * {
+        border-radius: 0 !important;
+    }
+
+    .filter-scroll-container {
+        max-height: 10rem;
+        overflow-y: auto;
+        padding: 8px 12px;
+        margin: 0 -12px;
+        border: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+    }
+
+    .filter-scroll-container label {
+        padding: 6px 4px;
+        margin: 2px 0;
+        border-radius: 0 !important;
+    }
+
+    .filter-scroll-container input[type="checkbox"]:focus,
+    .filter-scroll-container input[type="radio"]:focus {
+        outline: 2px solid #8b5cf6;
+        outline-offset: 2px;
+    }
+
+    .filter-scroll-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .filter-scroll-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .filter-scroll-container::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 0;
+    }
+
+    .filter-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    .bg-verde-menta {
+        background-color: #10b981 !important;
+    }
+
+    .text-verde-menta:focus {
+        --tw-ring-color: #10b981 !important;
+    }
+
+    .bg-rojo-intenso {
+        background-color: #ef4444 !important;
+    }
+
+    .text-rojo-intenso {
+        color: #ef4444 !important;
+    }
+
+    .border-rojo-intenso {
+        border-color: #ef4444 !important;
+    }
+
+    .text-rosa-electrico:focus {
+        --tw-ring-color: #ec4899 !important;
+    }
+
+    .text-naranja-vibrante:focus {
+        --tw-ring-color: #f97316 !important;
+    }
+
+    .text-morado-vibrante:focus {
+        --tw-ring-color: #8b5cf6 !important;
+    }
+
+    .focus\:border-rosa-electrico:focus {
+        border-color: #ec4899 !important;
+    }
+
+    .focus\:border-morado-vibrante:focus {
+        border-color: #8b5cf6 !important;
+    }
+
+    .focus\:border-verde-menta:focus {
+        border-color: #10b981 !important;
+    }
+
+    .focus\:ring-morado-vibrante:focus {
+        --tw-ring-color: #8b5cf6 !important;
+    }
+</style>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Programas\laragon\www\ProyectoFinalMFB\resources\views/admin/actors/create.blade.php ENDPATH**/ ?>

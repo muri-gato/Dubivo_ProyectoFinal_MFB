@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - Dubivo</title>
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 </head>
+
 <body class="bg-gray-100 min-h-screen flex items-center justify-center py-12 px-4">
     <div class="max-w-md w-full bg-white shadow-md p-6 border border-gray-200">
         <!-- Logo -->
@@ -22,14 +24,14 @@
             <!-- Email Address -->
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2 font-medium" for="email">Email</label>
-                <input id="email" class="w-full border border-gray-300 px-3 py-2 focus:border-rosa-electrico focus:ring-rosa-electrico" 
-                       type="email" name="email" value="<?php echo e(old('email')); ?>" required autofocus autocomplete="username">
+                <input id="email" class="w-full border border-gray-300 px-3 py-2 focus:border-rosa-electrico focus:ring-rosa-electrico"
+                    type="email" name="email" value="<?php echo e(old('email')); ?>" required autofocus autocomplete="username">
                 <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                    <p class="text-red-600 text-sm mt-1"><?php echo e($message); ?></p>
+                <p class="text-red-600 text-sm mt-1"><?php echo e($message); ?></p>
                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -40,13 +42,13 @@ unset($__errorArgs, $__bag); ?>
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2 font-medium" for="password">Contraseña</label>
                 <input id="password" class="w-full border border-gray-300 px-3 py-2 focus:border-rosa-electrico focus:ring-rosa-electrico"
-                       type="password" name="password" required autocomplete="current-password">
+                    type="password" name="password" required autocomplete="current-password">
                 <?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                    <p class="text-red-600 text-sm mt-1"><?php echo e($message); ?></p>
+                <p class="text-red-600 text-sm mt-1"><?php echo e($message); ?></p>
                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -63,9 +65,9 @@ unset($__errorArgs, $__bag); ?>
 
                 <!-- Olvidé contraseña -->
                 <?php if(Route::has('password.request')): ?>
-                    <a class="text-azul-profundo hover:text-azul-profundo hover:bg-opacity-90 text-sm" href="<?php echo e(route('password.request')); ?>">
-                        ¿Olvidaste tu contraseña?
-                    </a>
+                <a class="text-azul-profundo hover:text-azul-profundo hover:bg-opacity-90 text-sm" href="<?php echo e(route('password.request')); ?>">
+                    ¿Olvidaste tu contraseña?
+                </a>
                 <?php endif; ?>
             </div>
 
@@ -79,7 +81,7 @@ unset($__errorArgs, $__bag); ?>
             <!-- Línea separadora -->
             <div class="border-t border-gray-200 pt-4 text-center">
                 <p class="text-gray-600 text-sm">
-                    ¿No tienes cuenta? 
+                    ¿No tienes cuenta?
                     <a href="javascript:void(0)" onclick="openRegisterModal()" class="text-ambar hover:text-ambar hover:bg-opacity-90 font-medium">
                         Regístrate aquí
                     </a>
@@ -141,7 +143,7 @@ unset($__errorArgs, $__bag); ?>
                 <!-- Enlace a login -->
                 <div class="border-t border-gray-200 pt-4">
                     <p class="text-sm text-gray-600">
-                        ¿Ya tienes cuenta? 
+                        ¿Ya tienes cuenta?
                         <a href="<?php echo e(route('login')); ?>" class="text-azul-profundo hover:text-azul-profundo hover:bg-opacity-90 font-medium">
                             Inicia sesión
                         </a>
@@ -197,4 +199,5 @@ unset($__errorArgs, $__bag); ?>
         });
     </script>
 </body>
+
 </html><?php /**PATH D:\Programas\laragon\www\ProyectoFinalMFB\resources\views/auth/login.blade.php ENDPATH**/ ?>

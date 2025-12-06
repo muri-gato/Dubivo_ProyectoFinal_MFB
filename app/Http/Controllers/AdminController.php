@@ -217,7 +217,7 @@ class AdminController extends Controller
 
         $schools = School::orderBy('name')->get();
         $works = Work::orderBy('title')->get();
-        $genders = ['Masculino', 'Femenino', 'Otros'];
+        $genders = ['Masculino', 'Femenino', 'Otro'];
 
         //Definimos la lista canónica de edades vocales
         $voiceAges = ['Niño', 'Adolescente', 'Adulto joven', 'Adulto', 'Anciano', 'Atipada'];
@@ -325,37 +325,37 @@ class AdminController extends Controller
     {
         $this->verificarAdmin();
 
-        // Validaciones del Admin (incluye campos de usuario y campos de actor)
+        // Validaciones del Admin
         $request->validate([
-            // Campos de Usuario (editable por Admin)
+            // Campos de Usuario
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($actor->user->id)],
-            'role' => ['required', 'string', Rule::in(['actor', 'client', 'admin'])],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
 
-            // Campos de Actor (igual que ActorController)
-            'city' => ['nullable', 'string', 'max:255'],
+            // Campos de Actor
             'is_available' => ['required', 'boolean'],
-            'genders' => ['nullable', 'array'],
-            'voice_ages' => ['nullable', 'array'],
-            'bio' => ['nullable', 'string', 'max:1000'],
+            'genders' => ['required', 'array'],
+            'genders.*' => ['string', Rule::in(Actor::getGenderOptions())],
+            'voice_ages' => ['required', 'array'],
+            'voice_ages.*' => ['string', Rule::in(Actor::getVoiceAgeOptions())],
+            'bio' => ['required', 'string', 'max:1000'],
             'photo' => ['nullable', 'image', 'max:2048'],
             'audio_path' => ['nullable', 'file', 'mimes:mp3,wav', 'max:5120'],
             'schools' => ['nullable', 'array'],
             'teaching_schools' => ['nullable', 'array'],
             'works' => ['nullable', 'array'],
+            'character_names' => ['nullable', 'array'],
         ]);
 
-        // 1. Actualización del Usuario (Solo Admin)
+        // 1. Actualización del Usuario (solo nombre y email)
         $actor->user->name = $request->name;
         $actor->user->email = $request->email;
-        $actor->user->role = $request->role;
         if ($request->filled('password')) {
             $actor->user->password = Hash::make($request->password);
         }
         $actor->user->save();
 
-        // 2. Actualización de Archivos y Datos del Actor (Igual que ActorController)
+        // 2. Actualización de Archivos y Datos del Actor
         if ($request->hasFile('photo')) {
             $this->eliminarArchivo($actor->photo);
             $actor->photo = $this->guardarArchivo($request->file('photo'), 'photos');
@@ -367,10 +367,8 @@ class AdminController extends Controller
         }
 
         $actor->fill($request->only([
-            'city',
             'is_available',
-            'bio',
-            'experience_notes'
+            'bio'
         ]));
         $actor->genders = $request->genders ?? [];
         $actor->voice_ages = $request->voice_ages ?? [];
@@ -379,10 +377,20 @@ class AdminController extends Controller
         // 3. Sincronización de relaciones Many-to-Many
         $actor->schools()->sync($request->schools ?? []);
         $actor->teachingSchools()->sync($request->teaching_schools ?? []);
-        $actor->works()->sync($request->works ?? []);
 
+        // 4. Sincronización de Obras con character_names (IMPORTANTE)
+        $worksData = [];
+        $workIds = $request->works ?? [];
+        $characterNames = $request->character_names ?? [];
 
-        return redirect()->route('admin.actors')->with('success', 'Perfil de actor y usuario actualizado correctamente.');
+        foreach ($workIds as $workId) {
+            $worksData[$workId] = [
+                'character_name' => $characterNames[$workId] ?? null
+            ];
+        }
+        $actor->works()->sync($worksData);
+
+        return redirect()->route('admin.actors')->with('success', 'Perfil de actor actualizado correctamente.');
     }
 
     // Elimina la foto de perfil del actor.
@@ -418,6 +426,7 @@ class AdminController extends Controller
         $userId = $actor->user_id;
         $actor->schools()->detach();
         $actor->works()->detach();
+        $actor->teachingSchools()->detach();
         $actor->delete();
         User::find($userId)->delete();
 

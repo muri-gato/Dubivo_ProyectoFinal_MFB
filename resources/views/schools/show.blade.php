@@ -19,7 +19,7 @@
 
             <div class="relative z-10 flex justify-between items-start">
                 <div class="flex items-start space-x-6">
-                    {{-- Logo de la escuela --}}
+                    <!-- Logo de la escuela -->
                     @if($school->logo)
                     <div class="flex-shrink-0">
                         <img src="{{ asset('storage/' . $school->logo) }}"
@@ -47,7 +47,7 @@
                     </div>
                 </div>
 
-                {{-- Botones de admin --}}
+                <!-- Botones de admin -->
                 @auth
                 @if(auth()->user()->role === 'admin')
                 <div class="flex space-x-3">
@@ -71,12 +71,12 @@
         </div>
     </div>
 
-@if($school->description)
-<div class="bg-white shadow-md p-6 mb-6 border border-gray-200">
-    <h2 class="text-2xl font-bold mb-4 text-gray-800">Sobre la Escuela</h2>
-    <p class="text-gray-700 leading-relaxed text-lg">{{ $school->description }}</p>
-</div>
-@endif
+    @if($school->description)
+    <div class="bg-white shadow-md p-6 mb-6 border border-gray-200">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Sobre la Escuela</h2>
+        <p class="text-gray-700 leading-relaxed text-lg">{{ $school->description }}</p>
+    </div>
+    @endif
 
     @if($school->teachers->count() > 0)
     <!-- Sección de Profesores -->
@@ -96,14 +96,8 @@
                     @endif
                     <div>
                         <h3 class="font-semibold text-gray-800 group-hover:text-blue-600">{{ $teacher->name }}</h3>
-                        @if($teacher->pivot->subject)
-                        <p class="text-sm text-amber-600">{{ $teacher->pivot->subject }}</p>
-                        @endif
                     </div>
                 </div>
-                @if($teacher->pivot->teaching_bio)
-                <p class="text-sm text-gray-700 mb-3">{{ Str::limit($teacher->pivot->teaching_bio, 100) }}</p>
-                @endif
             </a>
             @endforeach
         </div>
@@ -118,7 +112,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @foreach($school->actors as $actor)
             <a href="{{ route('actors.show', $actor) }}" class="flex items-center space-x-3 p-3 border border-gray-200 hover:bg-gray-50 transition duration-200 group">
-                {{-- Foto --}}
+                <!-- Foto -->
                 @if($actor->photo)
                 <img src="{{ asset('storage/' . $actor->photo) }}"
                     alt="{{ $actor->user->name }}"
@@ -130,16 +124,16 @@
                 @endif
 
                 <div class="flex-1">
-                    {{-- Nombre --}}
+                    <!-- Nombre -->
                     <h4 class="font-medium text-gray-800 group-hover:text-blue-600">{{ $actor->user->name }}</h4>
 
-                    {{-- Géneros y edades vocales --}}
+                    <!-- Géneros y edades vocales -->
                     <p class="text-gray-600 text-sm mb-2">
                         {{ $actor->genders_string ?: 'Género no especificado' }} •
                         {{ $actor->voice_ages_string ?: 'Edad no especificada' }}
                     </p>
 
-                    {{-- Biografía breve --}}
+                    <!-- Biografía breve -->
                     @if($actor->bio)
                     <p class="text-gray-700 text-sm line-clamp-2">
                         {{ Str::limit($actor->bio, 80) }}

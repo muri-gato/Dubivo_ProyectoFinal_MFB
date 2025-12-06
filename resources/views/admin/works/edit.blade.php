@@ -9,42 +9,11 @@
         <div class="border-b border-gray-200 pb-4 mb-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <div class="bg-blue-100 p-3 mr-4">
-                        <i class="fas fa-film text-blue-600 text-xl"></i>
-                    </div>
+
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800">Editar Obra</h1>
                         <p class="text-gray-600 mt-1">Actualiza la información de {{ $work->title }}</p>
                     </div>
-                </div>
-                <div class="text-sm text-gray-500">
-                    ID: {{ $work->id }} • Creada: {{ $work->created_at->format('d/m/Y') }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Información Actual -->
-        <div class="bg-gray-50 p-4 mb-6 border border-gray-200">
-            <h3 class="font-semibold text-gray-700 mb-2">Información Actual</h3>
-            <div class="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                    <span class="font-medium">Actores participantes:</span>
-                    <span class="ml-2">{{ $work->actors_count }}</span>
-                </div>
-                <div>
-                    <span class="font-medium">Última actualización:</span>
-                    <span class="ml-2">{{ $work->updated_at->format('d/m/Y H:i') }}</span>
-                </div>
-                <div class="col-span-2">
-                    @if($work->poster)
-                    <span class="font-medium">Póster actual:</span>
-                    <img src="{{ asset('storage/' . $work->poster) }}"
-                        alt="{{ $work->title }}"
-                        class="h-20 object-cover mt-2">
-                    @else
-                    <span class="font-medium">Póster:</span>
-                    <span class="ml-2 text-gray-500">No tiene póster</span>
-                    @endif
                 </div>
             </div>
         </div>
@@ -107,6 +76,17 @@
             </div>
 
             <!-- Nuevo Poster -->
+            <div class="col-span-2">
+                @if($work->poster)
+                <span class="font-medium">Póster actual:</span>
+                <img src="{{ asset('storage/' . $work->poster) }}"
+                    alt="{{ $work->title }}"
+                    class="h-20 object-cover mt-2">
+                @else
+                <span class="font-medium">Póster:</span>
+                <span class="ml-2 text-gray-500">No tiene póster</span>
+                @endif
+            </div>
             <div>
                 <label for="poster" class="block text-sm font-medium text-gray-700 mb-2">
                     Cambiar Póster
@@ -153,7 +133,7 @@
                         Cancelar
                     </a>
                     <button type="submit"
-                        class="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium flex items-center">
+                        class="bg-rosa-electrico hover:bg-naranja-vibrante text-white px-4 py-2 flex items-center text-sm font-semibold transition-colors duration-300">
                         <i class="fas fa-save mr-2"></i>
                         Actualizar Obra
                     </button>

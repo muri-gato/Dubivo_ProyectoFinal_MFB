@@ -175,7 +175,6 @@ class ActorController extends Controller
         $actor->fill($request->only([
             'is_available',
             'bio',
-            'experience_notes'
         ]));
         $actor->genders = $request->genders ?? [];
         $actor->voice_ages = $request->voice_ages ?? [];
@@ -225,24 +224,37 @@ class ActorController extends Controller
 
         return redirect()->back();
     }
-    public function destroyProfile()
-    {
-        $user = Auth::user();
-        $actor = $user->actor;
 
-        if ($actor) {
-            if ($actor->photo) $this->eliminarArchivo($actor->photo);
-            if ($actor->audio_path) $this->eliminarArchivo($actor->audio_path);
+public function destroyProfile()
+{
+    // Obtenemos el usuario autenticado
+    $user = Auth::user();
 
-            $actor->delete();
-        }
+    // 1. OBTENER EL PERFIL DEL ACTOR CON EL NOMBRE DE RELACIÓN CORRECTO
+    $actor = $user->actorProfile; 
 
-        // Eliminamos el usuario y cerrar sesión
-        $user->delete();
-        Auth::logout();
+    if ($actor) {
+        // 2. Eliminar archivos asociados (foto y audio)
+        // Usamos los métodos privados de tu controlador
+        if ($actor->photo) $this->eliminarArchivo($actor->photo);
+        if ($actor->audio_path) $this->eliminarArchivo($actor->audio_path);
 
-        return redirect('/')->with('success', 'Tu cuenta ha sido eliminada correctamente.');
+        // 3. Eliminamos el perfil del actor. 
+        $actor->delete();
     }
+
+    // 4. Eliminamos el usuario (esto es lo que borra la cuenta)
+    $user->delete();
+    
+    // 5. Cerramos sesión y redirigimos
+    Auth::logout();
+    
+    // Invalidamos la sesión por seguridad
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect('/')->with('success', 'Tu cuenta ha sido eliminada correctamente.');
+}
 
 
     // Eliminamos el perfil del actor y su cuenta de usuario

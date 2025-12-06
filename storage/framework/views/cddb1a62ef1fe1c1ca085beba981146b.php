@@ -11,122 +11,122 @@
         </a>
     </div>
 
-<!-- Header del perfil -->
-<div class="bg-white shadow-md overflow-hidden mb-6 border border-gray-200">
-    <div class="md:flex">
-        <!-- Foto cuadrada con Audio Hover - CORREGIDO -->
-        <div class="md:w-1/3 relative group flex-shrink-0">
-            <?php if($actor->photo): ?>
-            <img src="<?php echo e(asset('storage/' . $actor->photo)); ?>" alt="<?php echo e($actor->name); ?>"
-                class="w-full h-80 md:h-96 object-cover object-center">
-            <?php else: ?>
-            <div class="w-full h-80 md:h-96 bg-gray-100 flex items-center justify-center">
-                <i class="fas fa-user text-gray-400 text-6xl"></i>
-            </div>
-            <?php endif; ?>
-
-            <!-- Audio Overlay -->
-            <?php if($actor->audio_path): ?>
-            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <button id="playButton" class="text-white transform scale-90 group-hover:scale-100 transition-all duration-300">
-                    <i class="fas fa-play text-4xl"></i>
-                </button>
-                <button id="pauseButton" class="text-white transform scale-90 group-hover:scale-100 transition-all duration-300 hidden">
-                    <i class="fas fa-pause text-4xl"></i>
-                </button>
-            </div>
-
-            <!-- Audio oculto -->
-            <audio id="actorAudio" class="hidden">
-                <source src="<?php echo e(asset('storage/' . $actor->audio_path)); ?>" type="audio/mpeg">
-            </audio>
-            <?php endif; ?>
-        </div>
-
-        <!-- Información -->
-        <div class="md:w-2/3 p-6">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <h1 class="text-3xl font-bold mb-2 text-gray-800"><?php echo e($actor->name); ?></h1>
+    <!-- Header del perfil -->
+    <div class="bg-white shadow-md overflow-hidden mb-6 border border-gray-200">
+        <div class="md:flex">
+            <!-- Foto cuadrada con Audio Hover -->
+            <div class="md:w-1/3 relative group flex-shrink-0">
+                <?php if($actor->photo): ?>
+                <img src="<?php echo e(asset('storage/' . $actor->photo)); ?>" alt="<?php echo e($actor->name); ?>"
+                    class="w-full h-80 md:h-96 object-cover object-center">
+                <?php else: ?>
+                <div class="w-full h-80 md:h-96 bg-gray-100 flex items-center justify-center">
+                    <i class="fas fa-user text-gray-400 text-6xl"></i>
                 </div>
+                <?php endif; ?>
 
-                <!-- Botones de acción (solo admin/owner) -->
-                <div class="flex space-x-3">
-                    <?php if(auth()->guard()->check()): ?>
-                    <?php if(Auth::user()->role == 'admin'): ?>
-                    <a href="<?php echo e(route('admin.actors.edit', $actor)); ?>"
-                        class="bg-[#f59e0b] text-white px-4 py-2 hover:bg-[#d97706] flex items-center font-semibold transition duration-200 shadow-lg border border-[#d97706]">
-                        <i class="fas fa-edit mr-2"></i>Editar
-                    </a>
-                    <form action="<?php echo e(route('admin.actors.destroy', $actor)); ?>" method="POST"
-                        onsubmit="return confirm('¿Estás seguro de que quieres eliminar este actor?');">
-                        <?php echo csrf_field(); ?>
-                        <?php echo method_field('DELETE'); ?>
-                        <button type="submit"
-                            class="bg-[#dc2626] text-white px-4 py-2 hover:bg-[#b91c1c] flex items-center font-semibold transition duration-200 shadow-lg border border-[#b91c1c]">
-                            <i class="fas fa-trash mr-2"></i>Eliminar
-                        </button>
-                    </form>
-                    <?php elseif(Auth::user()->role == 'actor' && Auth::user()->actorProfile && Auth::user()->actorProfile->id == $actor->id): ?>
-                    <a href="<?php echo e(route('actors.edit', $actor)); ?>"
-                        class="bg-[#f59e0b] text-white px-4 py-2 hover:bg-[#d97706] flex items-center font-semibold transition duration-200 shadow-lg border border-[#d97706]">
-                        <i class="fas fa-edit mr-2"></i>Editar Perfil
-                    </a>
-                    <?php endif; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Información básica MEJORADA -->
-            <div class="space-y-4 mb-6">
-                <!-- Géneros -->
-                <div>
-                    <span class="font-semibold text-lg text-pink-500 block mb-1">Géneros:</span>
-                    <span class="text-gray-700 text-lg"><?php echo e($actor->genders_string ?: 'No especificados'); ?></span>
-                </div>
-                
-                <!-- Edades vocales -->
-                <div>
-                    <span class="font-semibold text-lg text-orange-500 block mb-1">Edades vocales:</span>
-                    <span class="text-gray-700 text-lg"><?php echo e($actor->voice_ages_string ?: 'No especificadas'); ?></span>
-                </div>
-
-                <!-- Disponibilidad -->
-                <div>
-                    <span class="font-semibold text-lg text-gray-700 block mb-1">Estado:</span>
-                    <?php if($actor->is_available): ?>
-                    <span class="bg-green-100 text-green-800 px-4 py-2 font-medium border border-green-200 text-lg">
-                        <i class="fas fa-check mr-2"></i>Disponible para proyectos
-                    </span>
-                    <?php else: ?>
-                    <span class="bg-red-100 text-red-800 px-4 py-2 font-medium border border-red-200 text-lg">
-                        <i class="fas fa-times mr-2"></i>No disponible actualmente
-                    </span>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Boton de contacto -->
-            <div class="border-t pt-6 mt-6">
-                <div class="flex space-x-4">
-                    <?php if(auth()->guard()->check()): ?>
-                    <?php if(Auth::user()->role == 'admin' || Auth::user()->role == 'client'): ?>
-                    <a href="mailto:<?php echo e($actor->user->email); ?>?subject=Contacto desde Dubivo&body=Hola <?php echo e($actor->name); ?>, me interesa contactar contigo para un proyecto."
-                        class="bg-verde-menta text-white px-6 py-3 hover:bg-green-600 flex items-center font-semibold transition duration-200 text-lg">
-                        <i class="fas fa-envelope mr-2"></i>Contactar Actor
-                    </a>
-                    <?php endif; ?>
-                    <?php else: ?>
-                    <button onclick="openContactModal()"
-                        class="bg-verde-menta text-white px-6 py-3 hover:bg-green-600 flex items-center font-semibold transition duration-200 text-lg">
-                        <i class="fas fa-envelope mr-2"></i>Contactar Actor
+                <!-- Audio Overlay -->
+                <?php if($actor->audio_path): ?>
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <button id="playButton" class="text-white transform scale-90 group-hover:scale-100 transition-all duration-300">
+                        <i class="fas fa-play text-4xl"></i>
                     </button>
-                    <?php endif; ?>
+                    <button id="pauseButton" class="text-white transform scale-90 group-hover:scale-100 transition-all duration-300 hidden">
+                        <i class="fas fa-pause text-4xl"></i>
+                    </button>
+                </div>
+
+                <!-- Audio oculto -->
+                <audio id="actorAudio" class="hidden">
+                    <source src="<?php echo e(asset('storage/' . $actor->audio_path)); ?>" type="audio/mpeg">
+                </audio>
+                <?php endif; ?>
+            </div>
+
+            <!-- Información -->
+            <div class="md:w-2/3 p-6">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2 text-gray-800"><?php echo e($actor->name); ?></h1>
+                    </div>
+
+                    <!-- Botones de acción (solo admin/owner) -->
+                    <div class="flex space-x-3">
+                        <?php if(auth()->guard()->check()): ?>
+                        <?php if(Auth::user()->role == 'admin'): ?>
+                        <a href="<?php echo e(route('admin.actors.edit', $actor)); ?>"
+                            class="bg-[#f59e0b] text-white px-4 py-2 hover:bg-[#d97706] flex items-center font-semibold transition duration-200 shadow-lg border border-[#d97706]">
+                            <i class="fas fa-edit mr-2"></i>Editar
+                        </a>
+                        <form action="<?php echo e(route('admin.actors.destroy', $actor)); ?>" method="POST"
+                            onsubmit="return confirm('¿Estás seguro de que quieres eliminar este actor?');">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('DELETE'); ?>
+                            <button type="submit"
+                                class="bg-[#dc2626] text-white px-4 py-2 hover:bg-[#b91c1c] flex items-center font-semibold transition duration-200 shadow-lg border border-[#b91c1c]">
+                                <i class="fas fa-trash mr-2"></i>Eliminar
+                            </button>
+                        </form>
+                        <?php elseif(Auth::user()->role == 'actor' && Auth::user()->actorProfile && Auth::user()->actorProfile->id == $actor->id): ?>
+                        <a href="<?php echo e(route('actor.profile.edit')); ?>"
+                            class="bg-[#f59e0b] text-white px-4 py-2 hover:bg-[#d97706] flex items-center font-semibold transition duration-200 shadow-lg border border-[#d97706]">
+                            <i class="fas fa-edit mr-2"></i>Editar Perfil
+                        </a>
+                        <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Información básica MEJORADA -->
+                <div class="space-y-4 mb-6">
+                    <!-- Géneros -->
+                    <div>
+                        <span class="font-semibold text-lg text-pink-500 block mb-1">Géneros:</span>
+                        <span class="text-gray-700 text-lg"><?php echo e($actor->genders_string ?: 'No especificados'); ?></span>
+                    </div>
+
+                    <!-- Edades vocales -->
+                    <div>
+                        <span class="font-semibold text-lg text-orange-500 block mb-1">Edades vocales:</span>
+                        <span class="text-gray-700 text-lg"><?php echo e($actor->voice_ages_string ?: 'No especificadas'); ?></span>
+                    </div>
+
+                    <!-- Disponibilidad -->
+                    <div>
+                        <span class="font-semibold text-lg text-gray-700 block mb-1">Estado:</span>
+                        <?php if($actor->is_available): ?>
+                        <span class="bg-green-100 text-green-800 px-4 py-2 font-medium border border-green-200 text-lg">
+                            <i class="fas fa-check mr-2"></i>Disponible para proyectos
+                        </span>
+                        <?php else: ?>
+                        <span class="bg-red-100 text-red-800 px-4 py-2 font-medium border border-red-200 text-lg">
+                            <i class="fas fa-times mr-2"></i>No disponible actualmente
+                        </span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Boton de contacto -->
+                <div class="border-t pt-6 mt-6">
+                    <div class="flex space-x-4">
+                        <?php if(auth()->guard()->check()): ?>
+                        <?php if(Auth::user()->role == 'admin' || Auth::user()->role == 'client'): ?>
+                        <a href="mailto:<?php echo e($actor->user->email); ?>?subject=Contacto desde Dubivo&body=Hola <?php echo e($actor->name); ?>, me interesa contactar contigo para un proyecto."
+                            class="bg-verde-menta text-white px-6 py-3 hover:bg-green-600 flex items-center font-semibold transition duration-200 text-lg">
+                            <i class="fas fa-envelope mr-2"></i>Contactar Actor
+                        </a>
+                        <?php endif; ?>
+                        <?php else: ?>
+                        <button onclick="openContactModal()"
+                            class="bg-verde-menta text-white px-6 py-3 hover:bg-green-600 flex items-center font-semibold transition duration-200 text-lg">
+                            <i class="fas fa-envelope mr-2"></i>Contactar Actor
+                        </button>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
     <div class="flex flex-col">
         <!-- Contenido Principal -->
@@ -168,12 +168,6 @@
                     <?php $__currentLoopData = $actor->getActiveTeachingSchools(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $school): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="border border-amber-200 p-4 bg-amber-50">
                         <h3 class="font-semibold text-lg text-amber-700">Profesor en <?php echo e($school->name); ?></h3>
-                        <?php if($school->pivot->subject): ?>
-                        <p class="text-amber-600"><strong>Materia:</strong> <?php echo e($school->pivot->subject); ?></p>
-                        <?php endif; ?>
-                        <?php if($school->pivot->teaching_bio): ?>
-                        <p class="text-amber-700 mt-2"><?php echo e($school->pivot->teaching_bio); ?></p>
-                        <?php endif; ?>
                         <a href="<?php echo e(route('schools.show', $school)); ?>" class="text-amber-600 hover:text-amber-800 hover:underline mt-2 inline-block font-semibold">
                             Ver escuela
                         </a>
@@ -306,22 +300,23 @@
         overflow: hidden;
     }
 
-    /* CORRECCIÓN PARA LA FOTO */
+    /* PARA LA FOTO */
     .object-cover {
         object-fit: cover;
         object-position: center center;
     }
-    
+
     /* Asegurar que la foto ocupe todo el espacio */
     .md\\:w-1\\/3 {
         flex-shrink: 0;
     }
-    
+
     /* Eliminar cualquier espacio extra */
     .relative.group {
-        line-height: 0; /* Elimina espacio fantasma */
+        line-height: 0;
+        /* Elimina espacio fantasma */
     }
-    
+
     /* Asegurar que la imagen llene el contenedor */
     .relative.group img {
         width: 100%;

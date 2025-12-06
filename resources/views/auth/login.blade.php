@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - Dubivo</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
 <body class="bg-gray-100 min-h-screen flex items-center justify-center py-12 px-4">
     <div class="max-w-md w-full bg-white shadow-md p-6 border border-gray-200">
         <!-- Logo -->
@@ -22,10 +24,10 @@
             <!-- Email Address -->
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2 font-medium" for="email">Email</label>
-                <input id="email" class="w-full border border-gray-300 px-3 py-2 focus:border-rosa-electrico focus:ring-rosa-electrico" 
-                       type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
+                <input id="email" class="w-full border border-gray-300 px-3 py-2 focus:border-rosa-electrico focus:ring-rosa-electrico"
+                    type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
                 @error('email')
-                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -33,9 +35,9 @@
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2 font-medium" for="password">Contraseña</label>
                 <input id="password" class="w-full border border-gray-300 px-3 py-2 focus:border-rosa-electrico focus:ring-rosa-electrico"
-                       type="password" name="password" required autocomplete="current-password">
+                    type="password" name="password" required autocomplete="current-password">
                 @error('password')
-                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -49,9 +51,9 @@
 
                 <!-- Olvidé contraseña -->
                 @if (Route::has('password.request'))
-                    <a class="text-azul-profundo hover:text-azul-profundo hover:bg-opacity-90 text-sm" href="{{ route('password.request') }}">
-                        ¿Olvidaste tu contraseña?
-                    </a>
+                <a class="text-azul-profundo hover:text-azul-profundo hover:bg-opacity-90 text-sm" href="{{ route('password.request') }}">
+                    ¿Olvidaste tu contraseña?
+                </a>
                 @endif
             </div>
 
@@ -65,7 +67,7 @@
             <!-- Línea separadora -->
             <div class="border-t border-gray-200 pt-4 text-center">
                 <p class="text-gray-600 text-sm">
-                    ¿No tienes cuenta? 
+                    ¿No tienes cuenta?
                     <a href="javascript:void(0)" onclick="openRegisterModal()" class="text-ambar hover:text-ambar hover:bg-opacity-90 font-medium">
                         Regístrate aquí
                     </a>
@@ -127,7 +129,7 @@
                 <!-- Enlace a login -->
                 <div class="border-t border-gray-200 pt-4">
                     <p class="text-sm text-gray-600">
-                        ¿Ya tienes cuenta? 
+                        ¿Ya tienes cuenta?
                         <a href="{{ route('login') }}" class="text-azul-profundo hover:text-azul-profundo hover:bg-opacity-90 font-medium">
                             Inicia sesión
                         </a>
@@ -183,4 +185,5 @@
         });
     </script>
 </body>
+
 </html>

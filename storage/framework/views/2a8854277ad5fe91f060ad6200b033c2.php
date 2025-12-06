@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Gestión de Actores - Admin'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -12,7 +10,7 @@
                 <p class="text-gray-600 mt-2">Administra todos los actores registrados en el sistema</p>
             </div>
             <a href="<?php echo e(route('admin.actors.create')); ?>"
-                class="bg-blue-600 text-white px-6 py-3 hover:bg-blue-700 transition duration-200 flex items-center font-medium">
+                class="bg-naranja-vibrante hover:bg-rosa-electrico text-white transition-colors duration-300  px-4 py-2 flex items-center h-[42px] font-medium">
                 <i class="fas fa-plus mr-2"></i>
                 Nuevo Actor
             </a>
@@ -97,11 +95,11 @@
             <!-- Búsqueda por nombre -->
             <div class="min-w-[200px]">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Buscar Actor</label>
-                <input type="text" 
-                       name="search" 
-                       value="<?php echo e(request('search')); ?>"
-                       placeholder="Nombre del actor..."
-                       class="w-full border border-gray-300 px-3 py-2 search-input">
+                <input type="text"
+                    name="search"
+                    value="<?php echo e(request('search')); ?>"
+                    placeholder="Nombre del actor..."
+                    class="w-full border border-gray-300 px-3 py-2 search-input">
             </div>
 
             <!-- Género -->
@@ -142,19 +140,9 @@
                 </select>
             </div>
 
-            <!-- Ordenar -->
-            <div class="min-w-[150px]">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ordenar</label>
-                <select name="sort" class="w-full border border-gray-300 px-3 py-2 filter-select">
-                    <option value="newest" <?php echo e(request('sort') == 'newest' ? 'selected' : ''); ?>>Más recientes</option>
-                    <option value="oldest" <?php echo e(request('sort') == 'oldest' ? 'selected' : ''); ?>>Más antiguos</option>
-                    <option value="name" <?php echo e(request('sort') == 'name' ? 'selected' : ''); ?>>Nombre A-Z</option>
-                    <option value="works" <?php echo e(request('sort') == 'works' ? 'selected' : ''); ?>>Más obras</option>
-                </select>
-            </div>
-
             <div class="flex items-end space-x-2">
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 transition duration-200 flex items-center h-[42px] font-medium">
+                <button type="submit" class="bg-naranja-vibrante hover:bg-rosa-electrico text-white transition-colors duration-300  px-4 py-2 flex items-center h-[42px] font-medium">
+
                     <i class="fas fa-filter mr-2"></i> Filtrar
                 </button>
                 <a href="<?php echo e(route('admin.actors')); ?>" class="bg-gray-500 text-white px-4 py-2 hover:bg-gray-600 transition duration-200 flex items-center h-[42px] font-medium">
@@ -298,7 +286,7 @@
                                 <p class="text-lg font-medium">No hay actores registrados</p>
                                 <p class="mt-2">Comienza añadiendo el primer actor</p>
                                 <a href="<?php echo e(route('admin.actors.create')); ?>"
-                                    class="inline-block mt-4 bg-blue-600 text-white px-6 py-2 hover:bg-blue-700 font-medium">
+                                    class="inline-block mt-4 naranja-vibrante-600 text-white px-6 py-2 hover:naranja-vibrante-700 font-medium">
                                     Crear Primer Actor
                                 </a>
                             </div>
@@ -320,28 +308,28 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const filterForm = document.getElementById('filterForm');
-    const filterSelects = document.querySelectorAll('.filter-select');
-    const searchInput = document.querySelector('.search-input');
-    
-    let searchTimeout;
-    
-    // Filtro en tiempo real para selects
-    filterSelects.forEach(select => {
-        select.addEventListener('change', function() {
-            filterForm.submit();
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterForm = document.getElementById('filterForm');
+        const filterSelects = document.querySelectorAll('.filter-select');
+        const searchInput = document.querySelector('.search-input');
+
+        let searchTimeout;
+
+        // Filtro en tiempo real para selects
+        filterSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        });
+
+        // Filtro en tiempo real para búsqueda (con debounce)
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                filterForm.submit();
+            }, 500);
         });
     });
-    
-    // Filtro en tiempo real para búsqueda (con debounce)
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            filterForm.submit();
-        }, 500);
-    });
-});
 </script>
 
 <style>

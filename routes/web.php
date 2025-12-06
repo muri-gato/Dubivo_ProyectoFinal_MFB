@@ -47,14 +47,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/actors/{actor}/availability', [ActorController::class, 'updateAvailability'])
         ->name('actors.update-availability');
 
-    // ========== ACTORES (pueden gestionar SU perfil) ==========
-    Route::prefix('actor/profile')->group(function () {
-        Route::get('/create', [ActorController::class, 'create'])->name('actors.create');
-        Route::post('/', [ActorController::class, 'store'])->name('actors.store');
-        Route::get('/{actor}/edit', [ActorController::class, 'edit'])->name('actors.edit');
-        Route::put('/{actor}', [ActorController::class, 'update'])->name('actors.update');
-        Route::delete('/{actor}', [ActorController::class, 'destroy'])->name('actors.destroy');
-    });
+    // ========== GESTIÓN DE MI PROPIO PERFIL (Actor Logueado) ==========
+// Estas rutas NO usan el ID del actor, sino que obtienen el actor de Auth::user()
+Route::get('/profile/edit', [ActorController::class, 'editProfile'])->name('actor.profile.edit');
+Route::put('/profile', [ActorController::class, 'updateProfile'])->name('actor.profile.update');
+Route::delete('/profile/delete_photo', [ActorController::class, 'deletePhoto'])->name('actor.profile.delete_photo');
+Route::delete('/profile/delete_audio', [ActorController::class, 'deleteAudio'])->name('actor.profile.delete_audio');
+Route::delete('/profile/destroy', [ActorController::class, 'destroyProfile'])->name('actor.profile.destroy');
 
     // ========== PANEL DE ADMINISTRACIÓN ==========
     Route::prefix('admin')->group(function () {
@@ -95,5 +94,14 @@ Route::middleware('auth')->group(function () {
             Route::put('/{actor}', [SchoolTeacherController::class, 'update'])->name('admin.schools.teachers.update');
             Route::delete('/{actor}', [SchoolTeacherController::class, 'destroy'])->name('admin.schools.teachers.destroy');
         });
+        // 1. Ruta para eliminar la foto de perfil del actor
+        Route::delete('/actors/{actor}/delete_photo', [AdminController::class, 'deleteActorPhoto'])
+            ->name('admin.actors.delete_photo'); // <-- ¡Esta es la ruta que faltaba!
+
+        // 2. Ruta para eliminar la muestra de voz del actor
+        Route::delete('/actors/{actor}/delete_audio', [AdminController::class, 'deleteActorAudio'])
+            ->name('admin.actors.delete_audio'); // <-- También faltaba para que no haya un error futuro.
     });
+    // Eliminación de poster de Obra
+    Route::delete('/works/{work}/delete_poster', [AdminController::class, 'deleteWorkPoster'])->name('admin.works.delete_poster');
 });

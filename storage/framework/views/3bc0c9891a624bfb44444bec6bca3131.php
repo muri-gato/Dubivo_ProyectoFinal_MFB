@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Escuelas de Doblaje - Dubivo'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -32,76 +30,57 @@
 
     <div class="flex flex-col lg:flex-row gap-6">
         <!-- Columna de Filtros - Desplegable -->
-        <div id="filterColumn" class="lg:w-1/4 hidden lg:block">
-            <div class="bg-white p-6 shadow-md sticky top-4 border border-gray-200">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">Filtros</h2>
-                    <button id="closeFilters" class="lg:hidden text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-lg"></i>
-                    </button>
-                </div>
+<div id="filterColumn" class="lg:w-1/4 w-full lg:sticky lg:top-20 h-fit lg:block hidden bg-white p-6 shadow-xl border border-gray-100 rounded-xl z-10">
+    
+    <div class="lg:hidden flex justify-end mb-4">
+        <button id="closeFilters" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times text-2xl"></i>
+        </button>
+    </div>
 
-                <!-- Buscador en Tiempo Real -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Buscar Escuela</label>
-                    <div class="relative">
-                        <input type="text"
-                            id="searchSchool"
-                            placeholder="Ej: Escuela de doblaje..."
-                            class="w-full border border-gray-300 px-4 py-2 pl-10 focus:border-azul-profundo focus:ring-azul-profundo transition duration-200">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-gray-400"></i>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Busca por nombre en tiempo real</p>
-                </div>
-
-                <!-- Filtro por Ciudad -->
-                <div class="mb-6">
-                    <h3 class="font-medium text-gray-700 mb-3">Ciudad</h3>
-                    <div class="filter-scroll-container">
-                        <?php $__currentLoopData = $cities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $city): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <label class="flex items-center py-1">
-                            <input type="checkbox" name="cities[]" value="<?php echo e($city); ?>"
-                                class="text-rosa-electrico focus:ring-rosa-electrico city-filter">
-                            <span class="ml-2 text-sm text-gray-700"><?php echo e($city); ?></span>
-                        </label>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </div>
-                </div>
-
-                <!-- Filtro por Año de Fundación -->
-                <div class="mb-6">
-                    <h3 class="font-medium text-gray-700 mb-3">Fundada después de</h3>
-                    <input type="number"
-                        id="yearFilter"
-                        min="1900"
-                        max="<?php echo e(date('Y')); ?>"
-                        placeholder="Ej: 2000"
-                        class="w-full border border-gray-300 px-3 py-2 focus:border-naranja-vibrante focus:ring-naranja-vibrante transition duration-200">
-                </div>
-
-                <!-- Filtro por Número de Actores -->
-                <div class="mb-6">
-                    <h3 class="font-medium text-gray-700 mb-3">Mínimo de actores</h3>
-                    <select id="actorsCountFilter" class="w-full border border-gray-300 px-3 py-2 focus:border-verde-menta focus:ring-verde-menta">
-                        <option value="">Cualquier cantidad</option>
-                        <option value="1">1+ actores</option>
-                        <option value="5">5+ actores</option>
-                        <option value="10">10+ actores</option>
-                        <option value="20">20+ actores</option>
-                        <option value="50">50+ actores</option>
-                    </select>
-                </div>
-
-                <!-- Botón Limpiar Filtros -->
-                <div>
-                    <button id="clearFilters" class="bg-gray-500 text-white px-4 py-2 hover:bg-gray-600 w-full inline-flex items-center justify-center font-semibold transition duration-200">
-                        <i class="fas fa-times mr-2"></i>Limpiar Filtros
-                    </button>
-                </div>
-            </div>
+    <form action="<?php echo e(route('schools.index')); ?>" method="GET">
+        
+        <div class="mb-6">
+            <label for="search" class="block text-lg font-semibold mb-2">Buscar Escuela</label>
+            <input type="text" name="search" id="search" placeholder="Nombre de la escuela..."
+                value="<?php echo e(request('search')); ?>"
+                class="w-full border border-gray-300 p-2 rounded-lg focus:ring-verde-menta focus:border-verde-menta transition duration-150">
         </div>
+
+        <div class="mb-6">
+            <h3 class="font-semibold text-lg mb-2">Ciudad</h3>
+            <select name="city" id="city" 
+                class="w-full border border-gray-300 p-2 rounded-lg focus:ring-verde-menta focus:border-verde-menta transition duration-150">
+                <option value="">Todas las Ciudades</option>
+                <?php $__currentLoopData = $cities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $city): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($city); ?>" <?php echo e(request('city') == $city ? 'selected' : ''); ?>>
+                        <?php echo e($city); ?>
+
+                    </option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+        </div>
+        
+        <div class="flex flex-col space-y-3 mt-8">
+            
+            <button type="submit"
+                class="bg-verde-menta text-negro px-4 py-2 font-bold rounded-lg 
+                       shadow-lg hover:bg-verde-menta/80 transition duration-300">
+                <i class="fas fa-search mr-2"></i>
+                Aplicar Filtros
+            </button>
+            
+            
+            <a href="<?php echo e(route('schools.index')); ?>"
+                class="text-center bg-negro text-white px-4 py-2 font-semibold rounded-lg 
+                       shadow-lg hover:bg-gray-700 transition duration-300">
+                <i class="fas fa-undo-alt mr-2"></i>
+                Limpiar Filtros
+            </a>
+        </div>
+        
+    </form>
+</div>
 
         <!-- Columna de Resultados -->
         <div class="lg:w-3/4">
@@ -218,7 +197,7 @@
         border-radius: 0 !important;
     }
 
-    /* CONTENEDOR DE FILTROS CORREGIDO - SIN CORTAR BORDES */
+    /* CONTENEDOR DE FILTROS */
     .filter-scroll-container {
         max-height: 10rem;
         overflow-y: auto;

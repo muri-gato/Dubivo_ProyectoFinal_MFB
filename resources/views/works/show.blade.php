@@ -62,13 +62,13 @@
                     @auth
                     @if(Auth::user()->role == 'admin')
                     <div class="flex space-x-3">
-                        {{-- Botón Editar --}}
+                        <!-- Botón Editar -->
                         <a href="{{ route('admin.works.edit', $work) }}"
                             class="bg-[#f59e0b] text-white px-4 py-2 hover:bg-[#d97706] flex items-center font-semibold transition duration-200 shadow-lg border border-[#d97706]">
                             <i class="fas fa-edit mr-2"></i>Editar
                         </a>
 
-                        {{-- Botón Eliminar --}}
+                        <!-- Botón Eliminar -->
                         <form action="{{ route('admin.works.destroy', $work) }}" method="POST"
                             onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta obra? Esta acción no se puede deshacer.');">
                             @csrf
@@ -114,14 +114,14 @@
         </div>
     </div>
 
-    {{-- Actores que participaron --}}
+    <!-- Actores que participaron -->
     @if($work->actors->count() > 0)
     <div class="bg-white shadow-md p-6 mb-6 border border-gray-200">
         <h2 class="text-2xl font-bold mb-4 text-gray-800">Actores que participaron</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @foreach($work->actors as $actor)
             <a href="{{ route('actors.show', $actor) }}" class="flex items-center space-x-3 p-3 border border-gray-200 hover:bg-gray-50 transition duration-200 group">
-                {{-- Foto --}}
+                <!-- Foto -->
                 @if($actor->photo)
                 <img src="{{ asset('storage/' . $actor->photo) }}"
                     alt="{{ $actor->user->name }}"
@@ -133,7 +133,7 @@
                 @endif
 
                 <div class="flex-1">
-                    {{-- Nombre --}}
+                    <!-- Nombre -->
                     <h4 class="font-medium text-gray-800 group-hover:text-blue-600">{{ $actor->user->name }}</h4>
 
                     <p class="text-gray-600 text-sm mb-2">
