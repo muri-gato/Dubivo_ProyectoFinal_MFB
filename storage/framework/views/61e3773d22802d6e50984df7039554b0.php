@@ -7,10 +7,6 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-800">Editar Actor: <?php echo e($actor->user->name); ?></h1>
-        
-        <a href="<?php echo e(route('actors.show', $actor)); ?>" class="bg-gray-200 text-gray-700 px-4 py-2 hover:bg-gray-300 flex items-center font-semibold transition duration-200">
-            <i class="fas fa-eye mr-2"></i>Ver Perfil
-        </a>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-6">

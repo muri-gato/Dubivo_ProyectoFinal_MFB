@@ -197,7 +197,7 @@ unset($__errorArgs, $__bag); ?>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-3">
-                            Obras Destacadas (opcional)
+                            Obras Destacadas
                         </label>
                         <div class="filter-scroll-container">
                             <?php $__currentLoopData = $works; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $work): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -358,5 +358,42 @@ unset($__errorArgs, $__bag); ?>
         background-color: #ef4444 !important;
     }
 </style>
+<?php $__env->startSection('scripts'); ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const worksCheckboxes = document.querySelectorAll('.work-checkbox');
+
+        worksCheckboxes.forEach(checkbox => {
+            const workId = checkbox.dataset.workId;
+            // Seleccionamos el input del nombre del personaje asociado
+            const characterInput = document.querySelector(`input[name="character_names[${workId}]"]`);
+
+            // Función para habilitar/deshabilitar el input del personaje
+            const toggleCharacterInput = (isChecked) => {
+                if (characterInput) {
+                    if (isChecked) {
+                        // Si la casilla está marcada, habilitamos el input
+                        characterInput.disabled = false;
+                        characterInput.classList.remove('bg-gray-100', 'text-gray-500'); // Revertimos estilos de deshabilitado
+                    } else {
+                        // Si la casilla está desmarcada, deshabilitar y limpiar el valor
+                        characterInput.disabled = true;
+                        characterInput.value = ''; // Limpiamos el valor para que no se envíe al servidor
+                        characterInput.classList.add('bg-gray-100', 'text-gray-500'); // Aplicar estilos de deshabilitado
+                    }
+                }
+            };
+            
+            // 1. Inicializar el estado al cargar la página (para valores old() o recarga)
+            toggleCharacterInput(checkbox.checked);
+
+            // 2. Escuchar el evento de cambio
+            checkbox.addEventListener('change', (event) => {
+                toggleCharacterInput(event.target.checked);
+            });
+        });
+    });
+</script>
+<?php $__env->stopSection(); ?>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Programas\laragon\www\ProyectoFinalMFB\resources\views/actors/create.blade.php ENDPATH**/ ?>
