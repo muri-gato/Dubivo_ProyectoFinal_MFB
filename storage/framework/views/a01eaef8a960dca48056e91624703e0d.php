@@ -367,8 +367,6 @@ unset($__errorArgs, $__bag); ?>
 
 <?php $__env->startSection('styles'); ?>
 <style>
-    /* Estilos necesarios para los contenedores de scroll y los colores personalizados */
-    /* El estilo global de no-border-radius se mantiene para imitar la otra vista */
     * {
         border-radius: 0 !important;
     }
@@ -465,7 +463,7 @@ unset($__errorArgs, $__bag); ?>
 
     // También puedes usar event listeners para mejor manejo
     document.addEventListener('DOMContentLoaded', function() {
-        // Opcional: Agregar event listeners para los botones de eliminar
+        // Agregar event listeners para los botones de eliminar
         const deleteButtons = document.querySelectorAll('[data-delete-form]');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function(e) {

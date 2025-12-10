@@ -311,14 +311,14 @@
 
         let searchTimeout;
 
-        // Filtro en tiempo real para selects
+        //Filtro en tiempo real para selects
         filterSelects.forEach(select => {
             select.addEventListener('change', function() {
                 filterForm.submit();
             });
         });
 
-        // Filtro en tiempo real para búsqueda (con debounce)
+        //Filtro en tiempo real para búsqueda
         searchInput.addEventListener('input', function() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {

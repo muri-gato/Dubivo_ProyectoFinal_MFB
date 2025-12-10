@@ -68,22 +68,6 @@ class ActorController extends Controller
         return view('actors.index', compact('actors', 'genders', 'voiceAges', 'schools'));
     }
 
-    public function edit()
-    {
-        // 1. Nos aseguramos de que el usuario logueado sea un actor y tenga un perfil
-        Auth::user()->actorProfile;
-        if (!$actor) {
-            return redirect()->route('dashboard')->with('error', 'Tu perfil de actor no fue encontrado.');
-        }
-
-        // 2. Cargamos los datos necesarios para las pestañas de Formación y Experiencia
-        $schools = School::orderBy('name')->get();
-        $works = Work::orderBy('title')->get();
-
-        // 3. Devolvemos la vista del ACTOR (simple)
-        return view('actors.edit', compact('actor', 'schools', 'works'));
-    }
-
     public function create()
     {
         // Si ya tiene perfil, lo redirigimos a editar.
@@ -95,7 +79,7 @@ class ActorController extends Controller
         $genders = Actor::getGenderOptions();
         $voiceAges = Actor::getVoiceAgeOptions();
 
-        // Asegúrate de pasar los datos necesarios para el formulario de creación si es necesario.
+        // Aseguramos pasar los datos necesarios para el formulario
         $schools = School::orderBy('name')->get();
         $works = Work::orderBy('title')->get();
 
@@ -165,52 +149,6 @@ class ActorController extends Controller
         return redirect()->route('dashboard')->with('success', '¡Perfil de actor creado con éxito!');
     }
 
-
-    public function update(Request $request)
-    {
-        $actor = Auth::user()->actorProfile;
-        $request->validate([
-            'is_available' => ['required', 'boolean'],
-            'genders' => ['nullable', 'array'],
-            'voice_ages' => ['nullable', 'array'],
-            'bio' => ['nullable', 'string', 'max:1000'],
-            'photo' => ['nullable', 'image', 'max:2048'],
-            'audio_path' => ['nullable', 'file', 'mimes:mp3,wav', 'max:5120'],
-            'schools' => ['nullable', 'array'],
-            'teaching_schools' => ['nullable', 'array'],
-            'works' => ['nullable', 'array'],
-        ]);
-
-        // Manejo de archivos
-        if ($request->hasFile('photo')) {
-            $this->eliminarArchivo($actor->photo);
-            $actor->photo = $this->guardarArchivo($request->file('photo'), 'photos');
-        }
-
-        if ($request->hasFile('audio_path')) {
-            $this->eliminarArchivo($actor->audio_path);
-            $actor->audio_path = $this->guardarArchivo($request->file('audio_path'), 'audios');
-        }
-
-        // Actualización de datos simples
-        $actor->fill($request->only([
-            'is_available',
-            'bio',
-        ]));
-        $actor->genders = $request->genders ?? [];
-        $actor->voice_ages = $request->voice_ages ?? [];
-        $actor->save();
-
-
-        // Sincronización de relaciones Many-to-Many
-        $actor->schools()->sync($request->schools ?? []);
-        $actor->teachingSchools()->sync($request->teaching_schools ?? []);
-        $actor->works()->sync($request->works ?? []);
-
-
-        return redirect()->route('dashboard.actor.edit')->with('success', 'Perfil actualizado correctamente.');
-    }
-
     public function deletePhoto()
     {
         $actor = Auth::user()->actorProfile;
@@ -275,30 +213,6 @@ class ActorController extends Controller
         request()->session()->regenerateToken();
 
         return redirect('/')->with('success', 'Tu cuenta ha sido eliminada correctamente.');
-    }
-
-    // Eliminamos el perfil del actor y su cuenta de usuario
-    public function destroy(Actor $actor)
-    {
-        // Solo el dueño o el admin pueden eliminar
-        if (Auth::id() !== $actor->user_id && Auth::user()->role !== 'admin') {
-            abort(403, 'No tienes permiso.');
-        }
-
-        // Si es admin eliminando desde su panel, redirigimos a la lista de admin
-        if (Auth::user()->role == 'admin') {
-            $actor->delete();
-            return redirect()->route('admin.actors')->with('success', 'Perfil eliminado.');
-        }
-
-        // Si es el actor eliminando su propia cuenta
-        $userId = $actor->user_id;
-        $actor->delete();
-        User::find($userId)->delete();
-
-        Auth::logout();
-
-        return redirect('/')->with('success', 'Tu cuenta ha sido eliminada.');
     }
 
     // Mostramos detalles
@@ -411,12 +325,96 @@ class ActorController extends Controller
         }
     }
 
-    public function showActorProfile()
+    /*     public function showActorProfile()
     {
         $actor = Auth::user()->actorProfile;
         if (!$actor) {
             return redirect()->route('dashboard')->with('error', 'Perfil no encontrado.');
         }
         return $this->show($actor);
-    }
+    } */
+
+    /*     public function destroy(Actor $actor)
+    {
+        // Solo el dueño o el admin pueden eliminar
+        if (Auth::id() !== $actor->user_id && Auth::user()->role !== 'admin') {
+            abort(403, 'No tienes permiso.');
+        }
+
+        // Si es admin eliminando desde su panel, redirigimos a la lista de admin
+        if (Auth::user()->role == 'admin') {
+            $actor->delete();
+            return redirect()->route('admin.actors')->with('success', 'Perfil eliminado.');
+        }
+
+        // Si es el actor eliminando su propia cuenta
+        $userId = $actor->user_id;
+        $actor->delete();
+        User::find($userId)->delete();
+
+        Auth::logout();
+
+        return redirect('/')->with('success', 'Tu cuenta ha sido eliminada.');
+    } */
+
+    /*     public function edit()
+    {
+        // 1. Nos aseguramos de que el usuario logueado sea un actor y tenga un perfil
+        Auth::user()->actorProfile;
+        if (!$actor) {
+            return redirect()->route('dashboard')->with('error', 'Tu perfil de actor no fue encontrado.');
+        }
+
+        // 2. Cargamos los datos necesarios para las pestañas de Formación y Experiencia
+        $schools = School::orderBy('name')->get();
+        $works = Work::orderBy('title')->get();
+
+        // 3. Devolvemos la vista del ACTOR (simple)
+        return view('actors.edit', compact('actor', 'schools', 'works'));
+    } */
+
+    /*     public function update(Request $request)
+    {
+        $actor = Auth::user()->actorProfile;
+        $request->validate([
+            'is_available' => ['required', 'boolean'],
+            'genders' => ['nullable', 'array'],
+            'voice_ages' => ['nullable', 'array'],
+            'bio' => ['nullable', 'string', 'max:1000'],
+            'photo' => ['nullable', 'image', 'max:2048'],
+            'audio_path' => ['nullable', 'file', 'mimes:mp3,wav', 'max:5120'],
+            'schools' => ['nullable', 'array'],
+            'teaching_schools' => ['nullable', 'array'],
+            'works' => ['nullable', 'array'],
+        ]);
+
+        // Manejo de archivos
+        if ($request->hasFile('photo')) {
+            $this->eliminarArchivo($actor->photo);
+            $actor->photo = $this->guardarArchivo($request->file('photo'), 'photos');
+        }
+
+        if ($request->hasFile('audio_path')) {
+            $this->eliminarArchivo($actor->audio_path);
+            $actor->audio_path = $this->guardarArchivo($request->file('audio_path'), 'audios');
+        }
+
+        // Actualización de datos simples
+        $actor->fill($request->only([
+            'is_available',
+            'bio',
+        ]));
+        $actor->genders = $request->genders ?? [];
+        $actor->voice_ages = $request->voice_ages ?? [];
+        $actor->save();
+
+
+        // Sincronización de relaciones Many-to-Many
+        $actor->schools()->sync($request->schools ?? []);
+        $actor->teachingSchools()->sync($request->teaching_schools ?? []);
+        $actor->works()->sync($request->works ?? []);
+
+
+        return redirect()->route('dashboard.actor.edit')->with('success', 'Perfil actualizado correctamente.');
+    } */
 }

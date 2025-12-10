@@ -235,102 +235,102 @@
         </div>
     </div>
 
-<!-- Modal de Selección de Registro -->
-<div id="registerModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg bg-white border-gray-200">
-        <div class="mt-3 text-center">
-            <!-- Icono -->
-            <div class="mx-auto flex items-center justify-center h-12 w-12 bg-rosa-electrico bg-opacity-20 mb-4">
-                <i class="fas fa-user-plus text-rosa-electrico text-xl"></i>
-            </div>
+    <!-- Modal de Selección de Registro -->
+    <div id="registerModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg bg-white border-gray-200">
+            <div class="mt-3 text-center">
+                <!-- Icono -->
+                <div class="mx-auto flex items-center justify-center h-12 w-12 bg-rosa-electrico bg-opacity-20 mb-4">
+                    <i class="fas fa-user-plus text-rosa-electrico text-xl"></i>
+                </div>
 
-            <h3 class="text-lg leading-6 font-bold text-gray-900 mb-2">
-                Crear Cuenta
-            </h3>
-            
-            <p class="text-sm text-gray-500 mb-6">
-                Selecciona el tipo de perfil que deseas crear
-            </p>
+                <h3 class="text-lg leading-6 font-bold text-gray-900 mb-2">
+                    Crear Cuenta
+                </h3>
 
-            <!-- Botones de opción -->
-            <div class="grid grid-cols-1 gap-4 mb-6">
-                <!-- Botón Actor -->
-                <a href="<?php echo e(route('register.actor')); ?>" 
-                   class="flex items-center justify-between p-4 border border-gray-200 hover:border-rosa-electrico hover:bg-rosa-electrico hover:bg-opacity-5 transition duration-200 group">
-                    <div class="flex items-center">
-                        <div class="bg-rosa-electrico bg-opacity-20 w-10 h-10 flex items-center justify-center mr-3 group-hover:bg-rosa-electrico group-hover:bg-opacity-30 transition duration-200">
-                            <i class="fas fa-microphone text-rosa-electrico text-lg"></i>
-                        </div>
-                        <div class="text-left">
-                            <div class="font-semibold text-gray-800 group-hover:text-rosa-electrico">Actor/Actriz</div>
-                            <div class="text-xs text-gray-500">Talento vocal</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-right text-gray-400 group-hover:text-rosa-electrico"></i>
-                </a>
-
-                <!-- Botón Cliente -->
-                <a href="<?php echo e(route('register.client')); ?>" 
-                   class="flex items-center justify-between p-4 border border-gray-200 hover:border-ambar hover:bg-ambar hover:bg-opacity-5 transition duration-200 group">
-                    <div class="flex items-center">
-                        <div class="bg-ambar bg-opacity-20 w-10 h-10 flex items-center justify-center mr-3 group-hover:bg-ambar group-hover:bg-opacity-30 transition duration-200">
-                            <i class="fas fa-search text-ambar text-lg"></i>
-                        </div>
-                        <div class="text-left">
-                            <div class="font-semibold text-gray-800 group-hover:text-ambar">Cliente</div>
-                            <div class="text-xs text-gray-500">Buscar talento</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-right text-gray-400 group-hover:text-ambar"></i>
-                </a>
-            </div>
-
-            <!-- Enlace a login -->
-            <div class="border-t border-gray-200 pt-4">
-                <p class="text-sm text-gray-600">
-                    ¿Ya tienes cuenta? 
-                    <a href="<?php echo e(route('login')); ?>" class="text-azul-profundo hover:text-azul-profundo hover:bg-opacity-90 font-medium">
-                        Inicia sesión
-                    </a>
+                <p class="text-sm text-gray-500 mb-6">
+                    Selecciona el tipo de perfil que deseas crear
                 </p>
-            </div>
 
-            <!-- Botón cerrar -->
-            <div class="mt-4">
-                <button onclick="closeRegisterModal()" 
+                <!-- Botones de opción -->
+                <div class="grid grid-cols-1 gap-4 mb-6">
+                    <!-- Botón Actor -->
+                    <a href="<?php echo e(route('register.actor')); ?>"
+                        class="flex items-center justify-between p-4 border border-gray-200 hover:border-rosa-electrico hover:bg-rosa-electrico hover:bg-opacity-5 transition duration-200 group">
+                        <div class="flex items-center">
+                            <div class="bg-rosa-electrico bg-opacity-20 w-10 h-10 flex items-center justify-center mr-3 group-hover:bg-rosa-electrico group-hover:bg-opacity-30 transition duration-200">
+                                <i class="fas fa-microphone text-rosa-electrico text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="font-semibold text-gray-800 group-hover:text-rosa-electrico">Actor/Actriz</div>
+                                <div class="text-xs text-gray-500">Talento vocal</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 group-hover:text-rosa-electrico"></i>
+                    </a>
+
+                    <!-- Botón Cliente -->
+                    <a href="<?php echo e(route('register.client')); ?>"
+                        class="flex items-center justify-between p-4 border border-gray-200 hover:border-ambar hover:bg-ambar hover:bg-opacity-5 transition duration-200 group">
+                        <div class="flex items-center">
+                            <div class="bg-ambar bg-opacity-20 w-10 h-10 flex items-center justify-center mr-3 group-hover:bg-ambar group-hover:bg-opacity-30 transition duration-200">
+                                <i class="fas fa-search text-ambar text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="font-semibold text-gray-800 group-hover:text-ambar">Cliente</div>
+                                <div class="text-xs text-gray-500">Buscar talento</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 group-hover:text-ambar"></i>
+                    </a>
+                </div>
+
+                <!-- Enlace a login -->
+                <div class="border-t border-gray-200 pt-4">
+                    <p class="text-sm text-gray-600">
+                        ¿Ya tienes cuenta?
+                        <a href="<?php echo e(route('login')); ?>" class="text-azul-profundo hover:text-azul-profundo hover:bg-opacity-90 font-medium">
+                            Inicia sesión
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Botón cerrar -->
+                <div class="mt-4">
+                    <button onclick="closeRegisterModal()"
                         class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 text-sm font-medium transition duration-200">
-                    Cancelar
-                </button>
+                        Cancelar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-// Funciones para el modal
-function openRegisterModal() {
-    console.log('Abriendo modal...');
-    document.getElementById('registerModal').classList.remove('hidden');
-}
+    <script>
+        // Funciones para el modal
+        function openRegisterModal() {
+            console.log('Abriendo modal...');
+            document.getElementById('registerModal').classList.remove('hidden');
+        }
 
-function closeRegisterModal() {
-    console.log('Cerrando modal...');
-    document.getElementById('registerModal').classList.add('hidden');
-}
+        function closeRegisterModal() {
+            console.log('Cerrando modal...');
+            document.getElementById('registerModal').classList.add('hidden');
+        }
 
-// Cerrar modal al hacer click fuera
-document.getElementById('registerModal').addEventListener('click', function(e) {
-    if (e.target.id === 'registerModal') {
-        closeRegisterModal();
-    }
-});
+        // Cerrar modal al hacer click fuera
+        document.getElementById('registerModal').addEventListener('click', function(e) {
+            if (e.target.id === 'registerModal') {
+                closeRegisterModal();
+            }
+        });
 
-// Cerrar con ESC
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeRegisterModal();
-    }
-});
+        // Cerrar con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRegisterModal();
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', function() {
             // Título aparece inmediatamente
