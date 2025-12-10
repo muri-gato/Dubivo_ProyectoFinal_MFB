@@ -39,11 +39,6 @@ class User extends Authenticatable
         return $this->hasOne(Actor::class);
     }
 
-    public function schools()
-    {
-        return $this->hasManyThrough(School::class, Actor::class);
-    }
-
     //Verificamos roles fácilmente
     public function isAdmin()
     {
@@ -59,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->role === 'client';
     }
+    
+    /*     public function schools()
+    {
+        return $this->hasManyThrough(School::class, Actor::class);
+    } */
 }
